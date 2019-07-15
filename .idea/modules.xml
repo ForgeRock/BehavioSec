@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-auth-trees/auth-node-api/auth-node-api.iml" filepath="$PROJECT_DIR$/am-external/openam-auth-trees/auth-node-api/auth-node-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-auth-trees/auth-nodes/auth-nodes.iml" filepath="$PROJECT_DIR$/am-external/openam-auth-trees/auth-nodes/auth-nodes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-auth-trees/auth-tree-node-archetype/auth-tree-node-archetype.iml" filepath="$PROJECT_DIR$/am-external/openam-auth-trees/auth-tree-node-archetype/auth-tree-node-archetype.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/custom-authentication-module/custom-authentication-module.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/custom-authentication-module/custom-authentication-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/forgerock-authorization-plugin.iml" filepath="$PROJECT_DIR$/forgerock-authorization-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/jwt-bearer-client/jwt-bearer-client.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/jwt-bearer-client/jwt-bearer-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-ad/openam-auth-ad.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-ad/openam-auth-ad.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-adaptive/openam-auth-adaptive.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-adaptive/openam-auth-adaptive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-amster/openam-auth-amster.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-amster/openam-auth-amster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-anonymous/openam-auth-anonymous.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-anonymous/openam-auth-anonymous.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-application/openam-auth-application.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-application/openam-auth-application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-cert/openam-auth-cert.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-cert/openam-auth-cert.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-common/openam-auth-common.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-common/openam-auth-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-datastore/openam-auth-datastore.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-datastore/openam-auth-datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-device-id/openam-auth-device-id.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-device-id/openam-auth-device-id.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-fr-oath/openam-auth-fr-oath.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-fr-oath/openam-auth-fr-oath.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-hotp/openam-auth-hotp.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-hotp/openam-auth-hotp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-httpbasic/openam-auth-httpbasic.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-httpbasic/openam-auth-httpbasic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-jdbc/openam-auth-jdbc.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-jdbc/openam-auth-jdbc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-jwt-pop/openam-auth-jwt-pop.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-jwt-pop/openam-auth-jwt-pop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-ldap/openam-auth-ldap.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-ldap/openam-auth-ldap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-membership/openam-auth-membership.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-membership/openam-auth-membership.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-msisdn/openam-auth-msisdn.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-msisdn/openam-auth-msisdn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-nt/openam-auth-nt.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-nt/openam-auth-nt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oath/openam-auth-oath.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oath/openam-auth-oath.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oauth2/openam-auth-oauth2.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oauth2/openam-auth-oauth2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oidc/openam-auth-oidc.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-oidc/openam-auth-oidc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-persistentcookie/openam-auth-persistentcookie.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-persistentcookie/openam-auth-persistentcookie.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-push/openam-auth-push.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-push/openam-auth-push.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-radius/openam-auth-radius.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-radius/openam-auth-radius.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-saml2/openam-auth-saml2.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-saml2/openam-auth-saml2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-scripted/openam-auth-scripted.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-scripted/openam-auth-scripted.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-social/openam-auth-social.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-social/openam-auth-social.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-auth-trees/openam-auth-trees.iml" filepath="$PROJECT_DIR$/am-external/openam-auth-trees/openam-auth-trees.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-auth-windowsdesktopsso/openam-auth-windowsdesktopsso.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-auth-windowsdesktopsso/openam-auth-windowsdesktopsso.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-authentication/openam-authentication.iml" filepath="$PROJECT_DIR$/am-external/openam-authentication/openam-authentication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-datastore/openam-datastore.iml" filepath="$PROJECT_DIR$/am-external/openam-datastore/openam-datastore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/openam-example-api-descriptor/openam-example-api-descriptor.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/openam-example-api-descriptor/openam-example-api-descriptor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-external.iml" filepath="$PROJECT_DIR$/am-external/openam-external.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/openam-post-auth-sample/openam-post-auth-sample.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/openam-post-auth-sample/openam-post-auth-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-push-notification/openam-push-notification.iml" filepath="$PROJECT_DIR$/am-external/openam-push-notification/openam-push-notification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-radius/openam-radius.iml" filepath="$PROJECT_DIR$/am-external/openam-radius/openam-radius.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-radius/openam-radius-cli/openam-radius-cli.iml" filepath="$PROJECT_DIR$/am-external/openam-radius/openam-radius-cli/openam-radius-cli.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-radius/openam-radius-common/openam-radius-common.iml" filepath="$PROJECT_DIR$/am-external/openam-radius/openam-radius-common/openam-radius-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-radius/openam-radius-server/openam-radius-server.iml" filepath="$PROJECT_DIR$/am-external/openam-radius/openam-radius-server/openam-radius-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/openam-samples.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/openam-samples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/openam-scope-sample/openam-scope-sample.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/openam-scope-sample/openam-scope-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-ui/openam-ui.iml" filepath="$PROJECT_DIR$/am-external/openam-ui/openam-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-ui/openam-ui-api/openam-ui-api.iml" filepath="$PROJECT_DIR$/am-external/openam-ui/openam-ui-api/openam-ui-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-ui/openam-ui-ria/openam-ui-ria.iml" filepath="$PROJECT_DIR$/am-external/openam-ui/openam-ui-ria/openam-ui-ria.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/policy-evaluation-plugin/policy-evaluation-plugin.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/policy-evaluation-plugin/policy-evaluation-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/openam-examples-quotaexhaustionaction/quotaexhaustionaction.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/openam-examples-quotaexhaustionaction/quotaexhaustionaction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/am-external/openam-samples/sample-trees/sample-trees.iml" filepath="$PROJECT_DIR$/am-external/openam-samples/sample-trees/sample-trees.iml" />
+    </modules>
+  </component>
+</project>
