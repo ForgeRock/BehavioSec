@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Definition of an <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/auth/node/api/AbstractNodeAmPlugin.html">AbstractNodeAmPlugin</a>. 
- * Implementations can use {@code @Inject} setters to get access to APIs 
- * available via Guice dependency injection. For example, if you want to add an SMS service on install, you 
+ * Definition of an <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/auth/node/api/AbstractNodeAmPlugin.html">AbstractNodeAmPlugin</a>.
+ * Implementations can use {@code @Inject} setters to get access to APIs
+ * available via Guice dependency injection. For example, if you want to add an SMS service on install, you
  * can add the following setter:
  * <pre><code>
  * {@code @Inject}
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  * }
  * </code></pre>
  * So that you can use the addSmsService api to load your schema XML for example.
- * PluginTools javadoc may be found 
- * <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/plugins/PluginTools.html#addSmsService-java.io.InputStream-">here</a> 
+ * PluginTools javadoc may be found
+ * <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/plugins/PluginTools.html#addSmsService-java.io.InputStream-">here</a>
  * <p>
  *     It can be assumed that when running, implementations of this class will be singleton instances.
  * </p>
@@ -62,65 +62,65 @@ import org.slf4j.LoggerFactory;
  */
 public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
 
-	static private String currentVersion = "1.0.0";
-	
-    /** 
+    static private String currentVersion = "1.0.0";
+
+    /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
      *  registered at the appropriate times in plugin lifecycle.
      *
      * @return The list of node classes.
      */
-	@Override
-	protected Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
-		return Collections.singletonMap(BehaviosecAuthNodePlugin.currentVersion, 
-				Collections.singletonList(BehaviosecAuthNode.class));
-	}
+    @Override
+    protected Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
+        return Collections.singletonMap(BehaviosecAuthNodePlugin.currentVersion,
+                Collections.singletonList(BehaviosecAuthNode.class));
+    }
 
-    /** 
+    /**
      * Handle plugin installation. This method will only be called once, on first AM startup once the plugin
      * is included in the classpath. The {@link #onStartup()} method will be called after this one.
-     * 
+     *
      * No need to implement this unless your AuthNode has specific requirements on install.
      */
-	@Override
-	public void onInstall() throws PluginException {
-		super.onInstall();
-	}
+    @Override
+    public void onInstall() throws PluginException {
+        super.onInstall();
+    }
 
-    /** 
+    /**
      * Handle plugin startup. This method will be called every time AM starts, after {@link #onInstall()},
      * {@link #onAmUpgrade(String, String)} and {@link #upgrade(String)} have been called (if relevant).
-     * 
+     *
      * No need to implement this unless your AuthNode has specific requirements on startup.
      *
      * @param startupType The type of startup that is taking place.
      */
-	@Override
-	public void onStartup() throws PluginException {
-		super.onStartup();
-	}
+    @Override
+    public void onStartup() throws PluginException {
+        super.onStartup();
+    }
 
-    /** 
+    /**
      * This method will be called when the version returned by {@link #getPluginVersion()} is higher than the
      * version already installed. This method will be called before the {@link #onStartup()} method.
-     * 
+     *
      * No need to implement this untils there are multiple versions of your auth node.
      *
      * @param fromVersion The old version of the plugin that has been installed.
-     */	
-	@Override
-	public void upgrade(String fromVersion) throws PluginException {
-		super.upgrade(fromVersion);
-	}
+     */
+    @Override
+    public void upgrade(String fromVersion) throws PluginException {
+        super.upgrade(fromVersion);
+    }
 
-    /** 
+    /**
      * The plugin version. This must be in semver (semantic version) format.
      *
      * @return The version of the plugin.
      * @see <a href="https://www.osgi.org/wp-content/uploads/SemanticVersioning.pdf">Semantic Versioning</a>
      */
-	@Override
-	public String getPluginVersion() {
-		return BehaviosecAuthNodePlugin.currentVersion;
-	}
+    @Override
+    public String getPluginVersion() {
+        return BehaviosecAuthNodePlugin.currentVersion;
+    }
 }

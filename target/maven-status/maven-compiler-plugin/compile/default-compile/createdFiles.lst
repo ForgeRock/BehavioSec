@@ -1,0 +1,8 @@
+com/behaviosec/utils/Consts.class
+com/behaviosec/behaviosecAuthNode/BehaviosecAuthNode.class
+com/behaviosec/utils/RestConnector.class
+com/behaviosec/behaviosecAuthNode/BehaviosecAuthNodePlugin.class
+com/behaviosec/behaviosecAuthNode/BehaviosecAuthNode$Config.class
+com/behaviosec/utils/BehavioSecRESTAPI.class
+com/behaviosec/utils/ResponseObject.class
+com/behaviosec/behaviosecAuthNode/BehaviosecAuthNode$OutcomeProvider.class
