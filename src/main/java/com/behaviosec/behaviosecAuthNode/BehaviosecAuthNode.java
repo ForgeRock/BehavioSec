@@ -61,9 +61,9 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final static String TRUE_OUTCOME_ID = "true";
     private final static String FALSE_OUTCOME_ID = "false";
-    private final Logger logger = LoggerFactory.getLogger(BehaviosecAuthNode.class);
+    private final Logger logger = LoggerFactory.getLogger("amAuth"); //LoggerFactory.getLogger(BehaviosecAuthNode.class);
+
     private final Config config;
-    private final Realm realm;
 
     /**
      * Configuration for the node.
@@ -80,13 +80,13 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             return "TENANT_UUID";
         }
 
-        @Attribute(order = 300)
-        default String Body() {
-            return "{\"message\": \"{{User}} has logged in\"}";
-        }
+//        @Attribute(order = 300)
+//        default String Body() {
+//            return "{\"message\": \"{{User}} has logged in\"}";
+//        }
 
-        @Attribute(order = 400)
-        Map<String, String> Headers();
+//        @Attribute(order = 300)
+//        Map<String, String> Headers();
     }
 
 
@@ -95,13 +95,11 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
      * from the plugin.
      *
      * @param config The service config.
-     * @param realm The realm the node is in.
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehaviosecAuthNode(@Assisted Config config, @Assisted Realm realm) throws NodeProcessException {
+    public BehaviosecAuthNode(@Assisted Config config) throws NodeProcessException {
         this.config = config;
-        this.realm = realm;
     }
 
     @Override
@@ -124,7 +122,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
             String output = br.readLine();
             logger.debug("Server response: " + output);
-            if (output == "true"){
+            if (output != null){
                 return goTo(true).build();
             } else {
                 return goTo(false).build();
