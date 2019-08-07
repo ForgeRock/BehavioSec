@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.http.entity.StringEntity;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
@@ -42,6 +43,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.InputStreamReader;
@@ -107,26 +109,35 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             logger.info("Sending request to " + getHealth);
             //Build HTTP request
             HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpPost postRequest = new HttpPost("http://13.56.150.246:8080/BehavioSenseAPI/GetReport");
             HttpGet getRequest = new HttpGet("http://13.56.150.246:8080/BehavioSenseAPI/GetHealthCheck");
-            HttpResponse response = httpClient.execute(getRequest);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
-            }
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-            String output = br.readLine();
-            logger.debug("Server response: " + output);
-            if (output != null){
-                return goTo(true).build();
-            } else {
-                return goTo(false).build();
+            String data = "userId=tutorial_user&userAgent=\"\"&ip=0.0.0.0&timing=[[\"w\",[{\"text#tutorial_username\": 2}],\"Tutorial/Login/\"],[\"f\",\"text#tutorial_username\",[[0,97,10030],[1,97,10342],[0,98,11412],[1,98,11792]]]]";
+            StringEntity entity = new StringEntity(data);
+            postRequest.setEntity(entity);
+            postRequest.setHeader("Accept", "application/json");
+            postRequest.setHeader("Content-type", "application/json");
+            HttpResponse response = httpClient.execute(postRequest);
 
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return goTo(false).build();
+//                throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
+            return goTo(true).build();
+//            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+//            String output = br.readLine();
+//            logger.debug("Server response: " + output);
+//            if (output != null){
+//                return goTo(true).build();
+//            } else {
+//                return goTo(false).build();
+//
+//            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return goTo(true).build();
+        return goTo(false).build();
 
     }
 
