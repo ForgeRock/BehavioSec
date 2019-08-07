@@ -72,7 +72,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
         @Attribute(order = 100)
         default String URL() {
-            return "https://server.domain:port/context";
+            return "http://13.56.150.246:8080/BehavioSenseAPI/GetHealthCheck";
         }
 
         @Attribute(order = 200)
@@ -80,13 +80,6 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             return "TENANT_UUID";
         }
 
-//        @Attribute(order = 300)
-//        default String Body() {
-//            return "{\"message\": \"{{User}} has logged in\"}";
-//        }
-
-//        @Attribute(order = 300)
-//        Map<String, String> Headers();
     }
 
 
@@ -114,7 +107,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             logger.info("Sending request to " + getHealth);
             //Build HTTP request
             HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet getRequest = new HttpGet(getHealth);
+            HttpGet getRequest = new HttpGet("http://13.56.150.246:8080/BehavioSenseAPI/GetHealthCheck");
             HttpResponse response = httpClient.execute(getRequest);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
