@@ -124,11 +124,11 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 return goTo(false).build();
 //                throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
-            String json_string = EntityUtils.toString(response.getEntity());
-            logger.error("RESPONSE entity: " + json_string);
-
-            JSONArray temp1 = new JSONArray(json_string);
-            logger.error("RESPONSE JSON: " + temp1.toString());
+//            String json_string = EntityUtils.toString(response.getEntity());
+//            logger.error("RESPONSE entity: " + json_string);
+//
+//            JSONArray temp1 = new JSONArray(json_string);
+//            logger.error("RESPONSE JSON: " + temp1.toString());
             return goTo(true).build();
 //            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 //            String output = br.readLine();
