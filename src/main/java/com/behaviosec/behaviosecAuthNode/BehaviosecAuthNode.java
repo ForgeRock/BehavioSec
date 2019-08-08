@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
@@ -34,6 +35,8 @@ import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.core.realms.Realm;
 import org.forgerock.util.i18n.PreferredLocales;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,14 +102,14 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        logger.info("Process node");
+        logger.error("Process node");
         return sendRequest(context);
     }
 
     private Action sendRequest(TreeContext context) throws NodeProcessException{
         try{
             String getHealth = config.URL()+"/BehavioSenseAPI/GetHealthCheck";
-            logger.info("Sending request to " + getHealth);
+            logger.error("Sending request to " + getHealth);
             //Build HTTP request
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost postRequest = new HttpPost("http://13.56.150.246:8080/BehavioSenseAPI/GetReport");
@@ -117,11 +120,16 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             postRequest.setHeader("Accept", "application/json");
             postRequest.setHeader("Content-type", "application/json");
             HttpResponse response = httpClient.execute(postRequest);
-
+            logger.error("RESPONSE: " + response.toString());
             if (response.getStatusLine().getStatusCode() != 200) {
                 return goTo(false).build();
 //                throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
             }
+            String json_string = EntityUtils.toString(response.getEntity());
+            logger.error("RESPONSE entity: " + json_string);
+
+            JSONArray temp1 = new JSONArray(json_string);
+            logger.error("RESPONSE JSON: " + temp1.toString());
             return goTo(true).build();
 //            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
 //            String output = br.readLine();
@@ -133,8 +141,13 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 //
 //            }
         } catch (MalformedURLException e) {
+            logger.error("MalformedURLException: " + e.toString());
             e.printStackTrace();
         } catch (IOException e) {
+            logger.error("IOException: " + e.toString());
+            e.printStackTrace();
+        } catch (JSONException e) {
+            logger.error("JSONException: " + e.toString());
             e.printStackTrace();
         }
         return goTo(false).build();
