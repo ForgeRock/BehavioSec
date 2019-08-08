@@ -33,7 +33,6 @@ import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.openam.core.realms.Realm;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.json.JSONArray;
 import org.json.JSONException;
