@@ -16,7 +16,9 @@
 
 package com.behaviosec.behaviosecAuthNode;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -72,8 +74,11 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
      */
     @Override
     protected Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
+        List<Class<? extends Node>> contents = new ArrayList<>();
+        contents.add(BehaviosecAuthNode.class);
+        contents.add(BehaviosecJSNode.class);
         return Collections.singletonMap(BehaviosecAuthNodePlugin.currentVersion,
-                Collections.singletonList(BehaviosecAuthNode.class));
+                Collections.unmodifiableList(contents));
     }
 
     /**
