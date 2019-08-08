@@ -87,7 +87,13 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
      	String myScript = getScriptAsString(config.fileName());
-    	
+        logger.error(" *************************************** BehaviosecJSNode *************************** ");
+        logger.error("CLIENT IP: " + context.request.clientIp);
+        logger.error("ServerURL: " +context.request.serverUrl);
+        logger.error("SSOTokenID: " +context.request.ssoTokenId);
+        logger.error("Headers: " +context.request.headers.toString());
+        logger.error("params: " +context.request.parameters.toString());
+        logger.error(" ******************************************************************************** ");
     	logger.error("Processing script " + config.fileName());
     	
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));

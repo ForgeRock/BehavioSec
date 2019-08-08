@@ -1,6 +1,6 @@
 var Monitor = function () {
     this.init()
-    console.log("BehavioSEc, Starting monitoring")
+    console.log("BehavioSec, Starting monitoring")
 };
 Monitor.prototype = {
     behavioData: [],

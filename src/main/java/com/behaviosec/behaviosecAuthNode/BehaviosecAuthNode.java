@@ -106,6 +106,14 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     private Action sendRequest(TreeContext context) throws NodeProcessException{
+        logger.error(" *************************************** BehaviosecAuthNode *************************** ");
+        logger.error("CLIENT IP: " + context.request.clientIp);
+        logger.error("ServerURL: " +context.request.serverUrl);
+        logger.error("SSOTokenID: " +context.request.ssoTokenId);
+        logger.error("Headers: " +context.request.headers.toString());
+        logger.error("params: " +context.request.parameters.toString());
+        logger.error(" ******************************************************************************** ");
+
         try{
             String getHealth = config.URL()+"/BehavioSenseAPI/GetHealthCheck";
             logger.error("Sending request to " + getHealth);
