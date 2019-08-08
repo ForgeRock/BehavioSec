@@ -145,10 +145,11 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         } catch (IOException e) {
             logger.error("IOException: " + e.toString());
             e.printStackTrace();
-        } catch (JSONException e) {
-            logger.error("JSONException: " + e.toString());
-            e.printStackTrace();
         }
+//        catch (JSONException e) {
+//            logger.error("JSONException: " + e.toString());
+//            e.printStackTrace();
+//        }
         return goTo(false).build();
 
     }
