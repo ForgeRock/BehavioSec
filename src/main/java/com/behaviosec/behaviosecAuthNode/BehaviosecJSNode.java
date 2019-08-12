@@ -15,7 +15,7 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.customAuthNode;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 
@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -68,7 +69,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
  
         @Attribute(order = 20)
         default String scriptResult() {
-        	return "behaviosec";
+            return "behaviosec";
         }
     }
 
@@ -86,57 +87,68 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-     	String myScript = getScriptAsString(config.fileName());
-        logger.error(" *************************************** BehaviosecJSNode *************************** ");
-        logger.error("CLIENT IP: " + context.request.clientIp);
-        logger.error("ServerURL: " +context.request.serverUrl);
-        logger.error("SSOTokenID: " +context.request.ssoTokenId);
-        logger.error("Headers: " +context.request.headers.toString());
-        logger.error("params: " +context.request.parameters.toString());
-        logger.error(" ******************************************************************************** ");
-    	logger.error("Processing script " + config.fileName());
-    	
+        String myScript = getScriptAsString(config.fileName());
+        
+        String deb = "";
+        List<? extends Callback>cb = context.getAllCallbacks();
+        for (int i = 0; i < cb.size(); i++) {
+            Callback c = cb.get(i);
+            deb += c.toString() + " " ;
+        }
+        
+        logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
+        
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
-        logger.error("Result = " + result);
+        logger.error("2 - Result = " + result);
         if (result.isPresent()) {
-        	logger.error("Result is present");
+            logger.error("3 - Result is present -> " + result.get());
+            String resultValue = result.get();
+            if ("undefined".equalsIgnoreCase(resultValue)) {
+                resultValue = "Not set";
+            }
             JsonValue newSharedState = context.sharedState.copy();
-            newSharedState.put(config.scriptResult(), result.get());
+            logger.error("4 - newSharedState -> " + newSharedState);
+            logger.error("Adding result to \"" + config.scriptResult() + "\"");
+            newSharedState.put(config.scriptResult(), resultValue);
+            logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
         } else { 
-        	logger.error("Result not present yet");
-        	String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript , 
-       			config.scriptResult(), true, context.sharedState.toString());
+            logger.error("8 - Result not present yet");
+            logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
+            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript , 
+                config.scriptResult(), true, context.sharedState.toString());
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
-
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
+//            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult(), "false");
+            logger.error("10 - hiddenValueCallback -> " + hiddenValueCallback);
 
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);
+            logger.error("11 - callbacks -> " + callbacks.toString());
 
             return send(callbacks).build();
        } 
     }
     
     public String getScriptAsString(String filename) {
-    	logger.error("getScriptAsString: Filename " + filename);
-    	if (filename == null) {
-    		filename = "behaviosec.js";
-    	}
-		try {
-			Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
+        logger.error("getScriptAsString: Filename " + filename);
+        if (filename == null) {
+            filename = "behaviosec.js";
+        }
+        try {
+            Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
-			String data = new String();
-			BufferedReader objReader = new BufferedReader(paramReader);
-			String strCurrentLine;
-			while ((strCurrentLine = objReader.readLine()) != null) {
-				data += strCurrentLine;
-			}
-	    	return data;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+            String data = new String();
+            BufferedReader objReader = new BufferedReader(paramReader);
+            String strCurrentLine;
+            while ((strCurrentLine = objReader.readLine()) != null) {
+                data += strCurrentLine;
+            }
+            return data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
