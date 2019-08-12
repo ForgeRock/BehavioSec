@@ -16,20 +16,14 @@
 
 package com.behaviosec.behaviosecAuthNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.plugins.PluginException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
+import static java.util.Arrays.asList;
 
 /**
  * Definition of an <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/auth/node/api/AbstractNodeAmPlugin.html">AbstractNodeAmPlugin</a>.
@@ -74,11 +68,11 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
      */
     @Override
     protected Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
-        List<Class<? extends Node>> contents = new ArrayList<>();
-        contents.add(BehaviosecAuthNode.class);
-        contents.add(BehaviosecJSNode.class);
-        return Collections.singletonMap(BehaviosecAuthNodePlugin.currentVersion,
-                Collections.unmodifiableList(contents));
+        return ImmutableMap.of(
+                BehaviosecAuthNodePlugin.currentVersion, asList(
+                BehaviosecAuthNode.class,
+                BehaviosecJSNode.class
+                ));
     }
 
     /**

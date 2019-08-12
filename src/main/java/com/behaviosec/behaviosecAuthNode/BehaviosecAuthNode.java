@@ -65,7 +65,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final static String TRUE_OUTCOME_ID = "true";
     private final static String FALSE_OUTCOME_ID = "false";
-    private final Logger logger = LoggerFactory.getLogger("amAuth"); //LoggerFactory.getLogger(BehaviosecAuthNode.class);
+    private final Logger logger = LoggerFactory.getLogger("com.behaviosec.authnode");
 
     private final Config config;
 
