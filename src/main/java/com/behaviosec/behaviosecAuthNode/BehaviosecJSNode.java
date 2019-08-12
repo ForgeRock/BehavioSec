@@ -15,7 +15,8 @@
  */
 
 
-package com.behaviosec.customAuthNode;
+package com.behaviosec.behaviosecAuthNode;
+
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 

@@ -14,7 +14,7 @@
  * Copyright 2017-2018 ForgeRock AS.
  */
 
-package com.behaviosec.customAuthNode;
+package com.behaviosec.behaviosecAuthNode;
 
 import java.util.Collections;
 import java.util.Map;
