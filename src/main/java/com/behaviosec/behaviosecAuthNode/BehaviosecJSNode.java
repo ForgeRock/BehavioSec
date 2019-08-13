@@ -18,8 +18,19 @@
 package com.behaviosec.behaviosecAuthNode;
 
 
-import static org.forgerock.openam.auth.node.api.Action.send;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.authentication.callbacks.HiddenValueCallback;
+import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,24 +38,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
-
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.authentication.callbacks.HiddenValueCallback;
-import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
@@ -65,12 +59,12 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
          */
         @Attribute(order = 10)
         default String fileName() {
-            return "behaviosec.js";
+            return "collector.min.js";
         }
  
         @Attribute(order = 20)
         default String scriptResult() {
-            return "behaviosec";
+            return "bdata";
         }
     }
 
@@ -98,7 +92,6 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
         }
         
         logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
-        
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
         logger.error("2 - Result = " + result);
         if (result.isPresent()) {
@@ -155,40 +148,33 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
             boolean clientSideScriptEnabled, String context) {
         String collectingDataMessage = "";
-        if (clientSideScriptEnabled) {
-            collectingDataMessage = "messenger.messages.addMessage( message );\n";
-        }
-
-        String spinningWheelScript = "if (window.require) {\n" +
-                "    var messenger = require(\"org/forgerock/commons/ui/common/components/Messages\"),\n" +
-                "        spinner =  require(\"org/forgerock/commons/ui/common/main/SpinnerManager\"),\n" +
-                "        message =  {message:\"Collecting Data...\", type:\"info\"};\n" +
-                "    spinner.showSpinner();\n" +
-                collectingDataMessage +
-                "}";
 
         return String.format(
-                spinningWheelScript +
-                        "(function(output) {\n" +
-                        "    var autoSubmitDelay = 0,\n" +
-                        "        submitted = false,\n" +
-                        "        context = %s;\n" + //injecting context in form of JSON
-                        "    function submit() {\n" +
-                        "        if (submitted) {\n" +
-                        "            return;\n" +
-                        "        }" +
-                        "        if (!(typeof $ == 'function')) {\n" + // Crude detection to see if XUI is not present.
-                        "            document.getElementById('loginButton_0').click();\n" +
-                        "        } else {\n" +
-                        "            $('input[type=submit]').click();\n" +
-                        "        }\n" +
-                        "        submitted = true;\n" +
-                        "    }\n" +
-                        "    %s\n" + // script
-                        "    setTimeout(submit, autoSubmitDelay);\n" +
-                        "}) (document.forms[0].elements['%s']);\n", // outputParameterId
-                context,
-                script,
-                outputParameterId);
+                "window.addEventListener(\"DOMContentLoaded\",function() {" + "\n",
+                "    console.log(\"Attaching to form\");" + "\n",
+                "    let form = document.forms[0]" + "\n",
+                "    if (form) {" + "\n",
+                "        form.addEventListener(\"submit\",function(e) {" + "\n",
+                "            let field = form.querySelector(\"input[name=%s]\");" + "\n", //outputParameterId
+                "            if (!field) {" + "\n",
+                "                field = document.createElement(\"input\");" + "\n",
+                "                field.name = '%s';" + "\n", //outputParameterId
+                "                field.type = \"hidden\";" + "\n",
+                "                form.appendChild(field);" + "\n",
+                "            }" + "\n",
+                "            field.value = window.bw.getData();" + "\n",
+                "            console.log(field.name);" + "\n",
+                "            console.log(field.type);" + "\n",
+                "            console.log(field.value);" + "\n",
+                "        });" + "\n",
+                "    } else {" + "\n",
+                "        console.log(\"ERROR: No form element\");" + "\n",
+                "    }" + "\n",
+                "});" + "\n",
+                "    %s\n",// script
+//                context,
+                outputParameterId,
+                outputParameterId,
+                script);
     }
 }

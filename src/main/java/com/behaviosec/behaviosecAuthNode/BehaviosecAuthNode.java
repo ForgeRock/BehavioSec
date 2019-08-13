@@ -18,41 +18,25 @@
 package com.behaviosec.behaviosecAuthNode;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
-import javax.inject.Inject;
-
 import com.google.common.collect.ImmutableList;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.util.i18n.PreferredLocales;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.assistedinject.Assisted;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.*;
+import org.forgerock.util.i18n.PreferredLocales;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.InputStreamReader;
+import javax.inject.Inject;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -80,10 +64,18 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         }
 
         @Attribute(order = 200)
+        default String DataField() {
+            return "bdata";
+        }
+
+        //TODO: verify that value exist?
+        //TODO: how do validate configuration errors?
+        //TODO: can we enforce dependencies?
+
+        @Attribute(order = 300)
         default String Tenant() {
             return "TENANT_UUID";
         }
-
     }
 
 
@@ -112,6 +104,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         logger.error("SSOTokenID: " +context.request.ssoTokenId);
         logger.error("Headers: " +context.request.headers.toString());
         logger.error("params: " +context.request.parameters.toString());
+        logger.error("stateData: " +context.sharedState.get(config.DataField()));
         logger.error(" ******************************************************************************** ");
 
         try{
