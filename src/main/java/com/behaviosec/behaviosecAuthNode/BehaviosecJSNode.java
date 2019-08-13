@@ -55,13 +55,14 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     public interface Config {
         /**
          * The amount to increment/decrement the auth level.
+         *
          * @return the amount.
          */
         @Attribute(order = 10)
         default String fileName() {
             return "collector.min.js";
         }
- 
+
         @Attribute(order = 20)
         default String scriptResult() {
             return "bdata";
@@ -72,6 +73,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     /**
      * Guice constructor.
+     *
      * @param config The node configuration.
      * @throws NodeProcessException If there is an error reading the configuration.
      */
@@ -83,14 +85,14 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
         String myScript = getScriptAsString(config.fileName());
-        
+
         String deb = "";
-        List<? extends Callback>cb = context.getAllCallbacks();
+        List<? extends Callback> cb = context.getAllCallbacks();
         for (int i = 0; i < cb.size(); i++) {
             Callback c = cb.get(i);
-            deb += c.toString() + " " ;
+            deb += c.toString() + " ";
         }
-        
+
         logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
         logger.error("2 - Result = " + result);
@@ -106,11 +108,11 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             newSharedState.put(config.scriptResult(), resultValue);
             logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
-        } else { 
+        } else {
             logger.error("8 - Result not present yet");
             logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
-            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript , 
-                config.scriptResult(), true, context.sharedState.toString());
+            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript,
+                    config.scriptResult(), true, context.sharedState.toString());
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 //            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
@@ -121,9 +123,9 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             logger.error("11 - callbacks -> " + callbacks.toString());
 
             return send(callbacks).build();
-       } 
+        }
     }
-    
+
     public String getScriptAsString(String filename) {
         logger.error("getScriptAsString: Filename " + filename);
         if (filename == null) {
@@ -146,35 +148,43 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     }
 
     public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
-            boolean clientSideScriptEnabled, String context) {
+                                                                boolean clientSideScriptEnabled, String context) {
+
         String collectingDataMessage = "";
+        if (clientSideScriptEnabled) {
+            collectingDataMessage = "    messenger.messages.addMessage( message );\n";
+        }
+
+        String spinningWheelScript = "if (window.require) {\n" +
+                "    var messenger = require(\"org/forgerock/commons/ui/common/components/Messages\"),\n" +
+                "        spinner =  require(\"org/forgerock/commons/ui/common/main/SpinnerManager\"),\n" +
+                "        message =  {message:\"Collecting Data...\", type:\"info\"};\n" +
+                "    spinner.showSpinner();\n" +
+                collectingDataMessage +
+                "}";
 
         return String.format(
-                "window.addEventListener(\"DOMContentLoaded\",function() {" + "\n",
-                "    console.log(\"Attaching to form\");" + "\n",
-                "    let form = document.forms[0]" + "\n",
-                "    if (form) {" + "\n",
-                "        form.addEventListener(\"submit\",function(e) {" + "\n",
-                "            let field = form.querySelector(\"input[name=%s]\");" + "\n", //outputParameterId
-                "            if (!field) {" + "\n",
-                "                field = document.createElement(\"input\");" + "\n",
-                "                field.name = '%s';" + "\n", //outputParameterId
-                "                field.type = \"hidden\";" + "\n",
-                "                form.appendChild(field);" + "\n",
-                "            }" + "\n",
-                "            field.value = window.bw.getData();" + "\n",
-                "            console.log(field.name);" + "\n",
-                "            console.log(field.type);" + "\n",
-                "            console.log(field.value);" + "\n",
-                "        });" + "\n",
-                "    } else {" + "\n",
-                "        console.log(\"ERROR: No form element\");" + "\n",
-                "    }" + "\n",
-                "});" + "\n",
-                "    %s\n",// script
-//                context,
-                outputParameterId,
-                outputParameterId,
-                script);
+                script +
+                        "(function(output) {\n" +
+                        "    var autoSubmitDelay = 0,\n" +
+                        "        submitted = false,\n" +
+                        "        context = %s;\n" + //injecting context in form of JSON
+                        "    function submit() {\n" +
+                        "        if (submitted) {\n" +
+                        "            return;\n" +
+                        "        }" +
+                        "        if (!(typeof $ == 'function')) {\n" + // Crude detection to see if XUI is not present.
+                        "            document.getElementById('loginButton_0').click();\n" +
+                        "        } else {\n" +
+                        "            $('input[type=submit]').click();\n" +
+                        "        }\n" +
+                        "        submitted = true;\n" +
+                        "    }\n" +
+//                        "    %s\n" + // script
+                        "    setTimeout(submit, autoSubmitDelay);\n" +
+                        "}) (document.forms[0].elements['%s']);\n", // outputParameterId
+                context,
+//                script,
+                outputParameterId);
     }
 }
