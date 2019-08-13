@@ -150,31 +150,17 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
                                                                 boolean clientSideScriptEnabled, String context) {
 
-//        String collectingDataMessage = "";
-//        if (clientSideScriptEnabled) {
-//            collectingDataMessage = "    messenger.messages.addMessage( message );\n";
-//        }
-//
-//        String spinningWheelScript = "if (window.require) {\n" +
-//                "    var messenger = require(\"org/forgerock/commons/ui/common/components/Messages\"),\n" +
-//                "        spinner =  require(\"org/forgerock/commons/ui/common/main/SpinnerManager\"),\n" +
-//                "        message =  {message:\"Collecting Data...\", type:\"info\"};\n" +
-//                "    spinner.showSpinner();\n" +
-//                collectingDataMessage +
-//                "}";
-
         return String.format(
                 script +
                         "(function(output) {\n" +
-                        "    function submit() {\n" +
-                        "       console.log(\"submit function\");\n" +
+                        "       console.log(\"here here\");\n" +
+                        "       console.log(document.forms[0]);\n" +
                         "       document.forms[0].addEventListener(\"submit\",function(e) {\n" +
                         "           console.log(\"event function \");\n" +
                         "           var field = form.querySelector(\"input[id=bdata]\");\n" +
                         "           field.value = window.bw.getData();\n" +
                         "           console.log(field.value);\n" +
                         "       });\n" +
-                        "    }\n" +
                         "}) (document);\n", // outputParameterId
                 context,
                 outputParameterId

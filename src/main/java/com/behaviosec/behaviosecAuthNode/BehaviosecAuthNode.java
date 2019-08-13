@@ -104,7 +104,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         logger.error("SSOTokenID: " +context.request.ssoTokenId);
         logger.error("Headers: " +context.request.headers.toString());
         logger.error("params: " +context.request.parameters.toString());
-        logger.error("stateData: " +context.sharedState.get(config.DataField()));
+
+        logger.error("sharedState: " +context.sharedState);
         logger.error(" ******************************************************************************** ");
 
         try{
