@@ -1,11 +1,15 @@
-package com.behaviosec.utils;
+package com.behaviosec.client;
 
-import org.forgerock.http.util.Json;
+
+import org.apache.http.NameValuePair;
+
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.List;
 
-public interface BehavioSecRESTAPI {
+public interface BehavioSecAPIInterface {
 
-    void setEndPoint(String endPoint);
+
     /**
      * RESTFull call to submit timing data and receive user report
      * TODO: add approprite links to the documentation
@@ -22,31 +26,32 @@ public interface BehavioSecRESTAPI {
      * @param notes
      * @return Returns a JSON formatted report (a collection of reports) that contains the comparison of a timing behavior string to the given user ID.
      */
-    Json getReport(String userID,
-                   String timing,
-                   String userAgent,
-                   String ip,
-                   int reportFlags,
-                   int operatorFlags,
-                   @Nullable String sessionID,
-                   @Nullable String tenantID,
-                   @Nullable Long timeStamp,
-                   @Nullable String notes
-                   );
+    BehavioSecReport getReport(String userID,
+                               String timing,
+                               String userAgent,
+                               String ip,
+                               int reportFlags,
+                               int operatorFlags,
+                               @Nullable String sessionID,
+                               @Nullable String tenantID,
+                               @Nullable Long timeStamp,
+                               @Nullable String notes
+    );
+    BehavioSecReport getReport(List<NameValuePair> report) throws IOException;
 
     /**
      * Call to check health status of the server
      *
      * @return  True if database is accessible; false otherwise.
      */
-    boolean getHealthCheck();
+    boolean getHealthCheck() throws IOException;
 
     /**
      * Get version of Behaviosec server and its components
      *
      * @return String containing version of BehavioSense and its components.
      */
-    String getVersion();
+    BehavioSecVersion getVersion() throws IOException;
 
 
     /**
@@ -69,6 +74,6 @@ public interface BehavioSecRESTAPI {
                          @Nullable String deviceType,
                          @Nullable String tenantId,
                          @Nullable String reason
-                        );
-
+    );
+    boolean resetProfile(List<NameValuePair> report) throws IOException;
 }

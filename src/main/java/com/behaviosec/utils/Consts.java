@@ -18,9 +18,13 @@ public class Consts {
     public static String TENANT_ID = "tenantId";
 
     //request action
-    public static String GET_SCORE = "getScore";
-    public static String GET_HEALTH_STATUS = "getHealthStatus";
-    public static String RESET_PASSWORD = "resetPassword";
+    public static String BASE               = "BehavioSenseAPI/";
+    public static String FINALIZE_SESSION   = BASE + "FinalizeSession";
+    public static String GET_HEALTH_STATUS  = BASE+ "GetHealthCheck";
+    public static String GET_REPORT         = BASE + "GetReport";
+    public static String GET_VERSION        = BASE + "GetVersion";
+    public static String REMOVE_USER        = BASE + "RemoveUser";
+    public static String RESET_PROFILE      = BASE + "ResetProfile";
 
 
 
