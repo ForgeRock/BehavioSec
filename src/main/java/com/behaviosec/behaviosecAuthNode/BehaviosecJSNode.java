@@ -15,22 +15,10 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.customAuthNode;
 
+import static org.forgerock.openam.auth.node.api.Action.send;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.authentication.callbacks.HiddenValueCallback;
-import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,14 +26,31 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
+
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.authentication.callbacks.HiddenValueCallback;
+import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
-               configClass      = BehaviosecJSNode.Config.class)
+        configClass      = BehaviosecJSNode.Config.class)
 public class BehaviosecJSNode extends SingleOutcomeNode {
     private final Logger logger = LoggerFactory.getLogger("com.behaviosec");
 
@@ -55,17 +60,16 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
     public interface Config {
         /**
          * The amount to increment/decrement the auth level.
-         *
          * @return the amount.
          */
         @Attribute(order = 10)
         default String fileName() {
-            return "collector.min.js";
+            return "behaviosec.js";
         }
 
         @Attribute(order = 20)
         default String scriptResult() {
-            return "bdata";
+            return "behaviosec";
         }
     }
 
@@ -73,7 +77,6 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     /**
      * Guice constructor.
-     *
      * @param config The node configuration.
      * @throws NodeProcessException If there is an error reading the configuration.
      */
@@ -84,19 +87,22 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        String myScript = getScriptAsString(config.fileName());
-
         String deb = "";
-        List<? extends Callback> cb = context.getAllCallbacks();
+        List<? extends Callback>cb = context.getAllCallbacks();
         for (int i = 0; i < cb.size(); i++) {
             Callback c = cb.get(i);
-            deb += c.toString() + " ";
+            deb += c.toString() + " " ;
         }
 
+        String scriptResult = config.scriptResult();
         logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
-        Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
+        logger.error("    config.scriptResult() = " + scriptResult);
+        String myScript = getScriptAsString(config.fileName(), scriptResult);
+
+        Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
+                filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
         logger.error("2 - Result = " + result);
-        if (result.isPresent()) {
+        if (result.isPresent() && !scriptResult.equals(result.get())) {
             logger.error("3 - Result is present -> " + result.get());
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
@@ -109,17 +115,21 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
+            if (result.isPresent() && scriptResult.equals(result.get())) {
+                logger.error("6 doing nothing??");
+                return goToNext().build();
+            }
             logger.error("8 - Result not present yet");
             logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
-            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(
-                    myScript,
-                    getScriptAsString("alert.js"),
-                    config.scriptResult(),
-                    true,
-                    context.sharedState.toString()
-            );
+            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript ,
+                    config.scriptResult(), true, context.sharedState.toString());
+
+            logger.error("\n\n\n" + clientSideScriptExecutorFunction + "\n\n\n");
+
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
+//                    new ScriptTextOutputCallback(myScript);
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
+
 //            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult(), "false");
             logger.error("10 - hiddenValueCallback -> " + hiddenValueCallback);
@@ -131,7 +141,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
         }
     }
 
-    public String getScriptAsString(String filename) {
+    public String getScriptAsString(String filename, String outputParameterId) {
         logger.error("getScriptAsString: Filename " + filename);
         if (filename == null) {
             filename = "behaviosec.js";
@@ -143,43 +153,53 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             BufferedReader objReader = new BufferedReader(paramReader);
             String strCurrentLine;
             while ((strCurrentLine = objReader.readLine()) != null) {
-                data += strCurrentLine;
+                data += strCurrentLine + System.lineSeparator();
             }
-            return data;
+            return String.format(data, outputParameterId);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-
-    public static String createClientSideScriptExecutorFunction(String script, String loader, String outputParameterId,
+    public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
                                                                 boolean clientSideScriptEnabled, String context) {
+        String collectingDataMessage = "";
+        if (clientSideScriptEnabled) {
+            collectingDataMessage = "messenger.messages.addMessage( message );\n";
+        }
+
+        String spinningWheelScript = "if (window.require) {\n" +
+                "    var messenger = require(\"org/forgerock/commons/ui/common/components/Messages\"),\n" +
+                "        spinner =  require(\"org/forgerock/commons/ui/common/main/SpinnerManager\"),\n" +
+                "        message =  {message:\"Collecting Data...\", type:\"info\"};\n" +
+                "    spinner.showSpinner();\n" +
+                collectingDataMessage +
+                "}";
 
         return String.format(
-                script +
-
-                        "(function(output) {\n" +
-                        "       console.log(\"here here\");\n" +
-                        "       console.log(document.getElementById(\"loginButton_0\"));\n"+
-                        "       document.getElementById(\"loginButton_0\").addEventListener(\"submit\",function(e) {\n" +
-                        "           console.log(\"event function \");\n" +
-                        "           var field = document.forms[0].querySelector(\"input[id=bdata]\");\n" +
-                        "           field.value = window.bw.getData();\n" +
-                        "           console.log(field.value);\n" +
-                        "       });\n" +
-//                        "       document.addEventListener('DOMContentLoaded', function () {\n" +
-//                        "       console.log('document - DOMContentLoaded - bubble'); // 2nd\n" +
-//                        "             });\n" +
-//                        "       console.log(document.forms[0].querySelector(\"input[id=bdata]\"));\n" +
-//                        "       document.getElementById(\"loginButton_0\").addEventListener(\"submit\",function(e) {\n" +
-//                        "           console.log(\"event function \");\n" +
-//                        "           var field = document.forms[0].querySelector(\"input[id=bdata]\");\n" +
-//                        "           field.value = window.bw.getData();\n" +
-//                        "           console.log(field.value);\n" +
-//                        "       });\n" +
-                        "}) (document);\n" // outputParameterId
-
-        );
+//                spinningWheelScript +
+                "(function(output) {\n" +
+                        "    var autoSubmitDelay = 0,\n" +
+                        "        submitted = false,\n" +
+                        "        context = %s;\n" + //injecting context in form of JSON
+                        "    function submit1() {\n" +
+                        "        console.log(\"submitted = \" + submitted)\n" +
+                        "        if (submitted) {\n" +
+                        "            return;\n" +
+                        "        }" +
+                        "        if (!(typeof $ == 'function')) {\n" + // Crude detection to see if XUI is not present.
+                        "            document.getElementById('loginButton_0').click();\n" +
+                        "        } else {\n" +
+                        "            $('input[type=submit]').click();\n" +
+                        "        }\n" +
+                        "        submitted = true;\n" +
+                        "    }\n" +
+                        "    %s\n" + // script
+                        "    setTimeout(submit1, autoSubmitDelay);\n" +
+                        "}) (document.forms[0].elements['%s']);\n", // outputParameterId
+                context,
+                script,
+                outputParameterId);
     }
 }
