@@ -15,10 +15,21 @@
  */
 
 
-package com.behaviosec.customAuthNode;
+package com.behaviosec.behaviosecAuthNode;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.authentication.callbacks.HiddenValueCallback;
+import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,24 +37,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
-
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.authentication.callbacks.HiddenValueCallback;
-import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
@@ -52,7 +46,7 @@ import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
         configClass      = BehaviosecJSNode.Config.class)
 public class BehaviosecJSNode extends SingleOutcomeNode {
-    private final Logger logger = LoggerFactory.getLogger("com.behaviosec");
+    private final Logger logger = LoggerFactory.getLogger("com.behaviosec.");
 
     /**
      * Configuration for the node.

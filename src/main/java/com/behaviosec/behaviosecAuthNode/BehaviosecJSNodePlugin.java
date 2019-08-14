@@ -14,19 +14,14 @@
  * Copyright 2017-2018 ForgeRock AS.
  */
 
-package com.behaviosec.customAuthNode;
-
-import java.util.Collections;
-import java.util.Map;
-
-import javax.inject.Inject;
+package com.behaviosec.behaviosecAuthNode;
 
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.plugins.PluginException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Collections;
+import java.util.Map;
 
 
 /**
