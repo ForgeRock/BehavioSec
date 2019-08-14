@@ -111,8 +111,13 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
         } else {
             logger.error("8 - Result not present yet");
             logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
-            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript,
-                    config.scriptResult(), true, context.sharedState.toString());
+            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(
+                    myScript,
+                    getScriptAsString("alert.js"),
+                    config.scriptResult(),
+                    true,
+                    context.sharedState.toString()
+            );
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 //            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
@@ -147,23 +152,34 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
         return null;
     }
 
-    public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
+
+    public static String createClientSideScriptExecutorFunction(String script, String loader, String outputParameterId,
                                                                 boolean clientSideScriptEnabled, String context) {
 
         return String.format(
                 script +
+
                         "(function(output) {\n" +
                         "       console.log(\"here here\");\n" +
-                        "       console.log(document.forms[0]);\n" +
-                        "       document.forms[0].addEventListener(\"submit\",function(e) {\n" +
+                        "       console.log(document.getElementById(\"loginButton_0\"));\n"+
+                        "       document.getElementById(\"loginButton_0\").addEventListener(\"submit\",function(e) {\n" +
                         "           console.log(\"event function \");\n" +
-                        "           var field = form.querySelector(\"input[id=bdata]\");\n" +
+                        "           var field = document.forms[0].querySelector(\"input[id=bdata]\");\n" +
                         "           field.value = window.bw.getData();\n" +
                         "           console.log(field.value);\n" +
                         "       });\n" +
-                        "}) (document);\n", // outputParameterId
-                context,
-                outputParameterId
+//                        "       document.addEventListener('DOMContentLoaded', function () {\n" +
+//                        "       console.log('document - DOMContentLoaded - bubble'); // 2nd\n" +
+//                        "             });\n" +
+//                        "       console.log(document.forms[0].querySelector(\"input[id=bdata]\"));\n" +
+//                        "       document.getElementById(\"loginButton_0\").addEventListener(\"submit\",function(e) {\n" +
+//                        "           console.log(\"event function \");\n" +
+//                        "           var field = document.forms[0].querySelector(\"input[id=bdata]\");\n" +
+//                        "           field.value = window.bw.getData();\n" +
+//                        "           console.log(field.value);\n" +
+//                        "       });\n" +
+                        "}) (document);\n" // outputParameterId
+
         );
     }
 }
