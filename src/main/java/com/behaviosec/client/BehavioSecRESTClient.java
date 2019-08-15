@@ -2,6 +2,7 @@ package com.behaviosec.client;
 
 
 import com.behaviosec.utils.Consts;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -11,34 +12,44 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     private static final String TAG = BehavioSecRESTClient.class.getName();
-    private static final Logger LOGGER = Logger.getLogger(TAG);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TAG);
     private String endPoint;
     private HttpClient httpClient;
 
 
     public BehavioSecRESTClient(String endPoint) {
         this.endPoint =endPoint;
+        LOGGER.error(TAG + " BehavioSecRESTClient: " + this.endPoint);
+
         httpClient = HttpClientBuilder.create().build();
     }
 
     private HttpPost makePost(String path) {
-        HttpPost postRequest = new HttpPost(endPoint + path);
+        String uri = endPoint + path;
+        LOGGER.error(TAG + " makePost " + uri);
+        HttpPost postRequest = new HttpPost(uri);
         postRequest.setHeader("Accept", Consts.ACCEPT_HEADER);
         postRequest.setHeader("Content-type", Consts.SEND_HEADER);
+        LOGGER.error(TAG + " makePost postRequest " + postRequest.toString());
+
         return postRequest;
     }
 
     private HttpGet makeGet(String path){
-        HttpGet httpGet = new HttpGet(endPoint + path);
+        String uri = endPoint + path;
+        LOGGER.error(TAG + " makeGet " + uri);
+        HttpGet httpGet = new HttpGet(uri);
+        //TODO: move that to builder
         httpGet.setHeader("Accept", Consts.ACCEPT_HEADER);
         httpGet.setHeader("Content-type", Consts.SEND_HEADER);
         return httpGet;
@@ -47,13 +58,17 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
     private HttpResponse getResponse(org.apache.http.client.methods.HttpRequestBase request) throws IOException {
         HttpResponse response =  this.httpClient.execute(request);
         int responseCode = response.getStatusLine().getStatusCode();
+        LOGGER.error(TAG + " getResponse RESPONSE CODE: " + responseCode);
         if (responseCode == 200) {
             return response;
         } else if (responseCode == 400 ) {
+            LOGGER.error(TAG + " getResponse CODE 400: " + response.getEntity().getContent());
             throw new IOException("Response 400");
         } else if (responseCode == 403) {
+            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
             throw new IOException("Response 403");
         } else {
+            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
             throw new IOException("Response unknown error");
         }
     }
@@ -79,10 +94,33 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
         return new BehavioSecReport();
     }
 
-    public BehavioSecReport getReport(List<NameValuePair> report) throws IOException {
+    public BehavioSecReport getReport(List<NameValuePair> report){
+        //TODO :  return entity from get request
+        LOGGER.error(TAG + " getReport ");
         HttpPost post = makePost(Consts.GET_REPORT);
-        post.setEntity(new UrlEncodedFormEntity(report));
-        return new BehavioSecReport();
+        BehavioSecReport bhsReport = null;
+        HttpResponse reportResponse = null;
+        try {
+            post.setEntity(new UrlEncodedFormEntity(report));
+            reportResponse = this.getResponse(post);
+            LOGGER.error(TAG + " getReport " + reportResponse.toString());
+
+            HttpEntity reportHttpEntity = reportResponse.getEntity();
+            String retSrc = EntityUtils.toString(reportHttpEntity);
+            ObjectMapper objectMapper = new ObjectMapper();
+            LOGGER.error(TAG + " getReport " + reportResponse.toString());
+
+            bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
+
+        } catch (IOException e) {
+
+            LOGGER.error(TAG + " getReport IOException" + e.getMessage());
+            e.printStackTrace();
+        }
+        LOGGER.error(TAG + " getReport " + bhsReport.toString());
+
+        return bhsReport;
+
     }
 
     @Override
@@ -95,6 +133,8 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
                 LOGGER.info(TAG + " " + healthStatus.toString() );
                 return healthStatus;
             } else {
+                LOGGER.info(TAG + "Response is not 200" );
+
                 this.handleError(health);
             }
         } else {

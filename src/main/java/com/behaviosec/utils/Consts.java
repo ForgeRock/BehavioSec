@@ -13,8 +13,8 @@ public class Consts {
 
     // request body
     public static String CUSTOMER_ID = "customerID";
-    public static String USER_ID = "userid";
-    public static String TIMING = "customerID";
+    public static String USER_ID = "userId";
+    public static String TIMING = "timing";
     public static String USER_AGENT = "userAgent";
     public static String IP = "ip";
     public static String TIMESTAMP = "timestamp";

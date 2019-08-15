@@ -41,8 +41,8 @@ import java.util.*;
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
  */
-@Node.Metadata(outcomeProvider  = AbstractDecisionNode.OutcomeProvider.class,
-        configClass      = BehaviosecAuthNode.Config.class)
+@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
+        configClass = BehaviosecAuthNode.Config.class)
 public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final static String TRUE_OUTCOME_ID = "true";
@@ -100,51 +100,53 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        logger.error("Process node");
+
         return sendRequest(context);
     }
 
-    private Action sendRequest(TreeContext context) throws NodeProcessException{
-        logger.error(" *************************************** BehaviosecAuthNode *************************** ");
-        logger.error("CLIENT IP: " + context.request.clientIp);
-        logger.error("ServerURL: " +context.request.serverUrl);
-        logger.error("SSOTokenID: " +context.request.ssoTokenId);
-        logger.error("Headers: " +context.request.headers.toString());
-        logger.error("params: " +context.request.parameters.toString());
+    private Action sendRequest(TreeContext context) throws NodeProcessException {
 
-        logger.error("sharedState: " +context.sharedState.get(config.DataField()).toString());
-        logger.error(" ******************************************************************************** ");
 
-        try{
+        try {
             logger.error("Checking health " + behavioSecRESTClient.getHealthCheck());
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
-            nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, "rest_builder" + "_" +  Integer.toHexString((int)(Math.random()*Math.pow(2, 32)))));
-            nameValuePairs.add(new BasicNameValuePair(Consts.TIMING, context.sharedState.get(config.DataField()).toString()));
-//            nameValuePairs.add(new BasicNameValuePair(Consts.USER_AGENT,context.request.headers.get("user-agent").toString()));
-//            logger.error("USER_AGENT ");
+            String username = context.sharedState.get("username") + "_";
+            logger.error("username: " + username);
 
-            nameValuePairs.add(new BasicNameValuePair(Consts.IP,  context.request.clientIp));
+            nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
+            String timingData = context.sharedState.get(config.DataField()).asString();
+            nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
+                    timingData));
+            String userAgent = "";
+            try{
+                userAgent = context.request.headers.get("user-agent").get(0);
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("sendRequest: Change in API for user-agent");
+            }
+
+            nameValuePairs.add(new BasicNameValuePair(Consts.USER_AGENT, userAgent));
+            nameValuePairs.add(new BasicNameValuePair(Consts.IP, context.request.clientIp));
             nameValuePairs.add(new BasicNameValuePair(Consts.TIMESTAMP,
                     Long.toString(Calendar.getInstance().getTimeInMillis())));
             nameValuePairs.add(new BasicNameValuePair(Consts.SESSION_ID, UUID.randomUUID().toString()));
-            nameValuePairs.add(new BasicNameValuePair(Consts.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion + "SSOTokenID: " +context.request.ssoTokenId));
+            nameValuePairs.add(new BasicNameValuePair(Consts.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
             nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(0)));
 
             BehavioSecReport response = behavioSecRESTClient.getReport(nameValuePairs);
             logger.error("response " + response.toString());
 
-            if (response.getScore() >= (double)config.MinimumScore() && !response.isTrained()) {
+            if (response.getScore() >= (double) config.MinimumScore() && !response.isTrained()) {
                 return goTo(true).build();
             }
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());
             e.printStackTrace();
-            throw  new NodeProcessException("MMalformedURLException for " + config.endpoint());
+            throw new NodeProcessException("MalformedURLException for " + config.endpoint());
         } catch (IOException e) {
             logger.error("IOException: " + e.toString());
             e.printStackTrace();
-            throw  new NodeProcessException("MMalformedURLException for " + e.toString());
+            throw new NodeProcessException("IOException for " + e.toString());
         }
 
         return goTo(false).build();

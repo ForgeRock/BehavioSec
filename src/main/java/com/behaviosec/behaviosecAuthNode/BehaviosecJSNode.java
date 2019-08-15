@@ -46,7 +46,8 @@ import static org.forgerock.openam.auth.node.api.Action.send;
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
         configClass      = BehaviosecJSNode.Config.class)
 public class BehaviosecJSNode extends SingleOutcomeNode {
-    private final Logger logger = LoggerFactory.getLogger("com.behaviosec.");
+    private static final String TAG = BehaviosecJSNode.class.getName();
+    private final Logger logger = LoggerFactory.getLogger(TAG);
 
     /**
      * Configuration for the node.
