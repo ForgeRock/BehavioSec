@@ -8,23 +8,31 @@ public class Consts {
     public static String SCORE = "score";
 
     // request header
-    static String APPLICATION_JSON = "application/json";
+    public static String ACCEPT_HEADER = "application/json";
+    public static String SEND_HEADER = "application/json";
 
     // request body
     public static String CUSTOMER_ID = "customerID";
-    public static String ACTION = "action";
-    public static String UUID = "uuid";
+    public static String USER_ID = "userid";
+    public static String TIMING = "customerID";
+    public static String USER_AGENT = "userAgent";
+    public static String IP = "ip";
+    public static String TIMESTAMP = "timestamp";
+    public static String NOTES = "notes";
+    public static String REPORT_FLAGS = "reportflags";
+    public static String OPERATOR_FLAGS = "operatorflags";
     public static String SESSION_ID = "sessionId";
     public static String TENANT_ID = "tenantId";
+    public static String RESET_REASON = "reason";
 
     //request action
-    public static String BASE               = "BehavioSenseAPI/";
-    public static String FINALIZE_SESSION   = BASE + "FinalizeSession";
-    public static String GET_HEALTH_STATUS  = BASE+ "GetHealthCheck";
-    public static String GET_REPORT         = BASE + "GetReport";
-    public static String GET_VERSION        = BASE + "GetVersion";
-    public static String REMOVE_USER        = BASE + "RemoveUser";
-    public static String RESET_PROFILE      = BASE + "ResetProfile";
+    public static String API_BASE_URL               = "BehavioSenseAPI/";
+    public static String FINALIZE_SESSION   = API_BASE_URL + "FinalizeSession";
+    public static String GET_HEALTH_STATUS  = API_BASE_URL+ "GetHealthCheck";
+    public static String GET_REPORT         = API_BASE_URL + "GetReport";
+    public static String GET_VERSION        = API_BASE_URL + "GetVersion";
+    public static String REMOVE_USER        = API_BASE_URL + "RemoveUser";
+    public static String RESET_PROFILE      = API_BASE_URL + "ResetProfile";
 
 
 
@@ -38,23 +46,23 @@ public class Consts {
     public static int BAD_REQUEST = 400;
 
     // Error codes
-    public static int IP_MISSING_TIMMING_CODE = 1001;
-    public static String IP_MISSING_TIMMING_MESSAGE = "Invalid parameter: missing timing.";
+    public static int IP_MISSING_TIMING_CODE = 1001;
+    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 
     public static int IP_MISSING_USER_AGENT_CODE = 1002;
     public static String IP_MISSING_USER_AGENT_MESSAGE = "Invalid parameter: missing useragent.";
 
     // TODO: implement rest of the error messages
-//    public static int IP_MISSING_TIMMING_CODE = 1001;
-//    public static String IP_MISSING_TIMMING_MESSAGE = "Invalid parameter: missing timing.";
+//    public static int IP_MISSING_TIMING_CODE = 1001;
+//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 //
-//    public static int IP_MISSING_TIMMING_CODE = 1001;
-//    public static String IP_MISSING_TIMMING_MESSAGE = "Invalid parameter: missing timing.";
+//    public static int IP_MISSING_TIMING_CODE = 1001;
+//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 //
-//    public static int IP_MISSING_TIMMING_CODE = 1001;
-//    public static String IP_MISSING_TIMMING_MESSAGE = "Invalid parameter: missing timing.";
+//    public static int IP_MISSING_TIMING_CODE = 1001;
+//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 //
-//    public static int IP_MISSING_TIMMING_CODE = 1001;
-//    public static String IP_MISSING_TIMMING_MESSAGE = "Invalid parameter: missing timing.";
+//    public static int IP_MISSING_TIMING_CODE = 1001;
+//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 
 }

@@ -1,5 +1,6 @@
 package com.behaviosec.client;
 
+
 import com.behaviosec.utils.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,9 +20,9 @@ import java.util.logging.Logger;
 public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     private static final String TAG = BehavioSecRESTClient.class.getName();
-    private static final Logger LOGGER = Logger.getLogger(BehavioSecRESTClient.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TAG);
     private String endPoint;
-    HttpClient httpClient;
+    private HttpClient httpClient;
 
 
     public BehavioSecRESTClient(String endPoint) {
@@ -31,14 +32,16 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     private HttpPost makePost(String path) {
         HttpPost postRequest = new HttpPost(endPoint + path);
-        postRequest.setHeader("Accept", "application/json");
-        postRequest.setHeader("Content-type", "application/json");
-
+        postRequest.setHeader("Accept", Consts.ACCEPT_HEADER);
+        postRequest.setHeader("Content-type", Consts.SEND_HEADER);
         return postRequest;
     }
 
     private HttpGet makeGet(String path){
-        return new HttpGet(endPoint + path);
+        HttpGet httpGet = new HttpGet(endPoint + path);
+        httpGet.setHeader("Accept", Consts.ACCEPT_HEADER);
+        httpGet.setHeader("Content-type", Consts.SEND_HEADER);
+        return httpGet;
     }
 
     private HttpResponse getResponse(org.apache.http.client.methods.HttpRequestBase request) throws IOException {
@@ -79,9 +82,9 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
     public BehavioSecReport getReport(List<NameValuePair> report) throws IOException {
         HttpPost post = makePost(Consts.GET_REPORT);
         post.setEntity(new UrlEncodedFormEntity(report));
-
         return new BehavioSecReport();
     }
+
     @Override
     public boolean getHealthCheck() throws IOException {
         HttpResponse health = this.getResponse(this.makeGet(Consts.GET_HEALTH_STATUS));

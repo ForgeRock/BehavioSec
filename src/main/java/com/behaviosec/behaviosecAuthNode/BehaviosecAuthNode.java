@@ -18,14 +18,13 @@
 package com.behaviosec.behaviosecAuthNode;
 
 
+import com.behaviosec.client.BehavioSecRESTClient;
+import com.behaviosec.client.BehavioSecReport;
+import com.behaviosec.utils.Consts;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
@@ -36,8 +35,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
@@ -49,9 +47,12 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final static String TRUE_OUTCOME_ID = "true";
     private final static String FALSE_OUTCOME_ID = "false";
-    private final Logger logger = LoggerFactory.getLogger("com.behaviosec.authnode");
+    private static final String TAG = BehaviosecAuthNode.class.getName();
+
+    private final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
+    private BehavioSecRESTClient behavioSecRESTClient;
 
     /**
      * Configuration for the node.
@@ -59,11 +60,16 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     public interface Config {
 
         @Attribute(order = 100)
-        default String URL() {
-            return "http://13.56.150.246:8080/BehavioSenseAPI/GetHealthCheck";
+        default String endpoint() {
+            return "http://13.56.150.246:8080/";
         }
 
         @Attribute(order = 200)
+        default int MinimumScore() {
+            return 75;
+        }
+
+        @Attribute(order = 300)
         default String DataField() {
             return "bdata";
         }
@@ -72,7 +78,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         //TODO: how do validate configuration errors?
         //TODO: can we enforce dependencies?
 
-        @Attribute(order = 300)
+        @Attribute(order = 400)
         default String Tenant() {
             return "TENANT_UUID";
         }
@@ -89,6 +95,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     @Inject
     public BehaviosecAuthNode(@Assisted Config config) throws NodeProcessException {
         this.config = config;
+        this.behavioSecRESTClient = new BehavioSecRESTClient(this.config.endpoint());
     }
 
     @Override
@@ -109,49 +116,37 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         logger.error(" ******************************************************************************** ");
 
         try{
-            String getHealth = config.URL()+"/BehavioSenseAPI/GetHealthCheck";
-            logger.error("Sending request to " + getHealth);
-            //Build HTTP request
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPost postRequest = new HttpPost("http://13.56.150.246:8080/BehavioSenseAPI/GetReport");
-            HttpGet getRequest = new HttpGet("http://13.56.150.246:8080/BehavioSenseAPI/GetHealthCheck");
-            String data = "userId=tutorial_user&userAgent=\"\"&ip=0.0.0.0&timing=[[\"w\",[{\"text#tutorial_username\": 2}],\"Tutorial/Login/\"],[\"f\",\"text#tutorial_username\",[[0,97,10030],[1,97,10342],[0,98,11412],[1,98,11792]]]]";
-            StringEntity entity = new StringEntity(data);
-            postRequest.setEntity(entity);
-            postRequest.setHeader("Accept", "application/json");
-            postRequest.setHeader("Content-type", "application/json");
-            HttpResponse response = httpClient.execute(postRequest);
-            logger.error("RESPONSE: " + response.toString());
-            if (response.getStatusLine().getStatusCode() != 200) {
-                return goTo(false).build();
-//                throw new NodeProcessException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+            logger.error("Checking health " + behavioSecRESTClient.getHealthCheck());
+            List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+            nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, "rest_builder" + "_" +  Integer.toHexString((int)(Math.random()*Math.pow(2, 32)))));
+            nameValuePairs.add(new BasicNameValuePair(Consts.TIMING, context.sharedState.get(config.DataField()).toString()));
+//            nameValuePairs.add(new BasicNameValuePair(Consts.USER_AGENT,context.request.headers.get("user-agent").toString()));
+//            logger.error("USER_AGENT ");
+
+            nameValuePairs.add(new BasicNameValuePair(Consts.IP,  context.request.clientIp));
+            nameValuePairs.add(new BasicNameValuePair(Consts.TIMESTAMP,
+                    Long.toString(Calendar.getInstance().getTimeInMillis())));
+            nameValuePairs.add(new BasicNameValuePair(Consts.SESSION_ID, UUID.randomUUID().toString()));
+            nameValuePairs.add(new BasicNameValuePair(Consts.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion + "SSOTokenID: " +context.request.ssoTokenId));
+            nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
+            nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(0)));
+
+            BehavioSecReport response = behavioSecRESTClient.getReport(nameValuePairs);
+            logger.error("response " + response.toString());
+
+            if (response.getScore() >= (double)config.MinimumScore() && !response.isTrained()) {
+                return goTo(true).build();
             }
-//            String json_string = EntityUtils.toString(response.getEntity());
-//            logger.error("RESPONSE entity: " + json_string);
-//
-//            JSONArray temp1 = new JSONArray(json_string);
-//            logger.error("RESPONSE JSON: " + temp1.toString());
-            return goTo(true).build();
-//            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-//            String output = br.readLine();
-//            logger.debug("Server response: " + output);
-//            if (output != null){
-//                return goTo(true).build();
-//            } else {
-//                return goTo(false).build();
-//
-//            }
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());
             e.printStackTrace();
+            throw  new NodeProcessException("MMalformedURLException for " + config.endpoint());
         } catch (IOException e) {
             logger.error("IOException: " + e.toString());
             e.printStackTrace();
+            throw  new NodeProcessException("MMalformedURLException for " + e.toString());
         }
-//        catch (JSONException e) {
-//            logger.error("JSONException: " + e.toString());
-//            e.printStackTrace();
-//        }
+
         return goTo(false).build();
 
     }

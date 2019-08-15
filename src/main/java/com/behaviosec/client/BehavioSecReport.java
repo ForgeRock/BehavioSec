@@ -196,7 +196,15 @@ public class BehavioSecReport {
     }
 
 
-
+    @Override
+    public String toString(){
+        return  "User : " + getUserid() + "\n"+
+                "Score : " + getScore() + "\n"+
+                "Confidence : " + getConfidence() + "\n"+
+                "Trained : " + isTrained() + "\n"+
+                "Bot : " + isIsbot() + "\n"+
+                "";
+    }
 
 
 }
