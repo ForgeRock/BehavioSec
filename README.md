@@ -45,12 +45,7 @@ A sample of Authentication tree is shown below. Details for component configurat
 ## BehavioSecBooleanEvaluator
 ![ScreenShot](./behaviosec-boolean-evaluator.png)
 
-
-
-A simple authentication node for ForgeRock's [Identity Platform][forgerock_platform] 6.5.2 and above. This node... **SHORT DESCRIPTION HERE**
-
-
-Copy the .jar file from the ../target directory into the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed.  Restart the web container to pick up the new node.  The node will then appear in the authentication trees components palette.
+s
 
 
 ## Installation
@@ -60,6 +55,8 @@ Please contact sales representative sales-xxx@forgerock.com
 
 
 ### Binary
+Copy the .jar file from the ../target directory into the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed.  Restart the web container to pick up the new node.  The node will then appear in the authentication trees components palette.
+
 The code in this repository has binary dependencies that live in the ForgeRock maven repository. Maven can be configured to authenticate to this repository by following the following [ForgeRock Knowledge Base Article](https://backstage.forgerock.com/knowledge/kb/article/a74096897).
 
 
