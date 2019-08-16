@@ -119,7 +119,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
             logger.error("sendRequest responseCode " + responseCode);
-            logger.error("sendRequest response \n" + reportResponse.getEntity().toString());
+            logger.error("sendRequest response \n" + EntityUtils.toString(reportResponse.getEntity(), "UTF-8"));
 
             if ( responseCode == 200 ) {
                 HttpEntity reportHttpEntity = reportResponse.getEntity();
@@ -132,11 +132,14 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 return goTo(false).replaceSharedState(newSharedState).build();
 //                bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
             } else if ( responseCode == 400 ) {
-                logger.error(TAG + " response 400  ");
+                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
             } else if ( responseCode == 403 ) {
                 logger.error(TAG + " response 403  ");
+                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
+
             } else if ( responseCode == 500 ) {
                 logger.error(TAG + " response 500  ");
+                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
             } else {
                 logger.error(TAG + " response " + responseCode);
 
@@ -155,6 +158,10 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
         return goTo(false).build();
 
+    }
+
+    private String getErrorResponse(HttpResponse resp) throws IOException {
+        return EntityUtils.toString(resp.getEntity(), "UTF-8");
     }
 
     protected Action.ActionBuilder goTo(boolean outcome) {

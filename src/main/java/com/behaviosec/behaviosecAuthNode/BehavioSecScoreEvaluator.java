@@ -39,7 +39,7 @@ import java.util.ResourceBundle;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehaviosecAuthNode.Config.class)
+        configClass = BehavioSecScoreEvaluator.Config.class)
 public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     private static final String TAG = BehavioSecScoreEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
