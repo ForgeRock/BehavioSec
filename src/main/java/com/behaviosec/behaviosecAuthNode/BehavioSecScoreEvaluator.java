@@ -90,14 +90,17 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        JsonValue behavioSenseResponse = context.sharedState.get(Consts.DATA_FIELD);
+        JsonValue behavioSenseResponse = context.sharedState.get(Consts.BEHAVIOSEC_REPORT);
         ObjectMapper objectMapper = new ObjectMapper();
-        logger.error(TAG + " getReport " + behavioSenseResponse.toString());
 
         BehavioSecReport bhsReport = null;
         try {
             bhsReport = objectMapper.readValue(behavioSenseResponse.asString(), BehavioSecReport.class);
+            logger.error("REPORT-> " + bhsReport.toString());
+
         } catch (IOException e) {
+            logger.error("Error creating-> " + e.getMessage());
+
             e.printStackTrace();
             return goTo(false).build();
         }

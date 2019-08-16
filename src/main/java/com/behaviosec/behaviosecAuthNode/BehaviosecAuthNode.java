@@ -20,10 +20,8 @@ package com.behaviosec.behaviosecAuthNode;
 
 import com.behaviosec.client.BehavioSecRESTClient;
 import com.behaviosec.utils.Consts;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -93,7 +91,6 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             logger.error("Checking health " + behavioSecRESTClient.getHealthCheck());
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get("username") + "_";
-            logger.error("username: " + username);
 
             nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
             String timingData = context.sharedState.get(Consts.DATA_FIELD).asString();
@@ -118,28 +115,23 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
-            logger.error("sendRequest responseCode " + responseCode);
-            logger.error("sendRequest response \n" + EntityUtils.toString(reportResponse.getEntity(), "UTF-8"));
+//            logger.error("sendRequest response \n" + EntityUtils.toString(reportResponse.getEntity(), "UTF-8"));
 
             if ( responseCode == 200 ) {
-                HttpEntity reportHttpEntity = reportResponse.getEntity();
-                String retSrc = EntityUtils.toString(reportHttpEntity);
-                ObjectMapper objectMapper = new ObjectMapper();
                 logger.error(TAG + " getReport " + reportResponse.toString());
                 JsonValue newSharedState = context.sharedState.copy();
-                newSharedState.put(Consts.DATA_FIELD, reportResponse.toString());
+                newSharedState.put(Consts.BEHAVIOSEC_REPORT, getResponseString(reportResponse));
                 logger.error("5 - newSharedState -> " + newSharedState);
-                return goTo(false).replaceSharedState(newSharedState).build();
-//                bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
+                return goTo(true).replaceSharedState(newSharedState).build();
             } else if ( responseCode == 400 ) {
-                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
+                logger.error(TAG + " response 400  " + getResponseString(reportResponse));
             } else if ( responseCode == 403 ) {
                 logger.error(TAG + " response 403  ");
-                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
+                logger.error(TAG + " response 400  " + getResponseString(reportResponse));
 
             } else if ( responseCode == 500 ) {
                 logger.error(TAG + " response 500  ");
-                logger.error(TAG + " response 400  " + getErrorResponse(reportResponse));
+                logger.error(TAG + " response 400  " + getResponseString(reportResponse));
             } else {
                 logger.error(TAG + " response " + responseCode);
 
@@ -160,7 +152,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     }
 
-    private String getErrorResponse(HttpResponse resp) throws IOException {
+    private String getResponseString(HttpResponse resp) throws IOException {
         return EntityUtils.toString(resp.getEntity(), "UTF-8");
     }
 

@@ -22,6 +22,7 @@ public class BehavioSecReport {
     private double confidence = 0.0;
     private double uiScore = 0.0;
     private double uiConfidence = 0.0;
+    private double risk = 0.0;
     private String userid = "";
     private String startDate= "";
     private String endDate = "";
@@ -140,15 +141,23 @@ public class BehavioSecReport {
     }
 
     public double getScore() {
-        return score;
+        return score *100;
     }
 
     public void setScore(double score) {
         this.score = score;
     }
 
+    public double getRisk() {
+        return score *100;
+    }
+
+    public void setRisk(double risk) {
+        this.risk = risk;
+    }
+
     public double getConfidence() {
-        return confidence;
+        return confidence *100;
     }
 
     public void setConfidence(double confidence) {
@@ -156,7 +165,7 @@ public class BehavioSecReport {
     }
 
     public double getUiScore() {
-        return uiScore;
+        return uiScore * 100;
     }
 
     public void setUiScore(double uiScore) {
@@ -164,7 +173,7 @@ public class BehavioSecReport {
     }
 
     public double getUiConfidence() {
-        return uiConfidence;
+        return uiConfidence *100;
     }
 
     public void setUiConfidence(double uiConfidence) {

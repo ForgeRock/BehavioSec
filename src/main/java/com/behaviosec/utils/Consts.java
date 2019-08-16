@@ -4,6 +4,7 @@ public class Consts {
     public static final int MIN_SCORE = 60;
     public static final int MIN_CONFIDENCE = 40;
     public static final int MAX_RISK = 60;
+    public static final String BEHAVIOSEC_REPORT = "bhs_report";
     // request header
     public static String ACCEPT_HEADER = "application/json";
     public static String SEND_HEADER = "application/json";
