@@ -73,7 +73,7 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
                 BehaviosecAuthNode.class,
                 BehavioSecScoreEvaluator.class,
                 BehaviosecBooleanEvaluator.class,
-                BehaviosecJSNode.class
+                BehaviosecCollector.class
                 ));
     }
 

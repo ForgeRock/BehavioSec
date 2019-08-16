@@ -45,9 +45,9 @@ import static org.forgerock.openam.auth.node.api.Action.send;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
-        configClass      = BehaviosecJSNode.Config.class)
-public class BehaviosecJSNode extends SingleOutcomeNode {
-    private static final String TAG = BehaviosecJSNode.class.getName();
+        configClass      = BehaviosecCollector.Config.class)
+public class BehaviosecCollector extends SingleOutcomeNode {
+    private static final String TAG = BehaviosecCollector.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     /**
@@ -72,7 +72,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
      * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehaviosecJSNode(@Assisted Config config) throws NodeProcessException {
+    public BehaviosecCollector(@Assisted Config config) throws NodeProcessException {
         this.config = config;
     }
 
