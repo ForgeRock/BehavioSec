@@ -48,10 +48,7 @@ import java.util.*;
         configClass = BehaviosecAuthNode.Config.class)
 public class BehaviosecAuthNode extends AbstractDecisionNode {
 
-    private final static String TRUE_OUTCOME_ID = "true";
-    private final static String FALSE_OUTCOME_ID = "false";
     private static final String TAG = BehaviosecAuthNode.class.getName();
-
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
@@ -100,6 +97,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
             nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
             String timingData = context.sharedState.get(Consts.DATA_FIELD).asString();
+
             nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
                     timingData));
             String userAgent = "";
@@ -118,20 +116,21 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
             nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(0)));
 
-            HttpResponse reportResponse = null;
-
-            reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
+            HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
             logger.error("sendRequest responseCode " + responseCode);
+            logger.error("sendRequest response \n" + reportResponse.getEntity().toString());
 
             if ( responseCode == 200 ) {
                 HttpEntity reportHttpEntity = reportResponse.getEntity();
                 String retSrc = EntityUtils.toString(reportHttpEntity);
                 ObjectMapper objectMapper = new ObjectMapper();
                 logger.error(TAG + " getReport " + reportResponse.toString());
-
+                JsonValue newSharedState = context.sharedState.copy();
+                newSharedState.put(Consts.DATA_FIELD, reportResponse.toString());
+                logger.error("5 - newSharedState -> " + newSharedState);
+                return goTo(false).replaceSharedState(newSharedState).build();
 //                bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
-                return goTo(true).build();
             } else if ( responseCode == 400 ) {
                 logger.error(TAG + " response 400  ");
             } else if ( responseCode == 403 ) {
@@ -159,7 +158,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     protected Action.ActionBuilder goTo(boolean outcome) {
-        return Action.goTo(outcome ? TRUE_OUTCOME_ID : FALSE_OUTCOME_ID);
+        return Action.goTo(outcome ? Consts.TRUE_OUTCOME_ID : Consts.FALSE_OUTCOME_ID);
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
@@ -169,8 +168,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
             ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
             return ImmutableList.of(
-                    new Outcome(TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(FALSE_OUTCOME_ID, bundle.getString("false")));
+                    new Outcome(Consts.TRUE_OUTCOME_ID, bundle.getString("true")),
+                    new Outcome(Consts.FALSE_OUTCOME_ID, bundle.getString("false")));
         }
     }
 

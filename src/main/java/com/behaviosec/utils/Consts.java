@@ -1,6 +1,9 @@
 package com.behaviosec.utils;
 
 public class Consts {
+    public static final int MIN_SCORE = 60;
+    public static final int MIN_CONFIDENCE = 40;
+    public static final int MAX_RISK = 60;
     // request header
     public static String ACCEPT_HEADER = "application/json";
     public static String SEND_HEADER = "application/json";
@@ -32,7 +35,9 @@ public class Consts {
     public static String RESET_PROFILE      = API_BASE_URL + "ResetProfile";
 
 
-
+    // Node configuration
+    public final static String TRUE_OUTCOME_ID = "true";
+    public final static String FALSE_OUTCOME_ID = "false";
 
 
     //log(1=error, 2=warning, 3=message)
