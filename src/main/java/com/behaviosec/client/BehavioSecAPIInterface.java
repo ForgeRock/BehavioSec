@@ -1,6 +1,7 @@
 package com.behaviosec.client;
 
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ public interface BehavioSecAPIInterface {
                                @Nullable Long timeStamp,
                                @Nullable String notes
     );
-    BehavioSecReport getReport(List<NameValuePair> report) throws IOException;
+    HttpResponse getReport(List<NameValuePair> report) throws IOException;
 
     /**
      * Call to check health status of the server

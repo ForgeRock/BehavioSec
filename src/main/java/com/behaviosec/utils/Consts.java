@@ -1,18 +1,16 @@
 package com.behaviosec.utils;
 
 public class Consts {
-
-    public static final int DEFAULT_TIMEOUT = 5000;
-
-    // JsonPath
-    public static String SCORE = "score";
-
     // request header
     public static String ACCEPT_HEADER = "application/json";
     public static String SEND_HEADER = "application/json";
 
+
+    // data collector field
+    public static String DATA_FIELD = "application/json";
+    public static String COLLECTOR_SCRIPT= "collector.min.js";
+
     // request body
-    public static String CUSTOMER_ID = "customerID";
     public static String USER_ID = "userId";
     public static String TIMING = "timing";
     public static String USER_AGENT = "userAgent";
@@ -22,7 +20,6 @@ public class Consts {
     public static String REPORT_FLAGS = "reportflags";
     public static String OPERATOR_FLAGS = "operatorflags";
     public static String SESSION_ID = "sessionId";
-    public static String TENANT_ID = "tenantId";
     public static String RESET_REASON = "reason";
 
     //request action

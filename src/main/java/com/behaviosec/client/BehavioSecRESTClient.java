@@ -2,7 +2,6 @@ package com.behaviosec.client;
 
 
 import com.behaviosec.utils.Consts;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -57,20 +56,20 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     private HttpResponse getResponse(org.apache.http.client.methods.HttpRequestBase request) throws IOException {
         HttpResponse response =  this.httpClient.execute(request);
-        int responseCode = response.getStatusLine().getStatusCode();
-        LOGGER.error(TAG + " getResponse RESPONSE CODE: " + responseCode);
-        if (responseCode == 200) {
-            return response;
-        } else if (responseCode == 400 ) {
-            LOGGER.error(TAG + " getResponse CODE 400: " + response.getEntity().getContent());
-            throw new IOException("Response 400");
-        } else if (responseCode == 403) {
-            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
-            throw new IOException("Response 403");
-        } else {
-            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
-            throw new IOException("Response unknown error");
-        }
+        LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getStatusLine().getStatusCode());
+        return response;
+//        if (responseCode == 200) {
+//            return response;
+//        } else if (responseCode == 400 ) {
+//            LOGGER.error(TAG + " getResponse CODE 400: " + response.getEntity().getContent());
+//            throw new IOException("Response 400");
+//        } else if (responseCode == 403) {
+//            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
+//            throw new IOException("Response 403");
+//        } else {
+//            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
+//            throw new IOException("Response unknown error");
+//        }
     }
 
     private void handleError(HttpResponse httpResponse) throws IOException {
@@ -94,32 +93,12 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
         return new BehavioSecReport();
     }
 
-    public BehavioSecReport getReport(List<NameValuePair> report){
+    public HttpResponse getReport(List<NameValuePair> report) throws IOException {
         //TODO :  return entity from get request
         LOGGER.error(TAG + " getReport ");
         HttpPost post = makePost(Consts.GET_REPORT);
-        BehavioSecReport bhsReport = null;
-        HttpResponse reportResponse = null;
-        try {
-            post.setEntity(new UrlEncodedFormEntity(report));
-            reportResponse = this.getResponse(post);
-            LOGGER.error(TAG + " getReport " + reportResponse.toString());
-
-            HttpEntity reportHttpEntity = reportResponse.getEntity();
-            String retSrc = EntityUtils.toString(reportHttpEntity);
-            ObjectMapper objectMapper = new ObjectMapper();
-            LOGGER.error(TAG + " getReport " + reportResponse.toString());
-
-            bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
-
-        } catch (IOException e) {
-
-            LOGGER.error(TAG + " getReport IOException" + e.getMessage());
-            e.printStackTrace();
-        }
-        LOGGER.error(TAG + " getReport " + bhsReport.toString());
-
-        return bhsReport;
+        post.setEntity(new UrlEncodedFormEntity(report));
+        return this.getResponse(post);
 
     }
 

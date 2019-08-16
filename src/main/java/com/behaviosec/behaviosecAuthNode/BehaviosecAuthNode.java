@@ -19,12 +19,15 @@ package com.behaviosec.behaviosecAuthNode;
 
 
 import com.behaviosec.client.BehavioSecRESTClient;
-import com.behaviosec.client.BehavioSecReport;
 import com.behaviosec.utils.Consts;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
@@ -64,24 +67,6 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             return "http://13.56.150.246:8080/";
         }
 
-        @Attribute(order = 200)
-        default int MinimumScore() {
-            return 75;
-        }
-
-        @Attribute(order = 300)
-        default String DataField() {
-            return "bdata";
-        }
-
-        //TODO: verify that value exist?
-        //TODO: how do validate configuration errors?
-        //TODO: can we enforce dependencies?
-
-        @Attribute(order = 400)
-        default String Tenant() {
-            return "TENANT_UUID";
-        }
     }
 
 
@@ -114,7 +99,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             logger.error("username: " + username);
 
             nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
-            String timingData = context.sharedState.get(config.DataField()).asString();
+            String timingData = context.sharedState.get(Consts.DATA_FIELD).asString();
             nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
                     timingData));
             String userAgent = "";
@@ -133,12 +118,32 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
             nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(0)));
 
-            BehavioSecReport response = behavioSecRESTClient.getReport(nameValuePairs);
-            logger.error("response " + response.toString());
+            HttpResponse reportResponse = null;
 
-            if (response.getScore() >= (double) config.MinimumScore() && !response.isTrained()) {
+            reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
+            int responseCode = reportResponse.getStatusLine().getStatusCode();
+            logger.error("sendRequest responseCode " + responseCode);
+
+            if ( responseCode == 200 ) {
+                HttpEntity reportHttpEntity = reportResponse.getEntity();
+                String retSrc = EntityUtils.toString(reportHttpEntity);
+                ObjectMapper objectMapper = new ObjectMapper();
+                logger.error(TAG + " getReport " + reportResponse.toString());
+
+//                bhsReport = objectMapper.readValue(retSrc, BehavioSecReport.class);
                 return goTo(true).build();
+            } else if ( responseCode == 400 ) {
+                logger.error(TAG + " response 400  ");
+            } else if ( responseCode == 403 ) {
+                logger.error(TAG + " response 403  ");
+            } else if ( responseCode == 500 ) {
+                logger.error(TAG + " response 500  ");
+            } else {
+                logger.error(TAG + " response " + responseCode);
+
             }
+
+
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());
             e.printStackTrace();

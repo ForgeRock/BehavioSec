@@ -17,6 +17,7 @@
 
 package com.behaviosec.behaviosecAuthNode;
 
+import com.behaviosec.utils.Consts;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -59,12 +60,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
          */
         @Attribute(order = 10)
         default String fileName() {
-            return "collector.min.js";
-        }
-
-        @Attribute(order = 20)
-        default String scriptResult() {
-            return "bdata";
+            return Consts.COLLECTOR_SCRIPT;
         }
     }
 
@@ -89,7 +85,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             deb += c.toString() + " " ;
         }
 
-        String scriptResult = config.scriptResult();
+        String scriptResult = Consts.DATA_FIELD;
         logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
         logger.error("    config.scriptResult() = " + scriptResult);
         String myScript = getScriptAsString(config.fileName(), scriptResult);
@@ -105,8 +101,8 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             }
             JsonValue newSharedState = context.sharedState.copy();
             logger.error("4 - newSharedState -> " + newSharedState);
-            logger.error("Adding result to \"" + config.scriptResult() + "\"");
-            newSharedState.put(config.scriptResult(), resultValue);
+            logger.error("Adding result to \"" + Consts.DATA_FIELD + "\"");
+            newSharedState.put(Consts.DATA_FIELD, resultValue);
             logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
@@ -117,7 +113,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
             logger.error("8 - Result not present yet");
             logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript ,
-                    config.scriptResult(), true, context.sharedState.toString());
+                    Consts.DATA_FIELD, true, context.sharedState.toString());
 
             logger.error("\n\n\n" + clientSideScriptExecutorFunction + "\n\n\n");
 
@@ -126,7 +122,7 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
 //            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult(), "false");
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Consts.DATA_FIELD, "false");
             logger.error("10 - hiddenValueCallback -> " + hiddenValueCallback);
 
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);
@@ -138,9 +134,6 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     public String getScriptAsString(String filename, String outputParameterId) {
         logger.error("getScriptAsString: Filename " + filename);
-        if (filename == null) {
-            filename = "behaviosec.js";
-        }
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
@@ -159,18 +152,6 @@ public class BehaviosecJSNode extends SingleOutcomeNode {
 
     public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
                                                                 boolean clientSideScriptEnabled, String context) {
-//        String collectingDataMessage = "";
-//        if (clientSideScriptEnabled) {
-//            collectingDataMessage = "messenger.messages.addMessage( message );\n";
-//        }
-//
-//        String spinningWheelScript = "if (window.require) {\n" +
-//                "    var messenger = require(\"org/forgerock/commons/ui/common/components/Messages\"),\n" +
-//                "        spinner =  require(\"org/forgerock/commons/ui/common/main/SpinnerManager\"),\n" +
-//                "        message =  {message:\"Collecting Data...\", type:\"info\"};\n" +
-//                "    spinner.showSpinner();\n" +
-//                collectingDataMessage +
-//                "}";
 
         return String.format(
 //                spinningWheelScript +
