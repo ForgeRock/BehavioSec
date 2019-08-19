@@ -1,3 +1,6 @@
 target/
 .idea
 behaviosecNode.iml
+.project
+.classpath
+.settings/
