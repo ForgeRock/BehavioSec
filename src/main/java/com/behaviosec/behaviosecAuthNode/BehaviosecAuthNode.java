@@ -62,6 +62,11 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             return "http://13.56.150.246:8080/";
         }
 
+        @Attribute(order = 200)
+        default boolean denyOnFail() {
+            return true;
+        }
+
     }
 
 
@@ -85,8 +90,6 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     private Action sendRequest(TreeContext context) throws NodeProcessException {
-
-
         try {
             logger.error("Checking health " + behavioSecRESTClient.getHealthCheck());
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
@@ -95,8 +98,18 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
             String timingData = context.sharedState.get(Consts.DATA_FIELD).asString();
 
-            nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
-                    timingData));
+            if(timingData != null) {
+                nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
+                        timingData));
+            } else {
+                logger.error("Timing data is null");
+                // We check for flag, and we either return deny or success
+                if (config.denyOnFail()) {
+                    return goTo(false).build();
+                } else {
+                    return goTo(true).build();
+                }
+            }
             String userAgent = "";
             try{
                 userAgent = context.request.headers.get("user-agent").get(0);
@@ -111,7 +124,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Consts.SESSION_ID, UUID.randomUUID().toString()));
             nameValuePairs.add(new BasicNameValuePair(Consts.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
-            nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(0)));
+            nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(Consts.FINALIZE_DIRECTLY)));
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
