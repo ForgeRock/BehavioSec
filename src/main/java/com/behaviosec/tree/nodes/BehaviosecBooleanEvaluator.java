@@ -132,7 +132,6 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
         logger.error("Shared state size " + shared.size() + " toString " + shared.toString());
 
         BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
-        logger.error("1 - bhs report -> " + bhsReport.toString());
 
         if(bhsReport == null){
             logger.error("BehavioSec report is null");
