@@ -39,7 +39,9 @@ public class Constants {
     // Node configuration
     public final static String TRUE_OUTCOME_ID = "true";
     public final static String FALSE_OUTCOME_ID = "false";
+    //Operator flags
     public final static int FINALIZE_DIRECTLY = 256;
+    public final static int FLAG_GENERATE_TIMESTAMP = 2;
 
     //log(1=error, 2=warning, 3=message)
     public static int DEBUG_LEVEL = 3;

@@ -20,6 +20,8 @@ package com.behaviosec.tree.nodes;
 
 import com.behaviosec.tree.restclient.BehavioSecRESTClient;
 import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import org.apache.http.HttpResponse;
@@ -38,6 +40,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
@@ -51,6 +55,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final Config config;
     private final BehavioSecRESTClient behavioSecRESTClient;
+
+    private final int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
 
     /**
      * Configuration for the node.
@@ -126,7 +132,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
             nameValuePairs.add(new BasicNameValuePair(Constants.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
-            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(Constants.FINALIZE_DIRECTLY)));
+            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS,Integer.toString(this.operatorFlags)));
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
@@ -135,7 +141,9 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             if ( responseCode == 200 ) {
                 logger.error(TAG + " getReport " + reportResponse.toString());
                 JsonValue newSharedState = context.sharedState.copy();
-                newSharedState.put(Constants.BEHAVIOSEC_REPORT, getResponseString(reportResponse));
+                ObjectMapper objectMapper = new ObjectMapper();
+                BehavioSecReport bhsReport = objectMapper.readValue(reportResponse.toString(), BehavioSecReport.class);
+                newSharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bhsReport));
                 logger.error("5 - newSharedState -> " + newSharedState);
                 return goTo(true).replaceSharedState(newSharedState).build();
             } else if ( responseCode == 400 ) {

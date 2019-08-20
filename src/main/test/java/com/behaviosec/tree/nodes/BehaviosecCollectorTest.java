@@ -1,7 +1,4 @@
 package com.behaviosec.tree.nodes;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class BehaviosecCollectorTest {
 
     @org.junit.jupiter.api.BeforeEach

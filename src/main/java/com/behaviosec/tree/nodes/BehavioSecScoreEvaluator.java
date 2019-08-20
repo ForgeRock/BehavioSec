@@ -17,9 +17,8 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.behaviosec.tree.config.Constants;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import org.forgerock.json.JsonValue;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -95,20 +93,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        JsonValue behavioSenseResponse = context.sharedState.get(Constants.BEHAVIOSEC_REPORT);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        BehavioSecReport bhsReport = null;
-        try {
-            bhsReport = objectMapper.readValue(behavioSenseResponse.asString(), BehavioSecReport.class);
-            logger.error("REPORT-> " + bhsReport.toString());
-
-        } catch (IOException e) {
-            logger.error("Error creating-> " + e.getMessage());
-
-            e.printStackTrace();
-            return goTo(false).build();
-        }
+        BehavioSecReport bhsReport = (BehavioSecReport) context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList().get(0);
 
         if (!bhsReport.isTrained() && config.failOnInTraining()){
             return goTo(false).build();
@@ -121,7 +106,6 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         } else {
             return goTo(false).build();
         }
-
 
     }
 
