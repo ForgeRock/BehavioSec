@@ -149,7 +149,7 @@ public class BehavioSecReport {
     }
 
     public double getRisk() {
-        return score *100;
+        return this.risk *100;
     }
 
     public void setRisk(double risk) {

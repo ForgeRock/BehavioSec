@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
-public interface BehavioSecAPIInterface {
+interface BehavioSecAPIInterface {
 
 
     /**
