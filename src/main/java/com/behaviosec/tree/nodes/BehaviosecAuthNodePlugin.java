@@ -14,7 +14,7 @@
  * Copyright 2017-2018 ForgeRock AS.
  */
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.tree.nodes;
 
 import com.google.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;

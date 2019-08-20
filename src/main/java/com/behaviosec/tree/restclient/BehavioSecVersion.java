@@ -1,4 +1,4 @@
-package com.behaviosec.client;
+package com.behaviosec.tree.restclient;
 
 import java.util.HashMap;
 import java.util.Map;

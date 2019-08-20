@@ -1,7 +1,7 @@
-package com.behaviosec.client;
+package com.behaviosec.tree.restclient;
 
 
-import com.behaviosec.utils.Consts;
+import com.behaviosec.tree.config.Constants;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -37,8 +37,8 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
         String uri = endPoint + path;
         LOGGER.error(TAG + " makePost " + uri);
         HttpPost postRequest = new HttpPost(uri);
-        postRequest.setHeader("Accept", Consts.ACCEPT_HEADER);
-        postRequest.setHeader("Content-type", Consts.SEND_HEADER);
+        postRequest.setHeader("Accept", Constants.ACCEPT_HEADER);
+        postRequest.setHeader("Content-type", Constants.SEND_HEADER);
         LOGGER.error(TAG + " makePost postRequest " + postRequest.toString());
 
         return postRequest;
@@ -49,8 +49,8 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
         LOGGER.error(TAG + " makeGet " + uri);
         HttpGet httpGet = new HttpGet(uri);
         //TODO: move that to builder
-        httpGet.setHeader("Accept", Consts.ACCEPT_HEADER);
-        httpGet.setHeader("Content-type", Consts.SEND_HEADER);
+        httpGet.setHeader("Accept", Constants.ACCEPT_HEADER);
+        httpGet.setHeader("Content-type", Constants.SEND_HEADER);
         return httpGet;
     }
 
@@ -89,14 +89,14 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
             @Nullable Long timeStamp,
             @Nullable String notes) {
 
-        HttpPost post = makePost(Consts.GET_REPORT);
+        HttpPost post = makePost(Constants.GET_REPORT);
         return new BehavioSecReport();
     }
 
     public HttpResponse getReport(List<NameValuePair> report) throws IOException {
         //TODO :  return entity from get request
         LOGGER.error(TAG + " getReport ");
-        HttpPost post = makePost(Consts.GET_REPORT);
+        HttpPost post = makePost(Constants.GET_REPORT);
         post.setEntity(new UrlEncodedFormEntity(report));
         return this.getResponse(post);
 
@@ -104,7 +104,7 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     @Override
     public boolean getHealthCheck() throws IOException {
-        HttpResponse health = this.getResponse(this.makeGet(Consts.GET_HEALTH_STATUS));
+        HttpResponse health = this.getResponse(this.makeGet(Constants.GET_HEALTH_STATUS));
         if (health != null) {
             if (health.getStatusLine().getStatusCode() == 200) {
                 HttpEntity httpEntity = health.getEntity();
@@ -124,7 +124,7 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     @Override
     public BehavioSecVersion getVersion() throws IOException {
-        HttpResponse version = this.getResponse(this.makeGet(Consts.GET_VERSION));
+        HttpResponse version = this.getResponse(this.makeGet(Constants.GET_VERSION));
         return new BehavioSecVersion(EntityUtils.toString(version.getEntity()));
     }
 
@@ -141,7 +141,7 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
     }
 
     public boolean resetProfile(List<NameValuePair> report) throws IOException {
-        HttpResponse version = this.getResponse(this.makePost(Consts.GET_VERSION));
+        HttpResponse version = this.getResponse(this.makePost(Constants.GET_VERSION));
         version.setEntity(new UrlEncodedFormEntity(report));
         return Boolean.valueOf(EntityUtils.toString(version.getEntity()));
     }

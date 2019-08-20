@@ -15,10 +15,10 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.tree.nodes;
 
-import com.behaviosec.client.BehavioSecReport;
-import com.behaviosec.utils.Consts;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.behaviosec.tree.config.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -116,7 +116,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        JsonValue behavioSenseResponse = context.sharedState.get(Consts.DATA_FIELD);
+        JsonValue behavioSenseResponse = context.sharedState.get(Constants.DATA_FIELD);
         ObjectMapper objectMapper = new ObjectMapper();
         logger.error(TAG + " getReport " + behavioSenseResponse.toString());
 
@@ -137,7 +137,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
 
     protected Action.ActionBuilder goTo(boolean outcome) {
-        return Action.goTo(outcome ? Consts.TRUE_OUTCOME_ID : Consts.FALSE_OUTCOME_ID);
+        return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
@@ -147,8 +147,8 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
             ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, BehaviosecAuthNode.OutcomeProvider.class.getClassLoader());
             return ImmutableList.of(
-                    new Outcome(Consts.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Consts.FALSE_OUTCOME_ID, bundle.getString("false")));
+                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
+                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
         }
     }
 }

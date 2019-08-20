@@ -1,4 +1,4 @@
-package com.behaviosec.client;
+package com.behaviosec.tree.restclient;
 
 
 import org.apache.http.HttpResponse;

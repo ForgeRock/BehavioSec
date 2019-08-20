@@ -15,10 +15,10 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.tree.nodes;
 
-import com.behaviosec.client.BehavioSecReport;
-import com.behaviosec.utils.Consts;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.behaviosec.tree.config.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -54,7 +54,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 10)
         default int minScore() {
-            return Consts.MIN_SCORE;
+            return Constants.MIN_SCORE;
         }
 
         /**
@@ -63,7 +63,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 20)
         default int minConfidence() {
-            return Consts.MIN_CONFIDENCE;
+            return Constants.MIN_CONFIDENCE;
         }
 
         /**
@@ -72,7 +72,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 30)
         default int maxRisk() {
-            return Consts.MAX_RISK;
+            return Constants.MAX_RISK;
         }
     }
 
@@ -90,7 +90,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        JsonValue behavioSenseResponse = context.sharedState.get(Consts.BEHAVIOSEC_REPORT);
+        JsonValue behavioSenseResponse = context.sharedState.get(Constants.BEHAVIOSEC_REPORT);
         ObjectMapper objectMapper = new ObjectMapper();
 
         BehavioSecReport bhsReport = null;
@@ -117,7 +117,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
 
     protected Action.ActionBuilder goTo(boolean outcome) {
-        return Action.goTo(outcome ? Consts.TRUE_OUTCOME_ID : Consts.FALSE_OUTCOME_ID);
+        return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
@@ -127,8 +127,8 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
             ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, BehaviosecAuthNode.OutcomeProvider.class.getClassLoader());
             return ImmutableList.of(
-                    new Outcome(Consts.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Consts.FALSE_OUTCOME_ID, bundle.getString("false")));
+                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
+                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
         }
     }
 }

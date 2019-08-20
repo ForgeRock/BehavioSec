@@ -15,9 +15,9 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.tree.nodes;
 
-import com.behaviosec.utils.Consts;
+import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -60,7 +60,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
          */
         @Attribute(order = 10)
         default String fileName() {
-            return Consts.COLLECTOR_SCRIPT;
+            return Constants.COLLECTOR_SCRIPT;
         }
     }
 
@@ -85,7 +85,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
             deb += c.toString() + " " ;
         }
 
-        String scriptResult = Consts.DATA_FIELD;
+        String scriptResult = Constants.DATA_FIELD;
         logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
         logger.error("    config.scriptResult() = " + scriptResult);
         String myScript = getScriptAsString(config.fileName(), scriptResult);
@@ -101,8 +101,8 @@ public class BehaviosecCollector extends SingleOutcomeNode {
             }
             JsonValue newSharedState = context.sharedState.copy();
             logger.error("4 - newSharedState -> " + newSharedState);
-            logger.error("Adding result to \"" + Consts.DATA_FIELD + "\"");
-            newSharedState.put(Consts.DATA_FIELD, resultValue);
+            logger.error("Adding result to \"" + Constants.DATA_FIELD + "\"");
+            newSharedState.put(Constants.DATA_FIELD, resultValue);
             logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
@@ -113,7 +113,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
             logger.error("8 - Result not present yet");
             logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript ,
-                    Consts.DATA_FIELD, true, context.sharedState.toString());
+                    Constants.DATA_FIELD, true, context.sharedState.toString());
 
             logger.error("\n\n\n" + clientSideScriptExecutorFunction + "\n\n\n");
 
@@ -122,7 +122,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
 //            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Consts.DATA_FIELD, "false");
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
             logger.error("10 - hiddenValueCallback -> " + hiddenValueCallback);
 
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);

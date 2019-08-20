@@ -15,11 +15,11 @@
  */
 
 
-package com.behaviosec.behaviosecAuthNode;
+package com.behaviosec.tree.nodes;
 
 
-import com.behaviosec.client.BehavioSecRESTClient;
-import com.behaviosec.utils.Consts;
+import com.behaviosec.tree.restclient.BehavioSecRESTClient;
+import com.behaviosec.tree.config.Constants;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import org.apache.http.HttpResponse;
@@ -50,18 +50,20 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
-    private BehavioSecRESTClient behavioSecRESTClient;
+    private final BehavioSecRESTClient behavioSecRESTClient;
 
     /**
      * Configuration for the node.
      */
-    public interface Config {
+    interface Config {
 
+        @SuppressWarnings("SameReturnValue")
         @Attribute(order = 100)
         default String endpoint() {
             return "http://13.56.150.246:8080/";
         }
 
+        @SuppressWarnings("SameReturnValue")
         @Attribute(order = 200)
         default boolean denyOnFail() {
             return true;
@@ -95,11 +97,11 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get("username") + "_";
 
-            nameValuePairs.add(new BasicNameValuePair(Consts.USER_ID, username));
-            String timingData = context.sharedState.get(Consts.DATA_FIELD).asString();
+            nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
+            String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 
             if(timingData != null) {
-                nameValuePairs.add(new BasicNameValuePair(Consts.TIMING,
+                nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
                         timingData));
             } else {
                 logger.error("Timing data is null");
@@ -117,14 +119,14 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 logger.error("sendRequest: Change in API for user-agent");
             }
 
-            nameValuePairs.add(new BasicNameValuePair(Consts.USER_AGENT, userAgent));
-            nameValuePairs.add(new BasicNameValuePair(Consts.IP, context.request.clientIp));
-            nameValuePairs.add(new BasicNameValuePair(Consts.TIMESTAMP,
+            nameValuePairs.add(new BasicNameValuePair(Constants.USER_AGENT, userAgent));
+            nameValuePairs.add(new BasicNameValuePair(Constants.IP, context.request.clientIp));
+            nameValuePairs.add(new BasicNameValuePair(Constants.TIMESTAMP,
                     Long.toString(Calendar.getInstance().getTimeInMillis())));
-            nameValuePairs.add(new BasicNameValuePair(Consts.SESSION_ID, UUID.randomUUID().toString()));
-            nameValuePairs.add(new BasicNameValuePair(Consts.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
-            nameValuePairs.add(new BasicNameValuePair(Consts.REPORT_FLAGS, Integer.toString(0)));
-            nameValuePairs.add(new BasicNameValuePair(Consts.OPERATOR_FLAGS, Integer.toString(Consts.FINALIZE_DIRECTLY)));
+            nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
+            nameValuePairs.add(new BasicNameValuePair(Constants.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
+            nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
+            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(Constants.FINALIZE_DIRECTLY)));
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
@@ -133,7 +135,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             if ( responseCode == 200 ) {
                 logger.error(TAG + " getReport " + reportResponse.toString());
                 JsonValue newSharedState = context.sharedState.copy();
-                newSharedState.put(Consts.BEHAVIOSEC_REPORT, getResponseString(reportResponse));
+                newSharedState.put(Constants.BEHAVIOSEC_REPORT, getResponseString(reportResponse));
                 logger.error("5 - newSharedState -> " + newSharedState);
                 return goTo(true).replaceSharedState(newSharedState).build();
             } else if ( responseCode == 400 ) {
@@ -170,7 +172,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     protected Action.ActionBuilder goTo(boolean outcome) {
-        return Action.goTo(outcome ? Consts.TRUE_OUTCOME_ID : Consts.FALSE_OUTCOME_ID);
+        return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
@@ -180,8 +182,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
             ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
             return ImmutableList.of(
-                    new Outcome(Consts.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Consts.FALSE_OUTCOME_ID, bundle.getString("false")));
+                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
+                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
         }
     }
 

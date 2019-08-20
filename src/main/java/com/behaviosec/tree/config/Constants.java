@@ -1,6 +1,6 @@
-package com.behaviosec.utils;
+package com.behaviosec.tree.config;
 
-public class Consts {
+public class Constants {
     public static final int MIN_SCORE = 60;
     public static final int MIN_CONFIDENCE = 40;
     public static final int MAX_RISK = 60;
