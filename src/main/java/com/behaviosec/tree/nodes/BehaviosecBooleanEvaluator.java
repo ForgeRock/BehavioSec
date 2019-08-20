@@ -17,9 +17,8 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.behaviosec.tree.config.Constants;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import org.forgerock.json.JsonValue;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -48,12 +46,14 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
      * Configuration for the node.
      */
     public interface Config {
+
+
         /**
          * Minimum score to to accept
          * @return the amount.
          */
         @Attribute(order = 100)
-        default boolean allowRemoteAccess() {
+        default boolean allowBot() {
             return false;
         }
         /**
@@ -70,15 +70,16 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
          * @return the amount.
          */
         @Attribute(order = 300)
-        default boolean allowBoot() {
-            return false;
+        default boolean allowInTraining() {
+            return true;
         }
         /**
          * Minimum score to to accept
          * @return the amount.
          */
+
         @Attribute(order = 400)
-        default boolean allowTabAnomaly() {
+        default boolean allowRemoteAccess() {
             return true;
         }
 
@@ -87,7 +88,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
          * @return the amount.
          */
         @Attribute(order = 500)
-        default boolean allowNumpadAnomaly() {
+        default boolean allowTabAnomaly() {
             return true;
         }
 
@@ -96,6 +97,15 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
          * @return the amount.
          */
         @Attribute(order = 600)
+        default boolean allowNumpadAnomaly() {
+            return true;
+        }
+
+        /**
+         * Minimum score to to accept
+         * @return the amount.
+         */
+        @Attribute(order = 700)
         default boolean allowDeviceChanged() {
             return true;
         }
@@ -116,21 +126,55 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        JsonValue behavioSenseResponse = context.sharedState.get(Constants.DATA_FIELD);
-        ObjectMapper objectMapper = new ObjectMapper();
-        logger.error(TAG + " getReport " + behavioSenseResponse.toString());
+        //TODO: when to through NodeProcessException?
+        //Get report from sharedState
+        List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
+        logger.error("Shared state size " + shared.size() + " toString " + shared.toString());
 
-        BehavioSecReport bhsReport = null;
-        try {
-            bhsReport = objectMapper.readValue(behavioSenseResponse.asString(), BehavioSecReport.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
+        logger.error("1 - bhs report -> " + bhsReport.toString());
+
+        if(bhsReport == null){
+            logger.error("BehavioSec report is null");
             return goTo(false).build();
         }
-        boolean evaluation = bhsReport.isIsbot() != config.allowBoot()
-                || bhsReport.isReplay() != config.allowReplay();
+        logger.error("Got report, evaluating conditions");
 
-        return goTo(evaluation).build();
+        if ( bhsReport.isIsbot()) {
+            logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
+            return goTo(config.allowBot()).build();
+        }
+        if (bhsReport.isRemoteAccess()) {
+            logger.error("Fail on bhsReport.isRemoteAccess() "  + bhsReport.isRemoteAccess() + " " + config.allowRemoteAccess());
+            return goTo(config.allowRemoteAccess()).build();
+        }
+
+        if ( bhsReport.isReplay() ) {
+            logger.error("Fail on bhsReport.isReplay() "  + bhsReport.isReplay() + " " + config.allowReplay());
+            return goTo(config.allowReplay()).build();
+        }
+
+        if ( !bhsReport.isTrained() ) {
+            logger.error("Fail on bhsReport.isTrained()  "  + bhsReport.isTrained() + " " + config.allowInTraining());
+            return goTo(config.allowInTraining()).build();
+        }
+
+        if ( bhsReport.isTabAnomaly()) {
+            logger.error("Fail on bhsReport.isTabAnomaly() "  + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
+            return goTo(config.allowTabAnomaly()).build();
+        }
+
+        if ( bhsReport.isDeviceChanged() ) {
+            logger.error("Fail on bhsReport.isDeviceChanged() "  + bhsReport.isDeviceChanged() + " " + config.allowDeviceChanged());
+            return goTo(config.allowDeviceChanged()).build();
+        }
+        if ( bhsReport.isNumpadAnomaly() ) {
+            logger.error("Fail on bhsReport.isNumpadAnomaly() "  + bhsReport.isNumpadAnomaly() + " " + config.allowNumpadAnomaly());
+            return goTo(config.allowNumpadAnomaly()).build();
+        }
+        // All good allow passing through
+        logger.error("All good, resuming to true outcome");
+        return goTo(true).build();
 
 
     }

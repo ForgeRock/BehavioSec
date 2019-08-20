@@ -50,7 +50,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          * Minimum score to to accept
          * @return the amount.
          */
-        @Attribute(order = 10)
+        @Attribute(order = 100)
         default int minScore() {
             return Constants.MIN_SCORE;
         }
@@ -59,7 +59,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          * Minimum score to to accept
          * @return the amount.
          */
-        @Attribute(order = 20)
+        @Attribute(order = 200)
         default int minConfidence() {
             return Constants.MIN_CONFIDENCE;
         }
@@ -68,15 +68,11 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
          * Maximum acceptable risk
          * @return the amount.
          */
-        @Attribute(order = 30)
+        @Attribute(order = 300)
         default int maxRisk() {
             return Constants.MAX_RISK;
         }
 
-        @Attribute(order = 30)
-        default boolean failOnInTraining() {
-            return false;
-        }
     }
 
     /**
@@ -93,15 +89,18 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
+        //TODO: when to through NodeProcessException?
+        //Get report from sharedState
         BehavioSecReport bhsReport = (BehavioSecReport) context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList().get(0);
-
-        if (!bhsReport.isTrained() && config.failOnInTraining()){
+        if(bhsReport == null){
+            logger.error("BehavioSec report is null");
             return goTo(false).build();
         }
-        if (bhsReport.getScore() >= config.minScore()
-                && bhsReport.getConfidence() >= config.minConfidence()) {
-            return goTo(true).build();
-        } else if(!bhsReport.isTrained()) {
+        // check with the settings, all must evaluate to true
+        if (bhsReport.getScore() >= config.minScore() &&
+            bhsReport.getConfidence() >= config.minConfidence() &&
+            bhsReport.getRisk() <= config.maxRisk() )
+        {
             return goTo(true).build();
         } else {
             return goTo(false).build();

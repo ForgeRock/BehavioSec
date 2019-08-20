@@ -58,7 +58,7 @@ import static java.util.Arrays.asList;
  */
 public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
 
-    static protected String currentVersion = "0.0.0";
+    static public String currentVersion = "0.0.0";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -67,7 +67,7 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
      * @return The list of node classes.
      */
     @Override
-    protected Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
+    public Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
         return ImmutableMap.of(
                 BehaviosecAuthNodePlugin.currentVersion, asList(
                 BehaviosecAuthNode.class,
@@ -86,6 +86,19 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
     @Override
     public void onInstall() throws PluginException {
         super.onInstall();
+    }
+
+//    /**
+//     * Handle plugin startup. This method will be called every time AM starts, after {@link #onInstall()},
+//     * {@link #onAmUpgrade(String, String)} and {@link #upgrade(String)} have been called (if relevant).
+//     *
+//     * No need to implement this unless your AuthNode has specific requirements on startup.
+//     *
+//     * @param startupType The type of startup that is taking place.
+//     */
+    @Override
+    public void onStartup() throws PluginException {
+        super.onStartup();
     }
 
     /**

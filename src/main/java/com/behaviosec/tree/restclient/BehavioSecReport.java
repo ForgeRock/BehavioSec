@@ -15,6 +15,7 @@ public class BehavioSecReport {
     private boolean isReplay = false;
     private boolean tabAnomaly = false;
     private boolean numpadAnomaly = false;
+    private boolean isRemoteAccess = false;
     private int ipSeverity = 0;
     private long startTimestamp = 0;
     private long endTimestamp = 0;
@@ -36,6 +37,14 @@ public class BehavioSecReport {
     /**
      * auto generated setters and getters
      */
+
+    public boolean isRemoteAccess() {
+        return isRemoteAccess;
+    }
+
+    public void setRemoteAccess(boolean remoteAccess) {
+        isRemoteAccess = remoteAccess;
+    }
     public boolean isIsbot() {
         return isBot;
     }
@@ -48,7 +57,7 @@ public class BehavioSecReport {
         return isTrained;
     }
 
-    public void setTrained(boolean trained) {
+    public void setIsTrained(boolean trained) {
         isTrained = trained;
     }
 
@@ -104,7 +113,7 @@ public class BehavioSecReport {
         return tabAnomaly;
     }
 
-    public void setTabAnomaly(boolean tabAnomaly) {
+    public void setIsTabAnomaly(boolean tabAnomaly) {
         this.tabAnomaly = tabAnomaly;
     }
 
@@ -112,7 +121,7 @@ public class BehavioSecReport {
         return numpadAnomaly;
     }
 
-    public void setNumpadAnomaly(boolean numpadAnomaly) {
+    public void setIsNumpadAnomaly(boolean numpadAnomaly) {
         this.numpadAnomaly = numpadAnomaly;
     }
 
@@ -207,7 +216,7 @@ public class BehavioSecReport {
 
     @Override
     public String toString(){
-        return  "User : " + getUserid() + "\n"+
+        return  "\nUser : " + getUserid() + "\n"+
                 "Score : " + getScore() + "\n"+
                 "Confidence : " + getConfidence() + "\n"+
                 "Trained : " + isTrained() + "\n"+

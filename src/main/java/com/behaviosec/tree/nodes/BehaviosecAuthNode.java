@@ -61,7 +61,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     /**
      * Configuration for the node.
      */
-    interface Config {
+    public interface Config {
 
         @SuppressWarnings("SameReturnValue")
         @Attribute(order = 100)
@@ -99,7 +99,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private Action sendRequest(TreeContext context) throws NodeProcessException {
         try {
-            logger.error("Checking health " + behavioSecRESTClient.getHealthCheck());
+            boolean connectionToServer = behavioSecRESTClient.getHealthCheck();
+            logger.error("Checking health " + connectionToServer);
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get("username") + "_";
 
@@ -109,6 +110,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             if(timingData != null) {
                 nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
                         timingData));
+            } else if( connectionToServer ) {
+                throw new NodeProcessException("Connection to server established but timing data is not collected, check script loading.");
             } else {
                 logger.error("Timing data is null");
                 // We check for flag, and we either return deny or success
@@ -139,12 +142,14 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 //            logger.error("sendRequest response \n" + EntityUtils.toString(reportResponse.getEntity(), "UTF-8"));
 
             if ( responseCode == 200 ) {
-                logger.error(TAG + " getReport " + reportResponse.toString());
+//                logger.error(TAG + " getReport " + reportResponse.toString());
                 JsonValue newSharedState = context.sharedState.copy();
                 ObjectMapper objectMapper = new ObjectMapper();
-                BehavioSecReport bhsReport = objectMapper.readValue(reportResponse.toString(), BehavioSecReport.class);
+                BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()), BehavioSecReport.class);
+                logger.error("1 - bhs report -> " + bhsReport.toString());
+
                 newSharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bhsReport));
-                logger.error("5 - newSharedState -> " + newSharedState);
+                logger.error("2 - newSharedState -> " + newSharedState);
                 return goTo(true).replaceSharedState(newSharedState).build();
             } else if ( responseCode == 400 ) {
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
