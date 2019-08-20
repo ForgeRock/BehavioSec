@@ -149,9 +149,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
             } else {
                 logger.error(TAG + " response " + responseCode);
-
             }
-
 
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());

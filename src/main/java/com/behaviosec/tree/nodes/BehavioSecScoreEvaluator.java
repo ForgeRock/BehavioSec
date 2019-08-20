@@ -74,6 +74,11 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         default int maxRisk() {
             return Constants.MAX_RISK;
         }
+
+        @Attribute(order = 30)
+        default boolean failOnInTraining() {
+            return false;
+        }
     }
 
     /**
@@ -105,8 +110,13 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
             return goTo(false).build();
         }
 
+        if (!bhsReport.isTrained() && config.failOnInTraining()){
+            return goTo(false).build();
+        }
         if (bhsReport.getScore() >= config.minScore()
                 && bhsReport.getConfidence() >= config.minConfidence()) {
+            return goTo(true).build();
+        } else if(!bhsReport.isTrained()) {
             return goTo(true).build();
         } else {
             return goTo(false).build();
