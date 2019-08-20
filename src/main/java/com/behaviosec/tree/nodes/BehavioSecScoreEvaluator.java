@@ -95,7 +95,8 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     public Action process(TreeContext context) throws NodeProcessException {
         //TODO: when to through NodeProcessException?
         //Get report from sharedState
-        BehavioSecReport bhsReport = (BehavioSecReport) context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList().get(0);
+        List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
+        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
         if(bhsReport == null){
             logger.error("BehavioSec report is null");
             return goTo(false).build();
