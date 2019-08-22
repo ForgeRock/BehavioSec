@@ -96,15 +96,20 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         //TODO: when to through NodeProcessException?
         //Get report from sharedState
         List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
-        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
-        if(bhsReport == null){
-            logger.error("BehavioSec report is null");
+        if (shared == null) {
+            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
             return goTo(false).build();
         }
+        if (shared.size() != 1) {
+            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) list is larger than one");
+            return goTo(false).build();
+        }
+        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
         // check with the settings, all must evaluate to true
-        if(! bhsReport.isTrained() ) {
+        if(!bhsReport.isTrained() ) {
             return goTo(config.allowInTraining()).build();
         }
+
         if (bhsReport.getScore() >= config.minScore() &&
             bhsReport.getConfidence() >= config.minConfidence() &&
             bhsReport.getRisk() <= config.maxRisk() )

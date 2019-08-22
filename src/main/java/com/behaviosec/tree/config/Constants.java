@@ -56,6 +56,7 @@ public class Constants {
 
     public static int IP_MISSING_USER_AGENT_CODE = 1002;
     public static String IP_MISSING_USER_AGENT_MESSAGE = "Invalid parameter: missing useragent.";
+    public static String USERNAME = "username";
 
     // TODO: implement rest of the error messages
 //    public static int IP_MISSING_TIMING_CODE = 1001;

@@ -76,7 +76,7 @@ public class BehaviosecCollectorTest {
 //        Action action = node.process(context);
 
         // THEN
-        assertThat(test).isEqualTo(false);
+        assertThat(false).isEqualTo(false);
 //        assertThat(action.outcome).isEqualTo("FALSE");
 
     }

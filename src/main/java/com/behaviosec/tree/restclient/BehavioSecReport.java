@@ -219,6 +219,7 @@ public class BehavioSecReport {
         return  "\nUser : " + getUserid() + "\n"+
                 "Score : " + getScore() + "\n"+
                 "Confidence : " + getConfidence() + "\n"+
+                "Risk : " + getRisk() + "\n"+
                 "Trained : " + isTrained() + "\n"+
                 "Bot : " + isIsbot() + "\n"+
                 "";

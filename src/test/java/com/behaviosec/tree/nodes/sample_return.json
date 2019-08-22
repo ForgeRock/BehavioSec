@@ -1,0 +1,66 @@
+{
+  "isBot": false,
+  "isTrained": true,
+  "ipChanged": false,
+  "isWhitelisted": false,
+  "isSessionCorrupted": false,
+  "deviceChanged": false,
+  "ipSeverity": 0,
+  "isDataCorrupted": false,
+  "isReplay": false,
+  "userid": "user1",
+  "score": 0.9999994505329821,
+  "confidence": 0.8804666750177509,
+  "policy": "",
+  "policyId": 2,
+  "startDate": "2016-05-11T14:00+0200",
+  "endDate": "2016-05-11T14:00+0200",
+  "startTimestamp": 1462968000000,
+  "endTimestamp": 1462968000000,
+  "notes": "",
+  "uiScore": 0.5011858768985781,
+  "uiConfidence": 0.9030800089221658,
+  "tabAnomaly": false,
+  "numpadAnomaly": false,
+  "data": [
+    {
+      "isReplay": false,
+      "isTrained": true,
+      "isBot": false,
+      "isDataCorrupted": false,
+      "useragent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36",
+      "device": "DESKTOP",
+      "score": 0.9999994505329821,
+      "policy": "",
+      "policyId": 2,
+      "confidence": 0.874242850854397,
+      "date": 1462968000000,
+      "ip": "127.0.0.1",
+      "notes": "",
+      "tabAnomaly": false,
+      "numpadAnomaly": false,
+      "targets": [
+        {
+          "isBot": false,
+          "training": 17,
+          "updates": 14,
+          "target": "text#username",
+          "score": 0.9999006692880996,
+          "confidence": 0.7476688275082871,
+          "type": "f",
+          "tabAnomaly": false,
+          "numpadAnomaly": false
+        },
+        {
+          "isBot": false,
+          "training": 14,
+          "updates": 14,
+          "target": "password#password",
+          "score": 0.9944992785822514,
+          "confidence": 0.6579885410098075,
+          "type": "fa"
+        }
+      ]
+    }
+  ]
+}

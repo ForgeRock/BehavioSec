@@ -103,16 +103,16 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             boolean connectionToServer = behavioSecRESTClient.getHealthCheck();
             logger.error("Checking health " + connectionToServer);
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
-            String username = context.sharedState.get("username") + "_";
+            String username = context.sharedState.get(Constants.USERNAME).asString();
 
+            // TODO what is the best practice to post fix userid?
+            username += "_";
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
             String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 
             if(timingData != null) {
                 nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
                         timingData));
-            } else if( connectionToServer ) {
-                throw new NodeProcessException("Connection to server established but timing data is not collected, check script loading.");
             } else {
                 logger.error("Timing data is null");
                 // We check for flag, and we either return deny or success
