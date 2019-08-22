@@ -7,7 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @Test
-class BehaviosecCollectorTest {
+public class BehaviosecCollectorTest {
 
     @BeforeMethod
     public void before() {

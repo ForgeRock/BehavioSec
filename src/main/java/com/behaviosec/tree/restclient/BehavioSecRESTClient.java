@@ -58,18 +58,6 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
         HttpResponse response =  this.httpClient.execute(request);
         LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getStatusLine().getStatusCode());
         return response;
-//        if (responseCode == 200) {
-//            return response;
-//        } else if (responseCode == 400 ) {
-//            LOGGER.error(TAG + " getResponse CODE 400: " + response.getEntity().getContent());
-//            throw new IOException("Response 400");
-//        } else if (responseCode == 403) {
-//            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
-//            throw new IOException("Response 403");
-//        } else {
-//            LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getEntity().toString());
-//            throw new IOException("Response unknown error");
-//        }
     }
 
     private void handleError(HttpResponse httpResponse) throws IOException {

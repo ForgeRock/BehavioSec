@@ -88,19 +88,6 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
         super.onInstall();
     }
 
-//    /**
-//     * Handle plugin startup. This method will be called every time AM starts, after {@link #onInstall()},
-//     * {@link #onAmUpgrade(String, String)} and {@link #upgrade(String)} have been called (if relevant).
-//     *
-//     * No need to implement this unless your AuthNode has specific requirements on startup.
-//     *
-//     * @param startupType The type of startup that is taking place.
-//     */
-    @Override
-    public void onStartup() throws PluginException {
-        super.onStartup();
-    }
-
     /**
      * This method will be called when the version returned by {@link #getPluginVersion()} is higher than the
      * version already installed. This method will be called before the {@link #onStartup()} method.
