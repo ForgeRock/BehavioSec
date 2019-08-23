@@ -76,7 +76,6 @@ public class BehaviosecCollectorTest {
             //THEN
             assertThat(result.outcome).isEqualTo("outcome");
             assertThat(result.callbacks.isEmpty());
-//            assertThat(sharedState).isObject().contains(entry(Constants.DATA_FIELD, "================================================"));
         } catch (NodeProcessException e) {
             e.printStackTrace();
         }
