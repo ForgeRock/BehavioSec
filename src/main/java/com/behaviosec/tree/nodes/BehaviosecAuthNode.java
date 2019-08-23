@@ -66,7 +66,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
         @SuppressWarnings("SameReturnValue")
         @Attribute(order = 100)
         default String endpoint() {
-            return "http://13.56.150.246:8080/";
+            return "http://IP:PORT/";
         }
 
         @SuppressWarnings("SameReturnValue")
@@ -140,10 +140,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
-//            logger.error("sendRequest response \n" + EntityUtils.toString(reportResponse.getEntity(), "UTF-8"));
 
             if ( responseCode == 200 ) {
-//                logger.error(TAG + " getReport " + reportResponse.toString());
                 JsonValue newSharedState = context.sharedState.copy();
                 ObjectMapper objectMapper = new ObjectMapper();
                 BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()), BehavioSecReport.class);
