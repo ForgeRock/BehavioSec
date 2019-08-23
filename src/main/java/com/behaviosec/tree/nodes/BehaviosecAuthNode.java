@@ -18,8 +18,8 @@
 package com.behaviosec.tree.nodes;
 
 
-import com.behaviosec.tree.restclient.BehavioSecRESTClient;
 import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecRESTClient;
 import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
