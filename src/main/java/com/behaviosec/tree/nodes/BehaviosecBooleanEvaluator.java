@@ -129,15 +129,15 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
         //TODO: when to through NodeProcessException?
         //Get report from sharedState
         List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
-        logger.error("Shared state size " + shared.size() + " toString " + shared.toString());
-
-        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
-
-        if(bhsReport == null){
-            logger.error("BehavioSec report is null");
+        if (shared == null) {
+            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
             return goTo(false).build();
         }
-        logger.error("Got report, evaluating conditions");
+        if (shared.size() != 1) {
+            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) list is larger than one");
+            return goTo(false).build();
+        }
+        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
 
         if ( bhsReport.isIsbot()) {
             logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
