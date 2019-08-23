@@ -78,62 +78,37 @@ public class BehaviosecCollector extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        String deb = "";
-        List<? extends Callback>cb = context.getAllCallbacks();
-        for (int i = 0; i < cb.size(); i++) {
-            Callback c = cb.get(i);
-            deb += c.toString() + " " ;
-        }
 
-        String scriptResult = Constants.DATA_FIELD;
-        logger.error("1 - Processing script " + config.fileName() + ":" + context.toString() + "::" + deb);
-        logger.error("    config.scriptResult() = " + scriptResult);
-        String myScript = getScriptAsString(config.fileName(), scriptResult);
+
+        String myScript = getScriptAsString(config.fileName(), Constants.DATA_FIELD);
 
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
                 filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
-        logger.error("2 - Result = " + result);
-        if (result.isPresent() && !scriptResult.equals(result.get())) {
-            logger.error("3 - Result is present -> " + result.get());
+        if (result.isPresent() && !Constants.DATA_FIELD.equals(result.get())) {
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
                 resultValue = "Not set";
             }
             JsonValue newSharedState = context.sharedState.copy();
-            logger.error("4 - newSharedState -> " + newSharedState);
-            logger.error("Adding result to \"" + Constants.DATA_FIELD + "\"");
             newSharedState.put(Constants.DATA_FIELD, resultValue);
-            logger.error("5 - newSharedState -> " + newSharedState);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
-            if (result.isPresent() && scriptResult.equals(result.get())) {
-                logger.error("6 doing nothing??");
+            if (result.isPresent() && Constants.DATA_FIELD.equals(result.get())) {
                 return goToNext().build();
             }
-            logger.error("8 - Result not present yet");
-            logger.error("9 - context.sharedState.toString() -> " + context.sharedState.toString());
-            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript ,
-                    Constants.DATA_FIELD, true, context.sharedState.toString());
+            String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript);
 
-            logger.error("\n\n\n" + clientSideScriptExecutorFunction + "\n\n\n");
 
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
-//                    new ScriptTextOutputCallback(myScript);
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
-//            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(config.scriptResult());
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
-            logger.error("10 - hiddenValueCallback -> " + hiddenValueCallback);
-
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);
-            logger.error("11 - callbacks -> " + callbacks.toString());
-
             return send(callbacks).build();
         }
     }
 
     public String getScriptAsString(String filename, String outputParameterId) {
-        logger.error("getScriptAsString: Filename " + filename);
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
@@ -150,30 +125,11 @@ public class BehaviosecCollector extends SingleOutcomeNode {
         return null;
     }
 
-    public static String createClientSideScriptExecutorFunction(String script, String outputParameterId,
-                                                                boolean clientSideScriptEnabled, String context) {
-
+    public static String createClientSideScriptExecutorFunction(String script) {
         return String.format(
-//                spinningWheelScript +
                 "(function(output) {\n" +
-//                        "    var autoSubmitDelay = 0,\n" +
-//                        "        submitted = false,\n" +
-//                        "        context = %s;\n" + //injecting context in form of JSON
-//                        "    function submit1() {\n" +
-//                        "        console.log(\"submitted = \" + submitted)\n" +
-//                        "        if (submitted) {\n" +
-//                        "            return;\n" +
-//                        "        }" +
-//                        "        if (!(typeof $ == 'function')) {\n" + // Crude detection to see if XUI is not present.
-//                        "            document.getElementById('loginButton_0').click();\n" +
-//                        "        } else {\n" +
-//                        "            $('input[type=submit]').click();\n" +
-//                        "        }\n" +
-//                        "        submitted = true;\n" +
-//                        "    }\n" +
                         "    %s\n" + // script
-//                        "    setTimeout(submit1, autoSubmitDelay);\n" +
-                        "}) (document);\n", // outputParameterId
+                        "}) (document);\n",
                 script
                 );
     }
