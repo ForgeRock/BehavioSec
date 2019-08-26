@@ -1,8 +1,11 @@
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.Constants;
-import com.sun.identity.authentication.callbacks.HiddenValueCallback;
-import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.forgerock.json.JsonValue.json;
+import static org.forgerock.json.JsonValue.object;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext;
@@ -11,31 +14,19 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import javax.security.auth.callback.Callback;
-import java.util.ArrayList;
-import java.util.List;
+import com.behaviosec.tree.config.Constants;
+import com.sun.identity.authentication.callbacks.HiddenValueCallback;
+import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.forgerock.json.JsonValue.json;
-import static org.forgerock.json.JsonValue.object;
-import static org.mockito.MockitoAnnotations.initMocks;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.security.auth.callback.Callback;
 
 
 @Test
 public class BehaviosecCollectorTest {
 
-
-    static class TestConfig implements BehaviosecCollector.Config {
-        TestConfig(){
-
-        }
-        public String fileName() {
-            return Constants.COLLECTOR_SCRIPT;
-        }
-    }
 
     private TestConfig config = new TestConfig();
 
@@ -44,6 +35,7 @@ public class BehaviosecCollectorTest {
         initMocks(this);
 
     }
+
     @Test
     public void testProcessWithNoCallbacksInCaseOfMobile() {
         try {
@@ -52,7 +44,7 @@ public class BehaviosecCollectorTest {
 
             //WHEN
             Action result = node.process(getContext(sharedState,
-                    emptyList()));
+                                                    emptyList()));
             //THEN
             assertThat(result.outcome).isEqualTo(null);
             assertThat(result.callbacks).hasSize(2);
@@ -69,7 +61,6 @@ public class BehaviosecCollectorTest {
         try {
             BehaviosecCollector node = new BehaviosecCollector(config);
             JsonValue sharedState = json(object(1));
-            List<Callback> cbList = new ArrayList<>();
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
             hiddenValueCallback.setValue("================================================");
             //WHEN
@@ -84,6 +75,16 @@ public class BehaviosecCollectorTest {
 
     private TreeContext getContext(JsonValue sharedState, List<? extends Callback> callbacks) {
         return new TreeContext(sharedState, new ExternalRequestContext.Builder().build(), callbacks);
+    }
+
+    static class TestConfig implements BehaviosecCollector.Config {
+        TestConfig() {
+
+        }
+
+        public String fileName() {
+            return Constants.COLLECTOR_SCRIPT;
+        }
     }
 
 }

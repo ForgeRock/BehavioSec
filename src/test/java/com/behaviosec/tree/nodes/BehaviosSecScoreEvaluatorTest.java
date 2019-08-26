@@ -1,8 +1,8 @@
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext;
@@ -11,6 +11,10 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -18,38 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 
 @Test
 public class BehaviosSecScoreEvaluatorTest {
-
-
-
-    static class TestConfig implements BehavioSecScoreEvaluator.Config {
-        TestConfig(){
-
-        }
-        private boolean allowInTraining = true;
-        public int minScore() {
-            return Constants.MIN_SCORE;
-            }
-        public int minConfidence() {
-            return Constants.MIN_CONFIDENCE;
-            }
-        public int maxRisk() {
-            return Constants.MAX_RISK;
-            }
-        public  boolean allowInTraining() {
-            return allowInTraining;
-            }
-
-        void setAllowInTraining(boolean allowInTraining) {
-            this.allowInTraining = allowInTraining;
-        }
-    }
 
     private TestConfig config = new TestConfig();
 
@@ -63,7 +38,7 @@ public class BehaviosSecScoreEvaluatorTest {
     public void nodeProcessHighScoreTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre =getReport();
+        BehavioSecReport bre = getReport();
         Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0.2);
@@ -126,7 +101,7 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         config.setAllowInTraining(false);
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre =getReport();
+        BehavioSecReport bre = getReport();
         Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0);
@@ -139,21 +114,51 @@ public class BehaviosSecScoreEvaluatorTest {
 
     }
 
-    private BehavioSecReport getReport(){
+    private BehavioSecReport getReport() {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(new File("src/test/java/com/behaviosec/tree/nodes/sample_return.json"), BehavioSecReport.class);
+            return mapper.readValue(new File("src/test/java/com/behaviosec/tree/nodes/sample_return.json"),
+                                    BehavioSecReport.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
+
     private TreeContext getTreeContext(Map<String, String[]> parameters) {
         return new TreeContext(
                 JsonValue.json(JsonValue.object(1)),
                 new ExternalRequestContext.Builder().parameters(parameters).build(),
                 Collections.emptyList()
         );
+    }
+
+    static class TestConfig implements BehavioSecScoreEvaluator.Config {
+        private boolean allowInTraining = true;
+
+        TestConfig() {
+
+        }
+
+        public int minScore() {
+            return Constants.MIN_SCORE;
+        }
+
+        public int minConfidence() {
+            return Constants.MIN_CONFIDENCE;
+        }
+
+        public int maxRisk() {
+            return Constants.MAX_RISK;
+        }
+
+        public boolean allowInTraining() {
+            return allowInTraining;
+        }
+
+        void setAllowInTraining(boolean allowInTraining) {
+            this.allowInTraining = allowInTraining;
+        }
     }
 
 }
