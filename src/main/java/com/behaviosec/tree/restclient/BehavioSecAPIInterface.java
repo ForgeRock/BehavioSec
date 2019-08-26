@@ -48,7 +48,7 @@ interface BehavioSecAPIInterface {
     boolean getHealthCheck() throws IOException;
 
     /**
-     * Get version of Behaviosec server and its components
+     * Get version of BehavioSec server and its components
      *
      * @return String containing version of BehavioSense and its components.
      */

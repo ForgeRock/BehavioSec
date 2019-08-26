@@ -49,9 +49,9 @@ import javax.security.auth.callback.Callback;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = BehaviosecCollector.Config.class)
-public class BehaviosecCollector extends SingleOutcomeNode {
-    private static final String TAG = BehaviosecCollector.class.getName();
+        configClass = BehavioSecCollector.Config.class)
+public class BehavioSecCollector extends SingleOutcomeNode {
+    private static final String TAG = BehavioSecCollector.class.getName();
     //TODO Not logging anything in this class, either remove or add log statments
     private final Logger logger = LoggerFactory.getLogger(TAG);
     private final Config config;
@@ -77,7 +77,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
      * @param config The node configuration.
      */
     @Inject
-    public BehaviosecCollector(@Assisted Config config) {
+    public BehavioSecCollector(@Assisted Config config) {
         this.config = config;
     }
 

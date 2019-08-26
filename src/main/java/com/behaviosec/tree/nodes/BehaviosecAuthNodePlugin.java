@@ -56,7 +56,7 @@ import static java.util.Arrays.asList;
  * @supported.all.api
  * @since AM 5.5.0
  */
-public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
+public class BehavioSecAuthNodePlugin extends AbstractNodeAmPlugin {
 
     static public String currentVersion = "0.0.0";
 
@@ -69,11 +69,11 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
     @Override
     public Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
         return ImmutableMap.of(
-                BehaviosecAuthNodePlugin.currentVersion, asList(
-                BehaviosecAuthNode.class,
+                BehavioSecAuthNodePlugin.currentVersion, asList(
+                BehavioSecAuthNode.class,
                 BehavioSecScoreEvaluator.class,
-                BehaviosecBooleanEvaluator.class,
-                BehaviosecCollector.class
+                BehavioSecBooleanEvaluator.class,
+                BehavioSecCollector.class
                 ));
     }
 
@@ -109,6 +109,6 @@ public class BehaviosecAuthNodePlugin extends AbstractNodeAmPlugin {
      */
     @Override
     public String getPluginVersion() {
-        return BehaviosecAuthNodePlugin.currentVersion;
+        return BehavioSecAuthNodePlugin.currentVersion;
     }
 }

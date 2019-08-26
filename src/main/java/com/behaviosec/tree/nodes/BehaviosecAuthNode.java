@@ -57,10 +57,10 @@ import javax.inject.Inject;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehaviosecAuthNode.Config.class)
-public class BehaviosecAuthNode extends AbstractDecisionNode {
+        configClass = BehavioSecAuthNode.Config.class)
+public class BehavioSecAuthNode extends AbstractDecisionNode {
 
-    private static final String TAG = BehaviosecAuthNode.class.getName();
+    private static final String TAG = BehavioSecAuthNode.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
@@ -95,7 +95,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehaviosecAuthNode(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecAuthNode(@Assisted Config config) throws NodeProcessException {
         this.config = config;
         this.behavioSecRESTClient = new BehavioSecRESTClient(this.config.endpoint());
     }
@@ -143,7 +143,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                                                       Long.toString(Calendar.getInstance().getTimeInMillis())));
             nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
             nameValuePairs.add(
-                    new BasicNameValuePair(Constants.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
+                    new BasicNameValuePair(Constants.NOTES, "FR-V" + BehavioSecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
             int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
             nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(operatorFlags)));
@@ -195,7 +195,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehaviosecAuthNode.class.getName().replace(".", "/");
+        private static final String BUNDLE = BehavioSecAuthNode.class.getName().replace(".", "/");
 
         @Override
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {

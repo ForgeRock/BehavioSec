@@ -40,9 +40,9 @@ import javax.inject.Inject;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehaviosecBooleanEvaluator.Config.class)
-public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
-    private static final String TAG = BehaviosecBooleanEvaluator.class.getName();
+        configClass = BehavioSecBooleanEvaluator.Config.class)
+public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
+    private static final String TAG = BehavioSecBooleanEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
     private final Config config;
 
@@ -130,7 +130,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
      * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehaviosecBooleanEvaluator(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecBooleanEvaluator(@Assisted Config config) throws NodeProcessException {
         this.config = config;
     }
 

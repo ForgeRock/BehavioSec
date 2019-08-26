@@ -86,13 +86,13 @@ A sample of the Authentication Tree is shown below. Details for component config
 ![ScreenShot](behaviosec-authentication-tree-basic-example.png)
 
 
-## BehaviosecCollector
+## BehavioSec Collector
 This is a data collector node that you need to place under the page node. In the configuration you have an option to add a different collector script if needed.
 
 
 ![ScreenShot](behaviosec_collector_node.png)
 
-## BehaviosecAuthNode
+## BehavioSec AuthNode
 This node receives the collected data and communicates with the server. You have an option to fail authentication if connection to BehavioSense cannot be established.
 The option **Fail if no connection** allows node evaluation to true even if the connection to BehavioSense was not
  established.
@@ -100,7 +100,7 @@ The option **Fail if no connection** allows node evaluation to true even if the 
 ![ScreenShot](behaviosec-auth-node.png)
 
 
-## BehavioSecScoreEvaluator
+## BehavioSec Score Evaluator
 This Score evaluation module allows you to specify the Behavioral Score, Confidence, and Risk levels. 
 Anything below the specified values will fail. It also allows you to control the outcome for users whose Profiles are still in the Training phase.
 
@@ -123,7 +123,7 @@ Anything below the specified values will fail. It also allows you to control the
 ![ScreenShot](behaviosec-score-evaluator.png)
 
 
-## BehavioSecBooleanEvaluator
+## BehavioSec Boolean Evaluator
 The Boolean evaluator controls the outcome for flags returned by the BehavioSense module. It will fail on any
  condition evaluating to false.
 

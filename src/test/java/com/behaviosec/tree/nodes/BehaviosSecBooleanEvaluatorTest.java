@@ -36,7 +36,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessCleanTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -50,7 +50,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessIsBotFalseOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsbot(true);
 
@@ -66,7 +66,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowBot();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsbot(true);
 
@@ -86,7 +86,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessReplayFalseOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setReplay(true);
 
@@ -102,7 +102,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowReplay(true);
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setReplay(true);
 
@@ -123,7 +123,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowRemoteAccess(false);
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setRemoteAccess(true);
 
@@ -138,7 +138,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessRemoteAccessTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setRemoteAccess(true);
 
@@ -160,7 +160,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowTabAnomaly(false);
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsTabAnomaly(true);
 
@@ -175,7 +175,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessAllowTabAnomalyTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsTabAnomaly(true);
 
@@ -196,7 +196,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowNumpadAnomaly(false);
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsNumpadAnomaly(true);
 
@@ -211,7 +211,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessAllowNumpadAnomalyTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setIsNumpadAnomaly(true);
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -231,7 +231,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         config.setAllowDeviceChanged(false);
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setDeviceChanged(true);
 
@@ -246,7 +246,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessAllowDeviceChangedTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
         bre.setDeviceChanged(true);
 
@@ -266,7 +266,7 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessNoReportOutcomeFalse() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
+        BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
         // test no bhs repport
         Action action = node.process(context);
         // THEN
@@ -298,7 +298,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         );
     }
 
-    static class TestConfig implements BehaviosecBooleanEvaluator.Config {
+    static class TestConfig implements BehavioSecBooleanEvaluator.Config {
         boolean allowBot = false;
         boolean allowReplay = false;
         boolean allowInTraining = true;

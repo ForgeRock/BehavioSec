@@ -18,14 +18,13 @@ import com.behaviosec.tree.config.Constants;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.security.auth.callback.Callback;
 
 
 @Test
-public class BehaviosecCollectorTest {
+public class BehavioSecCollectorTest {
 
 
     private TestConfig config = new TestConfig();
@@ -39,7 +38,7 @@ public class BehaviosecCollectorTest {
     @Test
     public void testProcessWithNoCallbacksInCaseOfMobile() {
         try {
-            BehaviosecCollector node = new BehaviosecCollector(config);
+            BehavioSecCollector node = new BehavioSecCollector(config);
             JsonValue sharedState = json(object(1));
 
             //WHEN
@@ -59,7 +58,7 @@ public class BehaviosecCollectorTest {
     @Test
     public void testProcessWithCallbacksInCaseOfMobile() {
         try {
-            BehaviosecCollector node = new BehaviosecCollector(config);
+            BehavioSecCollector node = new BehavioSecCollector(config);
             JsonValue sharedState = json(object(1));
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
             hiddenValueCallback.setValue("================================================");
@@ -77,7 +76,7 @@ public class BehaviosecCollectorTest {
         return new TreeContext(sharedState, new ExternalRequestContext.Builder().build(), callbacks);
     }
 
-    static class TestConfig implements BehaviosecCollector.Config {
+    static class TestConfig implements BehavioSecCollector.Config {
         TestConfig() {
 
         }
