@@ -83,21 +83,21 @@ BehavioSec provides all the necessary components to use the [BehavioSec platform
 
 A sample of the Authentication Tree is shown below. Details for component configuration are in the following sections. Naturally, **Failure** outcomes should result in authentication step up, retry, or even account lock out.
 
-![ScreenShot](behaviosec-authentication-tree-basic-example.png)
+![ScreenShot](images/behaviosec-authentication-tree-basic-example.png)
 
 
 ## BehavioSec Collector
 This is a data collector node that you need to place under the page node. In the configuration you have an option to add a different collector script if needed.
 
 
-![ScreenShot](behaviosec_collector_node.png)
+![ScreenShot](images/behaviosec_collector_node.png)
 
 ## BehavioSec AuthNode
 This node receives the collected data and communicates with the server. You have an option to fail authentication if connection to BehavioSense cannot be established.
 The option **Fail if no connection** allows node evaluation to true even if the connection to BehavioSense was not
  established.
  
-![ScreenShot](behaviosec-auth-node.png)
+![ScreenShot](images/behaviosec-auth-node.png)
 
 
 ## BehavioSec Score Evaluator
@@ -120,7 +120,7 @@ Anything below the specified values will fail. It also allows you to control the
  will be ignored and the node will evaluate to true. 
 
 
-![ScreenShot](behaviosec-score-evaluator.png)
+![ScreenShot](images/behaviosec-score-evaluator.png)
 
 
 ## BehavioSec Boolean Evaluator
@@ -150,7 +150,7 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
 
 For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
 
-![ScreenShot](behaviosec-boolean-evaluator.png)
+![ScreenShot](images/behaviosec-boolean-evaluator.png)
 
 
 # Disclaimer
