@@ -32,6 +32,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.ResourceBundle;
 
+//TODO Add explanation of node
+
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
@@ -46,8 +48,6 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
      * Configuration for the node.
      */
     public interface Config {
-
-
         /**
          * Minimum score to to accept
          * @return the amount.
@@ -125,9 +125,10 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
     }
 
     @Override
-    public Action process(TreeContext context) throws NodeProcessException {
+    public Action process(TreeContext context) {
         //TODO: when to through NodeProcessException?
         //Get report from sharedState
+        //TODO Duplicate code with BehaioSecScoreEvaluator, refactor out
         List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
         if (shared == null) {
             logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
@@ -181,17 +182,5 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
     protected Action.ActionBuilder goTo(boolean outcome) {
         return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
-    }
-
-    static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehaviosecAuthNode.class.getName().replace(".", "/");
-
-        @Override
-        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, BehaviosecAuthNode.OutcomeProvider.class.getClassLoader());
-            return ImmutableList.of(
-                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
-        }
     }
 }

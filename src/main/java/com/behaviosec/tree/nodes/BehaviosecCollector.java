@@ -47,6 +47,7 @@ import static org.forgerock.openam.auth.node.api.Action.send;
         configClass      = BehaviosecCollector.Config.class)
 public class BehaviosecCollector extends SingleOutcomeNode {
     private static final String TAG = BehaviosecCollector.class.getName();
+    //TODO Not logging anything in this class, either remove or add log statments
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     /**
@@ -68,10 +69,9 @@ public class BehaviosecCollector extends SingleOutcomeNode {
     /**
      * Guice constructor.
      * @param config The node configuration.
-     * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehaviosecCollector(@Assisted Config config) throws NodeProcessException {
+    public BehaviosecCollector(@Assisted Config config) {
         this.config = config;
     }
 
@@ -92,7 +92,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
             newSharedState.put(Constants.DATA_FIELD, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
-            if (result.isPresent() && Constants.DATA_FIELD.equals(result.get())) {
+            if (result.isPresent()) {
                 return goToNext().build();
             }
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript);
@@ -107,24 +107,24 @@ public class BehaviosecCollector extends SingleOutcomeNode {
         }
     }
 
-    public String getScriptAsString(String filename, String outputParameterId) {
+    private String getScriptAsString(String filename, String outputParameterId) {
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
-            String data = new String();
+            StringBuilder data = new StringBuilder();
             BufferedReader objReader = new BufferedReader(paramReader);
             String strCurrentLine;
             while ((strCurrentLine = objReader.readLine()) != null) {
-                data += strCurrentLine + System.lineSeparator();
+                data.append(strCurrentLine).append(System.lineSeparator());
             }
-            return String.format(data, outputParameterId);
+            return String.format(data.toString(), outputParameterId);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static String createClientSideScriptExecutorFunction(String script) {
+    private static String createClientSideScriptExecutorFunction(String script) {
         return String.format(
                 "(function(output) {\n" +
                         "    %s\n" + // script

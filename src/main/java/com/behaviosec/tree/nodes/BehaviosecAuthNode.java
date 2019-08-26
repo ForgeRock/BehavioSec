@@ -42,6 +42,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 
+//TODO Add explanation of node
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
@@ -55,8 +56,6 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
     private final Config config;
     private final BehavioSecRESTClient behavioSecRESTClient;
-
-    private final int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
 
     /**
      * Configuration for the node.
@@ -136,7 +135,8 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
             nameValuePairs.add(new BasicNameValuePair(Constants.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
-            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS,Integer.toString(this.operatorFlags)));
+            int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
+            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(operatorFlags)));
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
@@ -147,7 +147,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()), BehavioSecReport.class);
                 logger.error("1 - bhs report -> " + bhsReport.toString());
 
-                newSharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bhsReport));
+                newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bhsReport));
                 logger.error("2 - newSharedState -> " + newSharedState);
                 return goTo(true).replaceSharedState(newSharedState).build();
             } else if ( responseCode == 400 ) {
@@ -165,11 +165,9 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());
-            e.printStackTrace();
             throw new NodeProcessException("MalformedURLException for " + config.endpoint());
         } catch (IOException e) {
             logger.error("IOException: " + e.toString());
-            e.printStackTrace();
             throw new NodeProcessException("IOException for " + e.toString());
         }
 

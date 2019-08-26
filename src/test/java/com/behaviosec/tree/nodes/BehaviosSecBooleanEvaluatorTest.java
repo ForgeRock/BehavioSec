@@ -27,8 +27,8 @@ public class BehaviosSecBooleanEvaluatorTest {
 
 
 
-    class TestConfig implements BehaviosecBooleanEvaluator.Config {
-        public TestConfig(){
+    static class TestConfig implements BehaviosecBooleanEvaluator.Config {
+        TestConfig(){
 
         }
         boolean allowBot = false;
@@ -62,26 +62,26 @@ public class BehaviosSecBooleanEvaluatorTest {
             return allowDeviceChanged;
         }
 
-        public void setallowBot(boolean allowBot) {
-            this.allowBot = allowBot;
+        void setAllowBot() {
+            this.allowBot = true;
         }
-        public void setAllowReplay(boolean allowReplay) {
+        void setAllowReplay(boolean allowReplay) {
             this.allowReplay = allowReplay;
         }
 
-        public void setAllowRemoteAccess(boolean allowRemoteAccess) {
+        void setAllowRemoteAccess(boolean allowRemoteAccess) {
             this.allowRemoteAccess = allowRemoteAccess;
         }
 
-        public void setAllowTabAnomaly(boolean allowTabAnomaly) {
+        void setAllowTabAnomaly(boolean allowTabAnomaly) {
             this.allowTabAnomaly = allowTabAnomaly;
         }
 
-        public void setAllowNumpadAnomaly(boolean allowNumpadAnomaly) {
+        void setAllowNumpadAnomaly(boolean allowNumpadAnomaly) {
             this.allowNumpadAnomaly = allowNumpadAnomaly;
         }
 
-        public void setAllowDeviceChanged(boolean allowDeviceChanged) {
+        void setAllowDeviceChanged(boolean allowDeviceChanged) {
             this.allowDeviceChanged = allowDeviceChanged;
         }
 
@@ -102,7 +102,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
         BehavioSecReport bre = getReport();
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -116,7 +116,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setIsbot(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -127,12 +127,12 @@ public class BehaviosSecBooleanEvaluatorTest {
     public void nodeProcessIsBotTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
-        config.setallowBot(true);
+        config.setAllowBot();
         BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
         BehavioSecReport bre =getReport();
         bre.setIsbot(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -150,7 +150,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setReplay(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -166,7 +166,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setReplay(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -186,7 +186,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setRemoteAccess(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -201,7 +201,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setRemoteAccess(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -222,7 +222,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setIsTabAnomaly(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -237,7 +237,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setIsTabAnomaly(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -256,7 +256,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setIsNumpadAnomaly(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -270,7 +270,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehaviosecBooleanEvaluator node = new BehaviosecBooleanEvaluator(config);
         BehavioSecReport bre =getReport();
         bre.setIsNumpadAnomaly(true);
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -290,7 +290,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setDeviceChanged(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -305,7 +305,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         BehavioSecReport bre =getReport();
         bre.setDeviceChanged(true);
 
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -346,12 +346,11 @@ public class BehaviosSecBooleanEvaluatorTest {
         return bre;
     }
     private TreeContext getTreeContext(Map<String, String[]> parameters) {
-        final TreeContext treeContext = new TreeContext(
+        return new TreeContext(
                 JsonValue.json(JsonValue.object(1)),
                 new ExternalRequestContext.Builder().parameters(parameters).build(),
                 Collections.emptyList()
         );
-        return treeContext;
     }
 
 }

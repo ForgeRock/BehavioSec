@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +28,8 @@ public class BehaviosSecScoreEvaluatorTest {
 
 
 
-    class TestConfig implements BehavioSecScoreEvaluator.Config {
-        public TestConfig(){
+    static class TestConfig implements BehavioSecScoreEvaluator.Config {
+        TestConfig(){
 
         }
         private boolean allowInTraining = true;
@@ -45,7 +46,7 @@ public class BehaviosSecScoreEvaluatorTest {
             return allowInTraining;
             }
 
-        public void setAllowInTraining(boolean allowInTraining) {
+        void setAllowInTraining(boolean allowInTraining) {
             this.allowInTraining = allowInTraining;
         }
     }
@@ -63,11 +64,11 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         BehavioSecReport bre =getReport();
-        bre.setScore(0.9);
+        Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0.2);
         bre.setIsTrained(true);
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -91,11 +92,11 @@ public class BehaviosSecScoreEvaluatorTest {
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         System.out.println("Config" + config.allowInTraining());
         BehavioSecReport bre = getReport();
-        bre.setScore(0.1);
+        Objects.requireNonNull(bre).setScore(0.1);
         bre.setConfidence(0.1);
         bre.setRisk(0);
         bre.setIsTrained(true);
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         // WHEN
         Action action = node.process(context);
         System.out.println("nodeProcessLowScoreOutcomeFalse " + action.outcome);
@@ -109,11 +110,11 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         BehavioSecReport bre = getReport();
-        bre.setScore(0.1);
+        Objects.requireNonNull(bre).setScore(0.1);
         bre.setConfidence(0.1);
         bre.setRisk(0.6);
         bre.setIsTrained(true);
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         // WHEN
         Action action = node.process(context);
         // THEN
@@ -126,11 +127,11 @@ public class BehaviosSecScoreEvaluatorTest {
         config.setAllowInTraining(false);
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         BehavioSecReport bre =getReport();
-        bre.setScore(0.9);
+        Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0);
         bre.setIsTrained(false);
-        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bre));
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
         Action action = node.process(context);
         // THEN
@@ -148,12 +149,11 @@ public class BehaviosSecScoreEvaluatorTest {
         return null;
     }
     private TreeContext getTreeContext(Map<String, String[]> parameters) {
-        final TreeContext treeContext = new TreeContext(
+        return new TreeContext(
                 JsonValue.json(JsonValue.object(1)),
                 new ExternalRequestContext.Builder().parameters(parameters).build(),
                 Collections.emptyList()
         );
-        return treeContext;
     }
 
 }

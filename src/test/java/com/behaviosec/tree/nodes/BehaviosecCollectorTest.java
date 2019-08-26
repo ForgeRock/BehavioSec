@@ -11,6 +11,7 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import javax.security.auth.callback.Callback;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class BehaviosecCollectorTest {
 
 
-    class TestConfig implements BehaviosecCollector.Config {
-        public TestConfig(){
+    static class TestConfig implements BehaviosecCollector.Config {
+        TestConfig(){
 
         }
         public String fileName() {
@@ -72,10 +73,10 @@ public class BehaviosecCollectorTest {
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
             hiddenValueCallback.setValue("================================================");
             //WHEN
-            Action result = node.process(getContext(sharedState,asList(hiddenValueCallback)));
+            Action result = node.process(getContext(sharedState, Collections.singletonList(hiddenValueCallback)));
             //THEN
             assertThat(result.outcome).isEqualTo("outcome");
-            assertThat(result.callbacks.isEmpty());
+            assertThat(result.callbacks).isEmpty();
         } catch (NodeProcessException e) {
             e.printStackTrace();
         }
