@@ -14,4 +14,4 @@
 # Copyright 2017-2018 ForgeRock AS.
 #
 
-com.behaviosec.tree.nodes.BehavioSecAuthNodePlugin
+com.behaviosec.tree.nodes.BehavioSecPlugin
