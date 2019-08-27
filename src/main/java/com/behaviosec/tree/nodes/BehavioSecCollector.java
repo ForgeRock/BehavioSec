@@ -43,8 +43,8 @@ import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 
 /**
- * A that inject collector JavaScript code into login page and collect behaviometrics that are passed further in
- * authentications tree within the context
+ * Behaviometric collector JavaScript code injection into login page
+ * puts data in authentications tree context
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
         configClass = BehavioSecCollector.Config.class)
@@ -86,9 +86,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     @Override
-    public Action process(TreeContext context) throws NodeProcessException {
-
-
+    public Action process(TreeContext context) {
         String myScript = getScriptAsString(config.fileName(), Constants.DATA_FIELD);
 
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).

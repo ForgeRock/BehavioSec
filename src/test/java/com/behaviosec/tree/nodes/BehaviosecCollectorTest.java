@@ -37,7 +37,6 @@ public class BehaviosecCollectorTest {
 
     @Test
     public void testProcessWithNoCallbacksInCaseOfMobile() {
-        try {
             BehavioSecCollector node = new BehavioSecCollector(config);
             JsonValue sharedState = json(object(1));
 
@@ -50,14 +49,10 @@ public class BehaviosecCollectorTest {
             assertThat(result.callbacks.get(1)).isInstanceOf(HiddenValueCallback.class);
             assertThat(result.callbacks.get(0)).isInstanceOf(ScriptTextOutputCallback.class);
             assertThat((Object) result.sharedState).isNull();
-        } catch (NodeProcessException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
     public void testProcessWithCallbacksInCaseOfMobile() {
-        try {
             BehavioSecCollector node = new BehavioSecCollector(config);
             JsonValue sharedState = json(object(1));
             HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
@@ -67,9 +62,6 @@ public class BehaviosecCollectorTest {
             //THEN
             assertThat(result.outcome).isEqualTo("outcome");
             assertThat(result.callbacks).isEmpty();
-        } catch (NodeProcessException e) {
-            e.printStackTrace();
-        }
     }
 
     private TreeContext getContext(JsonValue sharedState, List<? extends Callback> callbacks) {

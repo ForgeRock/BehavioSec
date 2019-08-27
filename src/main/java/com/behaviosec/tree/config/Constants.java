@@ -1,10 +1,17 @@
 package com.behaviosec.tree.config;
 
+/**
+ * Class for constants through the application
+ */
 public class Constants {
+    //Default score settings
     public static final int MIN_SCORE = 60;
     public static final int MIN_CONFIDENCE = 40;
     public static final int MAX_RISK = 60;
+    //report naming
     public static final String BEHAVIOSEC_REPORT = "bhs_report";
+    //username from from openam
+    public static String USERNAME = "username";
     // request header
     public static String ACCEPT_HEADER = "application/json";
     public static String SEND_HEADER = "application/json";
@@ -28,10 +35,8 @@ public class Constants {
 
     //request action
     private static String API_BASE_URL               = "BehavioSenseAPI/";
-
-    public static String GET_HEALTH_STATUS  = API_BASE_URL+ "GetHealthCheck";
+    //API endpoint
     public static String GET_REPORT         = API_BASE_URL + "GetReport";
-    public static String GET_VERSION        = API_BASE_URL + "GetVersion";
 
 
     // Node configuration
@@ -40,6 +45,5 @@ public class Constants {
     //Operator flags
     public final static int FINALIZE_DIRECTLY = 256;
     public final static int FLAG_GENERATE_TIMESTAMP = 2;
-    public static String USERNAME = "username";
 
 }
