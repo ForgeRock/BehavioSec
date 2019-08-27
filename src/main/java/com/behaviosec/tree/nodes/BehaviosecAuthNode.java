@@ -18,45 +18,53 @@
 package com.behaviosec.tree.nodes;
 
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecRESTClient;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.*;
+import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecRESTClient;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.UUID;
+import javax.inject.Inject;
 
-import static java.util.Arrays.asList;
+//TODO Add explanation of node
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehaviosecAuthNode.Config.class)
-public class BehaviosecAuthNode extends AbstractDecisionNode {
+        configClass = BehavioSecAuthNode.Config.class)
+public class BehavioSecAuthNode extends AbstractDecisionNode {
 
-    private static final String TAG = BehaviosecAuthNode.class.getName();
+    private static final String TAG = BehavioSecAuthNode.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
     private final BehavioSecRESTClient behavioSecRESTClient;
-
-    private final int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
 
     /**
      * Configuration for the node.
@@ -87,7 +95,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehaviosecAuthNode(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecAuthNode(@Assisted Config config) throws NodeProcessException {
         this.config = config;
         this.behavioSecRESTClient = new BehavioSecRESTClient(this.config.endpoint());
     }
@@ -110,9 +118,9 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
             String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 
-            if(timingData != null) {
+            if (timingData != null) {
                 nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
-                        timingData));
+                                                          timingData));
             } else {
                 logger.error("Timing data is null");
                 // We check for flag, and we either return deny or success
@@ -123,7 +131,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
                 }
             }
             String userAgent = "";
-            try{
+            try {
                 userAgent = context.request.headers.get("user-agent").get(0);
             } catch (IndexOutOfBoundsException e) {
                 logger.error("sendRequest: Change in API for user-agent");
@@ -132,31 +140,34 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_AGENT, userAgent));
             nameValuePairs.add(new BasicNameValuePair(Constants.IP, context.request.clientIp));
             nameValuePairs.add(new BasicNameValuePair(Constants.TIMESTAMP,
-                    Long.toString(Calendar.getInstance().getTimeInMillis())));
+                                                      Long.toString(Calendar.getInstance().getTimeInMillis())));
             nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
-            nameValuePairs.add(new BasicNameValuePair(Constants.NOTES, "FR-V" + BehaviosecAuthNodePlugin.currentVersion));
+            nameValuePairs.add(
+                    new BasicNameValuePair(Constants.NOTES, "FR-V" + BehavioSecAuthNodePlugin.currentVersion));
             nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
-            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS,Integer.toString(this.operatorFlags)));
+            int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
+            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(operatorFlags)));
 
             HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
             int responseCode = reportResponse.getStatusLine().getStatusCode();
 
-            if ( responseCode == 200 ) {
+            if (responseCode == 200) {
                 JsonValue newSharedState = context.sharedState.copy();
                 ObjectMapper objectMapper = new ObjectMapper();
-                BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()), BehavioSecReport.class);
+                BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()),
+                                                                    BehavioSecReport.class);
                 logger.error("1 - bhs report -> " + bhsReport.toString());
 
-                newSharedState.put(Constants.BEHAVIOSEC_REPORT, asList(bhsReport));
+                newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bhsReport));
                 logger.error("2 - newSharedState -> " + newSharedState);
                 return goTo(true).replaceSharedState(newSharedState).build();
-            } else if ( responseCode == 400 ) {
+            } else if (responseCode == 400) {
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
-            } else if ( responseCode == 403 ) {
+            } else if (responseCode == 403) {
                 logger.error(TAG + " response 403  ");
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
 
-            } else if ( responseCode == 500 ) {
+            } else if (responseCode == 500) {
                 logger.error(TAG + " response 500  ");
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
             } else {
@@ -165,11 +176,9 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
 
         } catch (MalformedURLException e) {
             logger.error("MalformedURLException: " + e.toString());
-            e.printStackTrace();
             throw new NodeProcessException("MalformedURLException for " + config.endpoint());
         } catch (IOException e) {
             logger.error("IOException: " + e.toString());
-            e.printStackTrace();
             throw new NodeProcessException("IOException for " + e.toString());
         }
 
@@ -186,7 +195,7 @@ public class BehaviosecAuthNode extends AbstractDecisionNode {
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehaviosecAuthNode.class.getName().replace(".", "/");
+        private static final String BUNDLE = BehavioSecAuthNode.class.getName().replace(".", "/");
 
         @Override
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {

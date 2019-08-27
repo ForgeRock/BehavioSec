@@ -17,20 +17,25 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.*;
+import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.inject.Inject;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
@@ -42,12 +47,14 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     private static final String TAG = BehavioSecScoreEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
     private final Config config;
+
     /**
      * Configuration for the node.
      */
     public interface Config {
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 100)
@@ -57,6 +64,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 200)
@@ -66,6 +74,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
         /**
          * Maximum acceptable risk
+         *
          * @return the amount.
          */
         @Attribute(order = 300)
@@ -106,14 +115,13 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         }
         BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
         // check with the settings, all must evaluate to true
-        if(!bhsReport.isTrained() ) {
+        if (!bhsReport.isTrained()) {
             return goTo(config.allowInTraining()).build();
         }
 
         if (bhsReport.getScore() >= config.minScore() &&
-            bhsReport.getConfidence() >= config.minConfidence() &&
-            bhsReport.getRisk() <= config.maxRisk() )
-        {
+                bhsReport.getConfidence() >= config.minConfidence() &&
+                bhsReport.getRisk() <= config.maxRisk()) {
             return goTo(true).build();
         } else {
             return goTo(false).build();
@@ -124,17 +132,5 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
     protected Action.ActionBuilder goTo(boolean outcome) {
         return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
-    }
-
-    static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehaviosecAuthNode.class.getName().replace(".", "/");
-
-        @Override
-        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, BehaviosecAuthNode.OutcomeProvider.class.getClassLoader());
-            return ImmutableList.of(
-                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
-        }
     }
 }

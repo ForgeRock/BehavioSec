@@ -17,47 +17,52 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
-import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.*;
-import org.forgerock.util.i18n.PreferredLocales;
+import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.TreeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.restclient.BehavioSecReport;
+import com.google.inject.assistedinject.Assisted;
+
 import java.util.List;
-import java.util.ResourceBundle;
+import javax.inject.Inject;
+
+//TODO Add explanation of node
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehaviosecBooleanEvaluator.Config.class)
-public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
-    private static final String TAG = BehaviosecBooleanEvaluator.class.getName();
+        configClass = BehavioSecBooleanEvaluator.Config.class)
+public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
+    private static final String TAG = BehavioSecBooleanEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
+    private final Config config;
 
     /**
      * Configuration for the node.
      */
     public interface Config {
-
-
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 100)
         default boolean allowBot() {
             return false;
         }
+
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 200)
@@ -67,14 +72,17 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 300)
         default boolean allowInTraining() {
             return true;
         }
+
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
 
@@ -85,6 +93,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 500)
@@ -94,6 +103,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 600)
@@ -103,6 +113,7 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
         /**
          * Minimum score to to accept
+         *
          * @return the amount.
          */
         @Attribute(order = 700)
@@ -112,22 +123,22 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
     }
 
-    private final Config config;
-
     /**
      * Guice constructor.
+     *
      * @param config The node configuration.
      * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehaviosecBooleanEvaluator(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecBooleanEvaluator(@Assisted Config config) throws NodeProcessException {
         this.config = config;
     }
 
     @Override
-    public Action process(TreeContext context) throws NodeProcessException {
+    public Action process(TreeContext context) {
         //TODO: when to through NodeProcessException?
         //Get report from sharedState
+        //TODO Duplicate code with BehaioSecScoreEvaluator, refactor out
         List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
         if (shared == null) {
             logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
@@ -139,36 +150,40 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
         }
         BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
 
-        if ( bhsReport.isIsbot()) {
+        if (bhsReport.isIsbot()) {
             logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
             return goTo(config.allowBot()).build();
         }
         if (bhsReport.isRemoteAccess()) {
-            logger.error("Fail on bhsReport.isRemoteAccess() "  + bhsReport.isRemoteAccess() + " " + config.allowRemoteAccess());
+            logger.error("Fail on bhsReport.isRemoteAccess() " + bhsReport.isRemoteAccess() + " " +
+                                 config.allowRemoteAccess());
             return goTo(config.allowRemoteAccess()).build();
         }
 
-        if ( bhsReport.isReplay() ) {
-            logger.error("Fail on bhsReport.isReplay() "  + bhsReport.isReplay() + " " + config.allowReplay());
+        if (bhsReport.isReplay()) {
+            logger.error("Fail on bhsReport.isReplay() " + bhsReport.isReplay() + " " + config.allowReplay());
             return goTo(config.allowReplay()).build();
         }
 
-        if ( !bhsReport.isTrained() ) {
-            logger.error("Fail on bhsReport.isTrained()  "  + bhsReport.isTrained() + " " + config.allowInTraining());
+        if (!bhsReport.isTrained()) {
+            logger.error("Fail on bhsReport.isTrained()  " + bhsReport.isTrained() + " " + config.allowInTraining());
             return goTo(config.allowInTraining()).build();
         }
 
-        if ( bhsReport.isTabAnomaly()) {
-            logger.error("Fail on bhsReport.isTabAnomaly() "  + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
+        if (bhsReport.isTabAnomaly()) {
+            logger.error(
+                    "Fail on bhsReport.isTabAnomaly() " + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
             return goTo(config.allowTabAnomaly()).build();
         }
 
-        if ( bhsReport.isDeviceChanged() ) {
-            logger.error("Fail on bhsReport.isDeviceChanged() "  + bhsReport.isDeviceChanged() + " " + config.allowDeviceChanged());
+        if (bhsReport.isDeviceChanged()) {
+            logger.error("Fail on bhsReport.isDeviceChanged() " + bhsReport.isDeviceChanged() + " " +
+                                 config.allowDeviceChanged());
             return goTo(config.allowDeviceChanged()).build();
         }
-        if ( bhsReport.isNumpadAnomaly() ) {
-            logger.error("Fail on bhsReport.isNumpadAnomaly() "  + bhsReport.isNumpadAnomaly() + " " + config.allowNumpadAnomaly());
+        if (bhsReport.isNumpadAnomaly()) {
+            logger.error("Fail on bhsReport.isNumpadAnomaly() " + bhsReport.isNumpadAnomaly() + " " +
+                                 config.allowNumpadAnomaly());
             return goTo(config.allowNumpadAnomaly()).build();
         }
         // All good allow passing through
@@ -181,17 +196,5 @@ public class BehaviosecBooleanEvaluator extends AbstractDecisionNode {
 
     protected Action.ActionBuilder goTo(boolean outcome) {
         return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
-    }
-
-    static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehaviosecAuthNode.class.getName().replace(".", "/");
-
-        @Override
-        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, BehaviosecAuthNode.OutcomeProvider.class.getClassLoader());
-            return ImmutableList.of(
-                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
-        }
     }
 }

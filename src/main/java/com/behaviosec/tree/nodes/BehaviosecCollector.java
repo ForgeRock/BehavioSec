@@ -17,37 +17,44 @@
 
 package com.behaviosec.tree.nodes;
 
+import static org.forgerock.openam.auth.node.api.Action.send;
+
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Optional;
-
-import static org.forgerock.openam.auth.node.api.Action.send;
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
  * permitted to use zero-page login headers.
  */
-@Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
-        configClass      = BehaviosecCollector.Config.class)
-public class BehaviosecCollector extends SingleOutcomeNode {
-    private static final String TAG = BehaviosecCollector.class.getName();
+@Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
+        configClass = BehavioSecCollector.Config.class)
+public class BehavioSecCollector extends SingleOutcomeNode {
+    private static final String TAG = BehavioSecCollector.class.getName();
+    //TODO Not logging anything in this class, either remove or add log statments
     private final Logger logger = LoggerFactory.getLogger(TAG);
+    private final Config config;
 
     /**
      * Configuration for the node.
@@ -55,6 +62,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
     public interface Config {
         /**
          * The amount to increment/decrement the auth level.
+         *
          * @return the amount.
          */
         @Attribute(order = 10)
@@ -63,16 +71,23 @@ public class BehaviosecCollector extends SingleOutcomeNode {
         }
     }
 
-    private final Config config;
-
     /**
      * Guice constructor.
+     *
      * @param config The node configuration.
-     * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehaviosecCollector(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecCollector(@Assisted Config config) {
         this.config = config;
+    }
+
+    private static String createClientSideScriptExecutorFunction(String script) {
+        return String.format(
+                "(function(output) {\n" +
+                        "    %s\n" + // script
+                        "}) (document);\n",
+                script
+        );
     }
 
     @Override
@@ -92,7 +107,7 @@ public class BehaviosecCollector extends SingleOutcomeNode {
             newSharedState.put(Constants.DATA_FIELD, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
-            if (result.isPresent() && Constants.DATA_FIELD.equals(result.get())) {
+            if (result.isPresent()) {
                 return goToNext().build();
             }
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript);
@@ -107,29 +122,20 @@ public class BehaviosecCollector extends SingleOutcomeNode {
         }
     }
 
-    public String getScriptAsString(String filename, String outputParameterId) {
+    private String getScriptAsString(String filename, String outputParameterId) {
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
-            String data = new String();
+            StringBuilder data = new StringBuilder();
             BufferedReader objReader = new BufferedReader(paramReader);
             String strCurrentLine;
             while ((strCurrentLine = objReader.readLine()) != null) {
-                data += strCurrentLine + System.lineSeparator();
+                data.append(strCurrentLine).append(System.lineSeparator());
             }
-            return String.format(data, outputParameterId);
+            return String.format(data.toString(), outputParameterId);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static String createClientSideScriptExecutorFunction(String script) {
-        return String.format(
-                "(function(output) {\n" +
-                        "    %s\n" + // script
-                        "}) (document);\n",
-                script
-                );
     }
 }
