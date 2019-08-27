@@ -17,6 +17,7 @@
 
 package com.behaviosec.tree.nodes;
 
+import com.behaviosec.tree.config.NoBehavioSecReportException;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
@@ -33,11 +34,10 @@ import com.google.inject.assistedinject.Assisted;
 import java.util.List;
 import javax.inject.Inject;
 
-//TODO Add explanation of node
+
 
 /**
- * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
- * permitted to use zero-page login headers.
+ * A node that what evaluates boolean flags of BehavioSec response
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
         configClass = BehavioSecBooleanEvaluator.Config.class)
@@ -51,9 +51,8 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
      */
     public interface Config {
         /**
-         * Minimum score to to accept
-         *
-         * @return the amount.
+         * Toggle Bot flagged profiles to evaluate to true
+         * @return allow bot.
          */
         @Attribute(order = 100)
         default boolean allowBot() {
@@ -61,9 +60,8 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Minimum score to to accept
-         *
-         * @return the amount.
+         * Toggle Allow replay flagged profiles to evaluate to true
+         * @return allow replay.
          */
         @Attribute(order = 200)
         default boolean allowReplay() {
@@ -71,9 +69,8 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Minimum score to to accept
-         *
-         * @return the amount.
+         * Toggle in Training flagged profiles to evaluate to true
+         * @return allow in training.
          */
         @Attribute(order = 300)
         default boolean allowInTraining() {
@@ -81,20 +78,19 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Minimum score to to accept
+         * Toggle Remote Access flagged profiles to evaluate to true
          *
-         * @return the amount.
+         * @return allow remote access.
          */
-
         @Attribute(order = 400)
         default boolean allowRemoteAccess() {
             return true;
         }
 
         /**
-         * Minimum score to to accept
+         * Toggle Tab anomaly flagged profiles to evaluate to true
          *
-         * @return the amount.
+         * @return allow tab anomaly.
          */
         @Attribute(order = 500)
         default boolean allowTabAnomaly() {
@@ -102,9 +98,9 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Minimum score to to accept
+         *  Toggle numpad anomaly flagged profiles to evaluate to true
          *
-         * @return the amount.
+         * @return allow num pad anomaly.
          */
         @Attribute(order = 600)
         default boolean allowNumpadAnomaly() {
@@ -112,9 +108,9 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Minimum score to to accept
+         *  Toggle device changed flagged profiles to evaluate to true
          *
-         * @return the amount.
+         * @return device changed.
          */
         @Attribute(order = 700)
         default boolean allowDeviceChanged() {
@@ -136,61 +132,52 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
-        //TODO: when to through NodeProcessException?
-        //Get report from sharedState
-        //TODO Duplicate code with BehaioSecScoreEvaluator, refactor out
-        List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
-        if (shared == null) {
-            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
+        BehavioSecReport bhsReport = null;
+        try {
+            bhsReport = BehavioSecReport.getReportFromContext(context);
+            if (bhsReport.isIsbot()) {
+                logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
+                return goTo(config.allowBot()).build();
+            }
+            if (bhsReport.isRemoteAccess()) {
+                logger.error("Fail on bhsReport.isRemoteAccess() " + bhsReport.isRemoteAccess() + " " +
+                        config.allowRemoteAccess());
+                return goTo(config.allowRemoteAccess()).build();
+            }
+
+            if (bhsReport.isReplay()) {
+                logger.error("Fail on bhsReport.isReplay() " + bhsReport.isReplay() + " " + config.allowReplay());
+                return goTo(config.allowReplay()).build();
+            }
+
+            if (!bhsReport.isTrained()) {
+                logger.error("Fail on bhsReport.isTrained()  " + bhsReport.isTrained() + " " + config.allowInTraining());
+                return goTo(config.allowInTraining()).build();
+            }
+
+            if (bhsReport.isTabAnomaly()) {
+                logger.error(
+                        "Fail on bhsReport.isTabAnomaly() " + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
+                return goTo(config.allowTabAnomaly()).build();
+            }
+
+            if (bhsReport.isDeviceChanged()) {
+                logger.error("Fail on bhsReport.isDeviceChanged() " + bhsReport.isDeviceChanged() + " " +
+                        config.allowDeviceChanged());
+                return goTo(config.allowDeviceChanged()).build();
+            }
+            if (bhsReport.isNumpadAnomaly()) {
+                logger.error("Fail on bhsReport.isNumpadAnomaly() " + bhsReport.isNumpadAnomaly() + " " +
+                        config.allowNumpadAnomaly());
+                return goTo(config.allowNumpadAnomaly()).build();
+            }
+            // All good allow passing through
+            logger.error("All good, resuming to true outcome");
+            return goTo(true).build();
+        } catch (NoBehavioSecReportException e) {
+            logger.error(TAG + " " + e.getMessage());
             return goTo(false).build();
         }
-        if (shared.size() != 1) {
-            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) list is larger than one");
-            return goTo(false).build();
-        }
-        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
-
-        if (bhsReport.isIsbot()) {
-            logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
-            return goTo(config.allowBot()).build();
-        }
-        if (bhsReport.isRemoteAccess()) {
-            logger.error("Fail on bhsReport.isRemoteAccess() " + bhsReport.isRemoteAccess() + " " +
-                                 config.allowRemoteAccess());
-            return goTo(config.allowRemoteAccess()).build();
-        }
-
-        if (bhsReport.isReplay()) {
-            logger.error("Fail on bhsReport.isReplay() " + bhsReport.isReplay() + " " + config.allowReplay());
-            return goTo(config.allowReplay()).build();
-        }
-
-        if (!bhsReport.isTrained()) {
-            logger.error("Fail on bhsReport.isTrained()  " + bhsReport.isTrained() + " " + config.allowInTraining());
-            return goTo(config.allowInTraining()).build();
-        }
-
-        if (bhsReport.isTabAnomaly()) {
-            logger.error(
-                    "Fail on bhsReport.isTabAnomaly() " + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
-            return goTo(config.allowTabAnomaly()).build();
-        }
-
-        if (bhsReport.isDeviceChanged()) {
-            logger.error("Fail on bhsReport.isDeviceChanged() " + bhsReport.isDeviceChanged() + " " +
-                                 config.allowDeviceChanged());
-            return goTo(config.allowDeviceChanged()).build();
-        }
-        if (bhsReport.isNumpadAnomaly()) {
-            logger.error("Fail on bhsReport.isNumpadAnomaly() " + bhsReport.isNumpadAnomaly() + " " +
-                                 config.allowNumpadAnomaly());
-            return goTo(config.allowNumpadAnomaly()).build();
-        }
-        // All good allow passing through
-        logger.error("All good, resuming to true outcome");
-        return goTo(true).build();
-
-
     }
 
 

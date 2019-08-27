@@ -18,6 +18,7 @@
 package com.behaviosec.tree.nodes;
 
 
+import com.google.common.hash.Hashing;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +43,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -50,11 +52,8 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 import javax.inject.Inject;
 
-//TODO Add explanation of node
-
 /**
- * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
- * permitted to use zero-page login headers.
+ * A node that send request to BehavioSense endpoint. Node expect to find behavior data in shared context
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
         configClass = BehavioSecAuthNode.Config.class)
@@ -71,22 +70,20 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
      */
     public interface Config {
 
-        @SuppressWarnings("SameReturnValue")
+        /**
+         *
+         * @return
+         */
         @Attribute(order = 100)
         default String endpoint() {
-            return "http://IP:PORT/";
+            return "https://IP:PORT/";
         }
 
-        @SuppressWarnings("SameReturnValue")
         @Attribute(order = 200)
         default boolean denyOnFail() {
             return true;
         }
-
-
     }
-
-
     /**
      * Create the node using Guice injection. Just-in-time bindings can be used to obtain instances of other classes
      * from the plugin.
@@ -95,7 +92,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehavioSecAuthNode(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecAuthNode(@Assisted Config config) {
         this.config = config;
         this.behavioSecRESTClient = new BehavioSecRESTClient(this.config.endpoint());
     }
@@ -108,13 +105,12 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     private Action sendRequest(TreeContext context) throws NodeProcessException {
         try {
-            boolean connectionToServer = behavioSecRESTClient.getHealthCheck();
-            logger.error("Checking health " + connectionToServer);
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get(Constants.USERNAME).asString();
 
-            // TODO what is the best practice to post fix userid?
-            username += "_";
+            username += "_" + Hashing.sha256()
+                    .hashString(username, StandardCharsets.UTF_8)
+                    .toString();
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
             String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 

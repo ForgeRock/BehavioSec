@@ -24,20 +24,14 @@ public class Constants {
     public static String REPORT_FLAGS = "reportflags";
     public static String OPERATOR_FLAGS = "operatorflags";
     public static String SESSION_ID = "sessionId";
-    //TODO Not used
-    public static String RESET_REASON = "reason";
+
 
     //request action
     private static String API_BASE_URL               = "BehavioSenseAPI/";
-    //TODO Not used
-    public static String FINALIZE_SESSION   = API_BASE_URL + "FinalizeSession";
+
     public static String GET_HEALTH_STATUS  = API_BASE_URL+ "GetHealthCheck";
     public static String GET_REPORT         = API_BASE_URL + "GetReport";
     public static String GET_VERSION        = API_BASE_URL + "GetVersion";
-    //TODO Not used
-    public static String REMOVE_USER        = API_BASE_URL + "RemoveUser";
-    //TODO Not used
-    public static String RESET_PROFILE      = API_BASE_URL + "ResetProfile";
 
 
     // Node configuration
@@ -46,40 +40,6 @@ public class Constants {
     //Operator flags
     public final static int FINALIZE_DIRECTLY = 256;
     public final static int FLAG_GENERATE_TIMESTAMP = 2;
-
-    //log(1=error, 2=warning, 3=message)
-    //TODO Not used
-    public static int DEBUG_LEVEL = 3;
-
-    // Http Status Code
-    //TODO Not used
-    public static int OK = 200;
-    //TODO Not used
-    public static int BAD_REQUEST = 400;
-
-    // Error codes
-    //TODO Not used
-    public static int IP_MISSING_TIMING_CODE = 1001;
-    //TODO Not used
-    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
-
-    //TODO Not used
-    public static int IP_MISSING_USER_AGENT_CODE = 1002;
-    //TODO Not used
-    public static String IP_MISSING_USER_AGENT_MESSAGE = "Invalid parameter: missing useragent.";
     public static String USERNAME = "username";
-
-    // TODO: implement rest of the error messages
-//    public static int IP_MISSING_TIMING_CODE = 1001;
-//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
-//
-//    public static int IP_MISSING_TIMING_CODE = 1001;
-//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
-//
-//    public static int IP_MISSING_TIMING_CODE = 1001;
-//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
-//
-//    public static int IP_MISSING_TIMING_CODE = 1001;
-//    public static String IP_MISSING_TIMING_MESSAGE = "Invalid parameter: missing timing.";
 
 }

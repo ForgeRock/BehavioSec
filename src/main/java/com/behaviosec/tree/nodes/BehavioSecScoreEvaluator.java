@@ -17,6 +17,7 @@
 
 package com.behaviosec.tree.nodes;
 
+import com.behaviosec.tree.config.NoBehavioSecReportException;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
@@ -96,34 +97,30 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehavioSecScoreEvaluator(@Assisted BehavioSecScoreEvaluator.Config config) throws NodeProcessException {
+    public BehavioSecScoreEvaluator(@Assisted BehavioSecScoreEvaluator.Config config){
         this.config = config;
     }
 
     @Override
-    public Action process(TreeContext context) throws NodeProcessException {
-        //TODO: when to through NodeProcessException?
+    public Action process(TreeContext context) {
         //Get report from sharedState
-        List<Object> shared = context.sharedState.get(Constants.BEHAVIOSEC_REPORT).asList();
-        if (shared == null) {
-            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) is null");
-            return goTo(false).build();
-        }
-        if (shared.size() != 1) {
-            logger.error("context.sharedState.get(Constants.BEHAVIOSEC_REPORT) list is larger than one");
-            return goTo(false).build();
-        }
-        BehavioSecReport bhsReport = (BehavioSecReport) shared.get(0);
-        // check with the settings, all must evaluate to true
-        if (!bhsReport.isTrained()) {
-            return goTo(config.allowInTraining()).build();
-        }
+        BehavioSecReport bhsReport = null;
+        try {
+            bhsReport = BehavioSecReport.getReportFromContext(context);
+            // check with the settings, all must evaluate to true
+            if (!bhsReport.isTrained()) {
+                return goTo(config.allowInTraining()).build();
+            }
 
-        if (bhsReport.getScore() >= config.minScore() &&
-                bhsReport.getConfidence() >= config.minConfidence() &&
-                bhsReport.getRisk() <= config.maxRisk()) {
-            return goTo(true).build();
-        } else {
+            if (bhsReport.getScore() >= config.minScore() &&
+                    bhsReport.getConfidence() >= config.minConfidence() &&
+                    bhsReport.getRisk() <= config.maxRisk()) {
+                return goTo(true).build();
+            } else {
+                return goTo(false).build();
+            }
+        } catch (NoBehavioSecReportException e) {
+            logger.error(TAG + " " + e.getMessage());
             return goTo(false).build();
         }
 

@@ -24,7 +24,7 @@ import javax.security.auth.callback.Callback;
 
 
 @Test
-public class BehavioSecCollectorTest {
+public class BehaviosecCollectorTest {
 
 
     private TestConfig config = new TestConfig();

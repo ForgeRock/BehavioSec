@@ -26,8 +26,6 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
@@ -45,15 +43,12 @@ import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 
 /**
- * A node that checks to see if zero-page login headers have specified username and whether that username is in a group
- * permitted to use zero-page login headers.
+ * A that inject collector JavaScript code into login page and collect behaviometrics that are passed further in
+ * authentications tree within the context
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
         configClass = BehavioSecCollector.Config.class)
 public class BehavioSecCollector extends SingleOutcomeNode {
-    private static final String TAG = BehavioSecCollector.class.getName();
-    //TODO Not logging anything in this class, either remove or add log statments
-    private final Logger logger = LoggerFactory.getLogger(TAG);
     private final Config config;
 
     /**
@@ -61,7 +56,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
      */
     public interface Config {
         /**
-         * The amount to increment/decrement the auth level.
+         * The collector script file
          *
          * @return the amount.
          */
