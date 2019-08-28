@@ -18,6 +18,7 @@
 package com.behaviosec.tree.nodes;
 
 
+import com.google.common.hash.Hashing;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +43,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -106,9 +108,9 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get(Constants.USERNAME).asString();
 
-//            username += "_" + Hashing.sha256()
-//                    .hashString(username, StandardCharsets.UTF_8)
-//                    .toString();
+            username += "_" + Hashing.sha256()
+                    .hashString(username, StandardCharsets.UTF_8)
+                    .toString();
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
             String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 
@@ -157,7 +159,6 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
             } else if (responseCode == 403) {
                 logger.error(TAG + " response 400  " + getResponseString(reportResponse));
-
             } else if (responseCode == 500) {
                 logger.error(TAG + " response 500  " + getResponseString(reportResponse));
             } else {
