@@ -112,7 +112,8 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get(Constants.USERNAME).asString();
-
+            String ssoTokenId = context.sharedState.get("ssoTokenId").asString();
+            logger.error("ssoTokenId: " + ssoTokenId);
             if (this.config.hashUserName()) {
                 username = Hashing.sha256()
                         .hashString(
