@@ -80,6 +80,11 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
 
         @Attribute(order = 200)
+        default boolean hashUserName() {
+            return false;
+        }
+
+        @Attribute(order = 300)
         default boolean denyOnFail() {
             return true;
         }
@@ -108,9 +113,14 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get(Constants.USERNAME).asString();
 
-            username += "_" + Hashing.sha256()
-                    .hashString(username, StandardCharsets.UTF_8)
-                    .toString();
+            if (this.config.hashUserName()) {
+                username = Hashing.sha256()
+                        .hashString(
+                                username,
+                                StandardCharsets.UTF_8
+                        )
+                        .toString();
+            }
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
             String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
 

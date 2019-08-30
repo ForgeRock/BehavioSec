@@ -50,7 +50,7 @@ public class BehavioSecReport {
     public void setRemoteAccess(boolean remoteAccess) {
         isRemoteAccess = remoteAccess;
     }
-    public boolean isIsbot() {
+    public boolean isBot() {
         return isBot;
     }
 
@@ -226,7 +226,7 @@ public class BehavioSecReport {
                 "Confidence : " + getConfidence() + "\n"+
                 "Risk : " + getRisk() + "\n"+
                 "Trained : " + isTrained() + "\n"+
-                "Bot : " + isIsbot() + "\n"+
+                "Bot : " + isBot() + "\n"+
                 "";
     }
 

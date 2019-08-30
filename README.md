@@ -93,8 +93,12 @@ This is a data collector node that you need to place under the page node. In the
 ![ScreenShot](images/behaviosec_collector_node.png)
 
 ## BehavioSec AuthNode
-This node receives the collected data and communicates with the server. You have an option to fail authentication if connection to BehavioSense cannot be established.
-The option **Fail if no connection** allows node evaluation to true even if the connection to BehavioSense was not
+This node receives the collected data and communicates with the server. 
+
+### Options
+*Hash username* - if set to true, the username will be encrypted using `Hashing.sha256()`
+
+*Fail if no connection*  - option allows node evaluation to true even if the connection to BehavioSense was not
  established.
  
 ![ScreenShot](images/behaviosec-auth-node.png)

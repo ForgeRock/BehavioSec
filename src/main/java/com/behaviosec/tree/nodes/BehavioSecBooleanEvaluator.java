@@ -134,8 +134,8 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
     public Action process(TreeContext context) {
         try {
             BehavioSecReport bhsReport = BehavioSecReport.getReportFromContext(context);
-            if (bhsReport.isIsbot()) {
-                logger.error("Fail on bhsReport.isIsbot() " + bhsReport.isIsbot() + " " + config.allowBot());
+            if (bhsReport.isBot()) {
+                logger.error("Fail on bhsReport.isBot() " + bhsReport.isBot() + " " + config.allowBot());
                 return goTo(config.allowBot()).build();
             }
             if (bhsReport.isRemoteAccess()) {
