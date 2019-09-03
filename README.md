@@ -13,7 +13,7 @@
  *
  * Copyright 2019 ForgeRock AS.
 -->
-# BehavioSec - Continues Authentication
+# BehavioSec - Continuous Authentication
 
 The [BehavioSec platform][behaviosec_platform] provides a continuous and transparent sensory capability that helps verify that people online are who they say they are. It analyzes users’ keystrokes, cursor movements, screen pressure, and device handling to continuously authenticate users based on their innate behaviors in real time.
 The system is invisible to end users. End users interact with the app in their normal ways, and their normal usage patterns are gathered.
@@ -52,25 +52,23 @@ Please familiarize yourself with the [BehavioSec SDK][behaviosec_platform] and a
 # Installation
 
 Please contact your sales representative sales-xxx@forgerock.com.
-## Market space
 
-
-## Binary
 Download the latest release from xxxxx and copy file to the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed. Restart the web container to pick up the new node. The node will then appear in the authentication trees components palette.
 
 The code in this repository has binary dependencies that live in the ForgeRock maven repository. Maven can be configured to authenticate to this repository by following the following [ForgeRock Knowledge Base Article](https://backstage.forgerock.com/knowledge/kb/article/a74096897).
 
 
-#Configuration
+## Configuration
 The following sections provides information about configuring the BehavioSense tree. 
 
-The BehavioSec API backend returns a JSON response that has been integrated to handle the outcome in ForgeRock modules. To start behavior metrics authentication follow these steps:
+The BehavioSec API backend returns a JSON response that has been integrated to handle the outcome in ForgeRock Nodes. To
+ start behavior metrics authentication follow these steps:
 
 * Obtain the URL to the BehavioSense API endpoint, dashboard URL, and get access to developer portal documentation.
 * Create a user with an email address and real password (see Note 1).
 * Combine the components as show in the Authentication Tree.
 * Save.
-* Navigate to the login page with the tree URL + `1#login&service=BehavioSec`.
+* Navigate to the login page with the tree URL + `#login&service=BehavioSec`.
 * Login in as the user.
 * Verify with the BehavioSense Dashboard recorded session. 
 
@@ -96,7 +94,9 @@ This is a data collector node that you need to place under the page node. In the
 This node receives the collected data and communicates with the server. 
 
 ### Options
-*Hash username* - if set to true, the username will be encrypted using `Hashing.sha256()`
+*Hash username* - if set to true, the username will be hashed using `Hashing.sha256()`
+
+*Anonymize IP* - if set to true, set last octet of IP address to 000. 
 
 *Fail if no connection*  - option allows node evaluation to true even if the connection to BehavioSense was not
  established.
@@ -133,10 +133,12 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
 
 ### Boolean Flag configuration
 * **Bot Detection**	indicates that robotic behavior was detected, such as a typing rhythm that is too uniform or
- jittery mouse movements. This information is received from the isBot flag in the JSON. **Allow Bot** enabled evaluates to a true outcome even if a bot is detected. Default is **false**.
+ jittery mouse movements. This information is received from the isBot flag in the JSON. **Allow Auto-Login Bot** enabled
+  evaluates to a true outcome even if a bot is detected. Default is **false**.
 * **Replay Attack**	indicates that the exact same behavioral data has been received in the past. This information is
  received from the isReplay flag. **Allow Replay** enabled evaluates to a true outcome even if replay is detected. Default is **false**.
-* **Allow In Training**	
+* **Allow In Training**	indicates that the user Profile is still in the Training phase. If enabled, the Score and
+ Risk will be ignored and the node will evaluate to true. 
 * **Remote Access**	indicates that one or more remote access protocols were detected in the session. If remote access
  has been flagged, you can see a breakdown of software using the detected protocols by looking at the
   ratProtocol parameter. **Allow Remote Access** enabled evaluates to a true outcome even if a remote access protocol is

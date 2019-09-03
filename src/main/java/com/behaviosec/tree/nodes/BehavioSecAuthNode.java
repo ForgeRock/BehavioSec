@@ -60,7 +60,8 @@ import javax.inject.Inject;
 public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     private static final String TAG = BehavioSecAuthNode.class.getName();
-    private final Logger logger = LoggerFactory.getLogger(TAG);
+    private static final Logger logger = LoggerFactory.getLogger(TAG);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Config config;
     private final BehavioSecRESTClient behavioSecRESTClient;
@@ -85,6 +86,11 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
 
         @Attribute(order = 300)
+        default boolean anonymizeIP() {
+            return false;
+        }
+
+        @Attribute(order = 400)
         default boolean denyOnFail() {
             return true;
         }
@@ -112,8 +118,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             String username = context.sharedState.get(Constants.USERNAME).asString();
-            String ssoTokenId = context.sharedState.get("ssoTokenId").asString();
-            logger.error("ssoTokenId: " + ssoTokenId);
+            // add config option for the session name
             if (this.config.hashUserName()) {
                 username = Hashing.sha256()
                         .hashString(
@@ -141,11 +146,16 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             try {
                 userAgent = context.request.headers.get("user-agent").get(0);
             } catch (IndexOutOfBoundsException e) {
-                logger.error("sendRequest: Change in API for user-agent");
+                logger.error("sendRequest: Change of API for user-agent");
             }
 
             nameValuePairs.add(new BasicNameValuePair(Constants.USER_AGENT, userAgent));
-            nameValuePairs.add(new BasicNameValuePair(Constants.IP, context.request.clientIp));
+            String userip = context.request.clientIp;
+            if (this.config.anonymizeIP()){
+                userip = userip.substring(0, userip.lastIndexOf(".")) +".000";
+            }
+
+            nameValuePairs.add(new BasicNameValuePair(Constants.IP, userip));
             nameValuePairs.add(new BasicNameValuePair(Constants.TIMESTAMP,
                                                       Long.toString(Calendar.getInstance().getTimeInMillis())));
             nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
@@ -160,7 +170,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
             if (responseCode == 200) {
                 JsonValue newSharedState = context.sharedState.copy();
-                ObjectMapper objectMapper = new ObjectMapper();
+
                 BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()),
                                                                     BehavioSecReport.class);
 

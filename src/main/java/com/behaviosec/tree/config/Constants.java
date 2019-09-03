@@ -43,7 +43,7 @@ public class Constants {
     public final static String TRUE_OUTCOME_ID = "true";
     public final static String FALSE_OUTCOME_ID = "false";
     //Operator flags
-    public final static int FINALIZE_DIRECTLY = 256;
+    public final static int FINALIZE_DIRECTLY = 512;
     public final static int FLAG_GENERATE_TIMESTAMP = 2;
 
 }

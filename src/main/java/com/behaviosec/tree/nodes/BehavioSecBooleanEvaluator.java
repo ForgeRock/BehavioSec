@@ -134,44 +134,16 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
     public Action process(TreeContext context) {
         try {
             BehavioSecReport bhsReport = BehavioSecReport.getReportFromContext(context);
-            if (bhsReport.isBot()) {
-                logger.error("Fail on bhsReport.isBot() " + bhsReport.isBot() + " " + config.allowBot());
-                return goTo(config.allowBot()).build();
-            }
-            if (bhsReport.isRemoteAccess()) {
-                logger.error("Fail on bhsReport.isRemoteAccess() " + bhsReport.isRemoteAccess() + " " + config.allowRemoteAccess());
-                return goTo(config.allowRemoteAccess()).build();
-            }
 
-            if (bhsReport.isReplay()) {
-                logger.error("Fail on bhsReport.isReplay() " + bhsReport.isReplay() + " " + config.allowReplay());
-                return goTo(config.allowReplay()).build();
-            }
+            boolean disallow =  bhsReport.isBot() && !config.allowBot() ||
+                                bhsReport.isRemoteAccess()  && !config.allowRemoteAccess() ||
+                                bhsReport.isReplay()  && !config.allowReplay() ||
+                                bhsReport.isTrained()  && !config.allowInTraining() ||
+                                bhsReport.isTabAnomaly()  && !config.allowTabAnomaly() ||
+                                bhsReport.isDeviceChanged()  && !config.allowDeviceChanged() ||
+                                bhsReport.isNumpadAnomaly()  && !config.allowNumpadAnomaly();
 
-            if (!bhsReport.isTrained()) {
-                logger.error("Fail on bhsReport.isTrained()  " + bhsReport.isTrained() + " " + config.allowInTraining());
-                return goTo(config.allowInTraining()).build();
-            }
-
-            if (bhsReport.isTabAnomaly()) {
-                logger.error(
-                        "Fail on bhsReport.isTabAnomaly() " + bhsReport.isTabAnomaly() + " " + config.allowTabAnomaly());
-                return goTo(config.allowTabAnomaly()).build();
-            }
-
-            if (bhsReport.isDeviceChanged()) {
-                logger.error("Fail on bhsReport.isDeviceChanged() " + bhsReport.isDeviceChanged() + " " +
-                        config.allowDeviceChanged());
-                return goTo(config.allowDeviceChanged()).build();
-            }
-            if (bhsReport.isNumpadAnomaly()) {
-                logger.error("Fail on bhsReport.isNumpadAnomaly() " + bhsReport.isNumpadAnomaly() + " " +
-                        config.allowNumpadAnomaly());
-                return goTo(config.allowNumpadAnomaly()).build();
-            }
-            // All good allow passing through
-            logger.error("All good, resuming to true outcome");
-            return goTo(true).build();
+            return goTo(!disallow).build();
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
             return goTo(false).build();

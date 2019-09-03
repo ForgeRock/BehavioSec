@@ -29,23 +29,23 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
 
     public BehavioSecRESTClient(String endPoint) {
         this.endPoint =endPoint;
-        LOGGER.error(TAG + " BehavioSecRESTClient: " + this.endPoint);
+        LOGGER.info(TAG + " BehavioSecRESTClient: " + this.endPoint);
         httpClient = HttpClientBuilder.create().build();
     }
 
     private HttpPost makePost(String path) {
         String uri = endPoint + path;
-        LOGGER.error(TAG + " makePost " + uri);
+        LOGGER.info(TAG + " makePost " + uri);
         HttpPost postRequest = new HttpPost(uri);
         postRequest.setHeader("Accept", Constants.ACCEPT_HEADER);
         postRequest.setHeader("Content-type", Constants.SEND_HEADER);
-        LOGGER.error(TAG + " makePost postRequest " + postRequest.toString());
+        LOGGER.info(TAG + " makePost postRequest " + postRequest.toString());
         return postRequest;
     }
 
     private HttpResponse getResponse(org.apache.http.client.methods.HttpRequestBase request) throws IOException {
         HttpResponse response =  this.httpClient.execute(request);
-        LOGGER.error(TAG + " getResponse RESPONSE CODE: " + response.getStatusLine().getStatusCode());
+        LOGGER.info(TAG + " getResponse RESPONSE CODE: " + response.getStatusLine().getStatusCode());
         return response;
     }
 
@@ -57,8 +57,6 @@ public class BehavioSecRESTClient implements BehavioSecAPIInterface {
      * @throws IOException
      */
     public HttpResponse getReport(List<NameValuePair> report) throws IOException {
-        //TODO :  return entity from get request
-        LOGGER.error(TAG + " getReport ");
         HttpPost post = makePost(Constants.GET_REPORT);
         post.setEntity(new UrlEncodedFormEntity(report));
         return this.getResponse(post);
