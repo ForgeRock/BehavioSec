@@ -53,7 +53,8 @@ Please familiarize yourself with the [BehavioSec SDK][behaviosec_platform] and a
 
 Please contact your sales representative sales-xxx@forgerock.com.
 
-Download the latest release from [https://github.com/ForgeRock/BehavioSec/releases/latest][https://github.com/ForgeRock/BehavioSec/releases/latest] and copy file to the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed. Restart the
+Download the latest release from <https://github.com/ForgeRock/BehavioSec/releases/latest> and copy file to the
+ `../web-container/webapps/openam/WEB-INF/lib` directory where AM is deployed. Restart the
  web container to pick up the new node. The node will then appear in the authentication trees components palette.
 
 The code in this repository has binary dependencies that live in the ForgeRock maven repository. Maven can be configured to authenticate to this repository by following the following [ForgeRock Knowledge Base Article](https://backstage.forgerock.com/knowledge/kb/article/a74096897).
