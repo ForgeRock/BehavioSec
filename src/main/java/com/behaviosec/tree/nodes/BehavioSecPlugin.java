@@ -58,7 +58,7 @@ import static java.util.Arrays.asList;
  */
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
 
-    static public String currentVersion = "1.0.0";
+    static public String currentVersion = "1.0.1";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and

@@ -97,9 +97,26 @@ public class BehaviosSecScoreEvaluatorTest {
     }
 
     @Test
-    public void nodeProcessNotAllowInTrainingOutcomeFalse() throws NodeProcessException {
+    public void nodeProcessNotAllowInTrainingOutcomeTrue() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
-        config.setAllowInTraining(false);
+        config.setAllowInTraining(true);
+        BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
+        BehavioSecReport bre = getReport();
+        Objects.requireNonNull(bre).setScore(0.5);
+        bre.setConfidence(0.9);
+        bre.setRisk(0);
+        bre.setIsTrained(false);
+        context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
+        //WHEN
+        Action action = node.process(context);
+        // THEN
+        assertThat(action.outcome).isEqualTo("true");
+    }
+
+    @Test
+    public void nodeProcessNotAllowInTrainingHighScoreOutcomeTrue() throws NodeProcessException {
+        TreeContext context = getTreeContext(new HashMap<>());
+        config.setAllowInTraining(true);
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         BehavioSecReport bre = getReport();
         Objects.requireNonNull(bre).setScore(0.9);
@@ -110,8 +127,7 @@ public class BehaviosSecScoreEvaluatorTest {
         //WHEN
         Action action = node.process(context);
         // THEN
-        assertThat(action.outcome).isEqualTo("false");
-
+        assertThat(action.outcome).isEqualTo("true");
     }
 
     private BehavioSecReport getReport() {

@@ -108,8 +108,8 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         try {
             bhsReport = BehavioSecReport.getReportFromContext(context);
             // check with the settings, all must evaluate to true
-            if (!bhsReport.isTrained()  && !config.allowInTraining() ) {
-                return goTo(config.allowInTraining()).build();
+            if (!bhsReport.isTrained()  && config.allowInTraining()) {
+                return goTo(true).build();
             }
 
             if (bhsReport.getScore() >= config.minScore() &&
