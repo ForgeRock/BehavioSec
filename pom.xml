@@ -23,7 +23,7 @@
     <artifactId>behaviosecNode</artifactId>
 
     <groupId>com.behaviosec</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>Template for an Auth Tree Node maven project</name>
     <description>An Authentication Tree Node for ForgeRock's Identity Platform</description>
 
