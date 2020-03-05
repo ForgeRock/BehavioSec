@@ -18,6 +18,11 @@
 package com.behaviosec.tree.nodes;
 
 
+import com.behaviosec.isdk.client.APICall;
+import com.behaviosec.isdk.client.Client;
+import com.behaviosec.isdk.client.ClientConfiguration;
+import com.behaviosec.isdk.config.BehavioSecException;
+import com.behaviosec.isdk.entities.Response;
 import com.google.common.hash.Hashing;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,17 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecRESTClient;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -61,10 +61,8 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     private static final String TAG = BehavioSecAuthNode.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Config config;
-    private final BehavioSecRESTClient behavioSecRESTClient;
 
     /**
      * Configuration for the node.
@@ -80,6 +78,11 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             return "https://IP:PORT/";
         }
 
+        @Attribute(order = 150)
+        default String tenantID() {
+            return "default_tenant";
+        }
+
         @Attribute(order = 200)
         default boolean hashUserName() {
             return false;
@@ -92,7 +95,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
         @Attribute(order = 400)
         default boolean denyOnFail() {
-            return true;
+            return false;
         }
     }
     /**
@@ -105,7 +108,6 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
     @Inject
     public BehavioSecAuthNode(@Assisted Config config) {
         this.config = config;
-        this.behavioSecRESTClient = new BehavioSecRESTClient(this.config.endpoint());
     }
 
     @Override
@@ -115,88 +117,74 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
     }
 
     private Action sendRequest(TreeContext context) throws NodeProcessException {
+        List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+        String username = context.sharedState.get(Constants.USERNAME).asString();
+        // add config option for the session name
+        if (this.config.hashUserName()) {
+            username = Hashing.sha256()
+                    .hashString(
+                            username,
+                            StandardCharsets.UTF_8
+                    )
+                    .toString();
+        }
+        String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
+        if (timingData != null) {
+            nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
+                    timingData));
+        } else {
+            logger.error("Timing data is null");
+            // We check for flag, and we either return deny or success
+            if (config.denyOnFail()) {
+                return goTo(false).build();
+            } else {
+                return goTo(true).build();
+            }
+        }
+        String userAgent = "";
         try {
-            List<NameValuePair> nameValuePairs = new ArrayList<>(2);
-            String username = context.sharedState.get(Constants.USERNAME).asString();
-            // add config option for the session name
-            if (this.config.hashUserName()) {
-                username = Hashing.sha256()
-                        .hashString(
-                                username,
-                                StandardCharsets.UTF_8
-                        )
-                        .toString();
-            }
-            nameValuePairs.add(new BasicNameValuePair(Constants.USER_ID, username));
-            String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
+            userAgent = context.request.headers.get("user-agent").get(0);
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("sendRequest: Change of API for user-agent");
+        }
 
-            if (timingData != null) {
-                nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
-                                                          timingData));
-            } else {
-                logger.error("Timing data is null");
-                // We check for flag, and we either return deny or success
-                if (config.denyOnFail()) {
-                    return goTo(false).build();
-                } else {
-                    return goTo(true).build();
-                }
-            }
-            String userAgent = "";
-            try {
-                userAgent = context.request.headers.get("user-agent").get(0);
-            } catch (IndexOutOfBoundsException e) {
-                logger.error("sendRequest: Change of API for user-agent");
-            }
+        String userip = context.request.clientIp;
+        if (this.config.anonymizeIP()){
+            userip = userip.substring(0, userip.lastIndexOf(".")) +".000";
+        }
 
-            nameValuePairs.add(new BasicNameValuePair(Constants.USER_AGENT, userAgent));
-            String userip = context.request.clientIp;
-            if (this.config.anonymizeIP()){
-                userip = userip.substring(0, userip.lastIndexOf(".")) +".000";
-            }
+        ClientConfiguration clientConfig = new ClientConfiguration(this.config.endpoint());
 
-            nameValuePairs.add(new BasicNameValuePair(Constants.IP, userip));
-            nameValuePairs.add(new BasicNameValuePair(Constants.TIMESTAMP,
-                                                      Long.toString(Calendar.getInstance().getTimeInMillis())));
-            nameValuePairs.add(new BasicNameValuePair(Constants.SESSION_ID, UUID.randomUUID().toString()));
-            nameValuePairs.add(
-                    new BasicNameValuePair(Constants.NOTES, "FR-V" + BehavioSecPlugin.currentVersion));
-            nameValuePairs.add(new BasicNameValuePair(Constants.REPORT_FLAGS, Integer.toString(0)));
-            int operatorFlags = Constants.FLAG_GENERATE_TIMESTAMP + Constants.FINALIZE_DIRECTLY;
-            nameValuePairs.add(new BasicNameValuePair(Constants.OPERATOR_FLAGS, Integer.toString(operatorFlags)));
+        Client client = new Client(clientConfig);
 
-            HttpResponse reportResponse = behavioSecRESTClient.getReport(nameValuePairs);
-            int responseCode = reportResponse.getStatusLine().getStatusCode();
+        APICall callReport = APICall.reportBuilder()
+                .tenantId(this.config.tenantID())
+                .username(username)
+                .userIP(userip)
+                .userAgent(userAgent)
+                .timingData(timingData)
+                .timestamp()
+                .sessionId(UUID.randomUUID().toString())
+                .operatorFlags(com.behaviosec.isdk.config.Constants.FLAG_FINALIZE_SESSION)
+                .notes("FR-V" + BehavioSecPlugin.currentVersion)
+                .build();
 
-            if (responseCode == 200) {
-                JsonValue newSharedState = context.sharedState.copy();
-
-                BehavioSecReport bhsReport = objectMapper.readValue(EntityUtils.toString(reportResponse.getEntity()),
-                                                                    BehavioSecReport.class);
-
-                newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bhsReport));
-                return goTo(true).replaceSharedState(newSharedState).build();
-            } else if (responseCode == 400) {
-                logger.error(TAG + " response 400  " + getResponseString(reportResponse));
-            } else if (responseCode == 403) {
-                logger.error(TAG + " response 400  " + getResponseString(reportResponse));
-            } else if (responseCode == 500) {
-                logger.error(TAG + " response 500  " + getResponseString(reportResponse));
-            } else {
-                logger.error(TAG + " response " + responseCode);
-            }
-
-        } catch (MalformedURLException e) {
-            logger.error("MalformedURLException: " + e.toString());
-            throw new NodeProcessException("MalformedURLException for " + config.endpoint());
-        } catch (IOException e) {
-            logger.error("IOException: " + e.toString());
-            throw new NodeProcessException("IOException for " + e.toString());
+        Response respose = null;
+        try {
+            respose = client.makeCall(callReport);
+        } catch (BehavioSecException e) {
+            e.printStackTrace();
+        }
+        JsonValue newSharedState = context.sharedState.copy();
+        if( respose.hasReport()){
+            newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(respose.getReport()));
+            return goTo(true).replaceSharedState(newSharedState).build();
         }
 
         return goTo(false).build();
 
     }
+
 
     private String getResponseString(HttpResponse resp) throws IOException {
         return EntityUtils.toString(resp.getEntity(), "UTF-8");

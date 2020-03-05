@@ -153,9 +153,19 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
  type is detected (e.g., Desktop, Android, or iOS device), this flag is set to true. This information is received
   from the deviceChanged flag in the JSON.  **Allow Device Change** enabled evaluates to a true outcome even if a device
    change is detected. Default is **true**.
-
-
+* **IP Changed** indicates if the IP has changed since previous sessions and will also provide a severity value depending on usage frequency. This information is received
+  from the ipChanged flag in the JSON.  **Allow IP Change** enabled evaluates to a true outcome even if a device
+   change is detected. Default is **true**.
+* **Copy-Paste** indicates that the user copied or pasted into username or password field during the active session. This information is received
+  from the diDesc flag in the JSON.  **Allow Copy-Paste Change** enabled evaluates to a true outcome even if a device
+   change is detected. Default is **true**.
+   
 For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
+
+# Whats new in version 2
+Version 2 brings multiple improvements based on customer feedback. We add support for BehavioSense 5.2 and a multitenant environment. 
+
+Additionally, configuration for new Risk flags: "Copy-Paste" and "IP Change". See the extended information above.
 
 ![ScreenShot](images/behaviosec-boolean-evaluator.png)
 

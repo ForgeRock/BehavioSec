@@ -3,6 +3,7 @@ package com.behaviosec.tree.nodes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import com.behaviosec.isdk.entities.Report;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext;
@@ -12,7 +13,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
@@ -51,7 +51,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsbot(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -67,7 +67,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowBot();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsbot(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -87,7 +87,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setReplay(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -103,7 +103,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowReplay(true);
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setReplay(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -124,7 +124,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowRemoteAccess(false);
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setRemoteAccess(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -139,7 +139,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setRemoteAccess(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -161,7 +161,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowTabAnomaly(false);
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsTabAnomaly(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -176,7 +176,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsTabAnomaly(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -197,7 +197,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowNumpadAnomaly(false);
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsNumpadAnomaly(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -212,7 +212,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setIsNumpadAnomaly(true);
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
         //WHEN
@@ -232,7 +232,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TestConfig config = new TestConfig();
         config.setAllowDeviceChanged(false);
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setDeviceChanged(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -247,7 +247,7 @@ public class BehaviosSecBooleanEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         TestConfig config = new TestConfig();
         BehavioSecBooleanEvaluator node = new BehavioSecBooleanEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         bre.setDeviceChanged(true);
 
         context.sharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(bre));
@@ -273,13 +273,12 @@ public class BehaviosSecBooleanEvaluatorTest {
         assertThat(action.outcome).isEqualTo("false");
     }
 
-    private BehavioSecReport getReport() {
+    private Report getReport() {
         ObjectMapper mapper = new ObjectMapper();
-        BehavioSecReport bre = null;
+        Report bre = null;
         try {
             bre = mapper.readValue(new File("src/test/java/com/behaviosec/tree/nodes/sample_return" +
-                                                    ".json"),
-                                   BehavioSecReport.class);
+                                                    ".json"), Report.class);
             bre.setScore(0.9);
             bre.setConfidence(0.9);
             bre.setRisk(0.2);

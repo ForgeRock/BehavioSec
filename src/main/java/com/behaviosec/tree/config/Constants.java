@@ -5,9 +5,9 @@ package com.behaviosec.tree.config;
  */
 public class Constants {
     //Default score settings
-    public static final int MIN_SCORE = 60;
-    public static final int MIN_CONFIDENCE = 40;
-    public static final int MAX_RISK = 60;
+    public static final int MIN_SCORE = 70;
+    public static final int MIN_CONFIDENCE = 60;
+    public static final int MAX_RISK = 100;
     //report naming
     public static final String BEHAVIOSEC_REPORT = "bhs_report";
     //username from from openam

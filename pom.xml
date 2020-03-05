@@ -23,7 +23,7 @@
     <artifactId>behaviosecNode</artifactId>
 
     <groupId>com.behaviosec</groupId>
-    <version>1.0.1</version>
+    <version>0</version>
     <name>Template for an Auth Tree Node maven project</name>
     <description>An Authentication Tree Node for ForgeRock's Identity Platform</description>
 
@@ -89,6 +89,13 @@
             <artifactId>assertj-core</artifactId>
             <version>3.11.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.behaviosec</groupId>
+            <artifactId>behaviosec-iSDK-2.0-SNAPSHOT</artifactId>
+            <version>2.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/behaviosec-iSDK-2.0-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
 

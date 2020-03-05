@@ -3,6 +3,7 @@ package com.behaviosec.tree.nodes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import com.behaviosec.isdk.entities.Report;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext;
@@ -12,7 +13,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -38,7 +38,7 @@ public class BehaviosSecScoreEvaluatorTest {
     public void nodeProcessHighScoreTrueOutcome() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0.2);
@@ -66,7 +66,7 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
         System.out.println("Config" + config.allowInTraining());
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         Objects.requireNonNull(bre).setScore(0.1);
         bre.setConfidence(0.1);
         bre.setRisk(0);
@@ -84,7 +84,7 @@ public class BehaviosSecScoreEvaluatorTest {
     public void nodeProcessHighRiskOutcomeFalse() throws NodeProcessException {
         TreeContext context = getTreeContext(new HashMap<>());
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         Objects.requireNonNull(bre).setScore(0.1);
         bre.setConfidence(0.1);
         bre.setRisk(0.6);
@@ -101,7 +101,7 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         config.setAllowInTraining(true);
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         Objects.requireNonNull(bre).setScore(0.5);
         bre.setConfidence(0.9);
         bre.setRisk(0);
@@ -118,7 +118,7 @@ public class BehaviosSecScoreEvaluatorTest {
         TreeContext context = getTreeContext(new HashMap<>());
         config.setAllowInTraining(true);
         BehavioSecScoreEvaluator node = new BehavioSecScoreEvaluator(config);
-        BehavioSecReport bre = getReport();
+        Report bre = getReport();
         Objects.requireNonNull(bre).setScore(0.9);
         bre.setConfidence(0.9);
         bre.setRisk(0);
@@ -130,11 +130,11 @@ public class BehaviosSecScoreEvaluatorTest {
         assertThat(action.outcome).isEqualTo("true");
     }
 
-    private BehavioSecReport getReport() {
+    private Report getReport() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(new File("src/test/java/com/behaviosec/tree/nodes/sample_return.json"),
-                                    BehavioSecReport.class);
+                                    Report.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
