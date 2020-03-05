@@ -76,7 +76,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 300)
         default boolean allowInTraining() {
-            return true;
+            return false;
         }
 
         /**
@@ -86,7 +86,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 400)
         default boolean allowRemoteAccess() {
-            return true;
+            return false;
         }
 
         /**

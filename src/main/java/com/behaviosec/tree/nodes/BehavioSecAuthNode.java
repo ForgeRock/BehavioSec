@@ -75,7 +75,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
          */
         @Attribute(order = 100)
         default String endpoint() {
-            return "https://IP:PORT/";
+            return "https://URL:OPTIONAL_PORT/";
         }
 
         @Attribute(order = 150)
