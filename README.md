@@ -95,6 +95,10 @@ This is a data collector node that you need to place under the page node. In the
 This node receives the collected data and communicates with the server. 
 
 ### Options
+*BehavioSec Endpoint* - if set to true, the username will be hashed using `Hashing.sha256()`
+
+*Tenant ID* - if set to true, the username will be hashed using `Hashing.sha256()`
+
 *Hash username* - if set to true, the username will be hashed using `Hashing.sha256()`
 
 *Anonymize IP* - if set to true, set last octet of IP address to 000. 
@@ -162,13 +166,16 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
    
 For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
 
+![ScreenShot](images/behaviosec-boolean-evaluator.png)
+
 # Whats new in version 2
 Version 2 brings multiple improvements based on customer feedback. We add support for BehavioSense 5.2 and a multitenant environment. 
 
 Additionally, configuration for new Risk flags: "Copy-Paste" and "IP Change". See the extended information above.
 
-![ScreenShot](images/behaviosec-boolean-evaluator.png)
 
+
+# External Dependencies
 
 # Disclaimer
         
