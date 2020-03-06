@@ -174,8 +174,17 @@ Version 2 brings multiple improvements based on customer feedback. We add suppor
 Additionally, configuration for new Risk flags: "Copy-Paste" and "IP Change". See the extended information above.
 
 
-
 # External Dependencies
+commons-logging-1.2.jar         
+jackson-annotations-2.10.2.jar   
+slf4j-api-1.7.13.jar
+behaviosec-iSDK-2.0-SNAPSHOT.jar 
+httpclient-4.5.11.jar            
+jackson-core-2.10.2.jar          
+slf4j-simple-1.7.13.jar                  
+httpcore-4.4.13.jar              
+jackson-databind-2.10.2.jar
+
 
 # Disclaimer
         
