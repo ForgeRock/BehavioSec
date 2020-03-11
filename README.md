@@ -55,9 +55,22 @@ Download the latest release from <https://github.com/ForgeRock/BehavioSec/releas
  `../web-container/webapps/openam/WEB-INF/lib` directory where AM is deployed. Restart the
  web container to pick up the new node. The node will then appear in the authentication trees components palette.
 
-The code in this repository has binary dependencies that live in the ForgeRock maven repository. Maven can be configured to authenticate to this repository by following the following [ForgeRock Knowledge Base Article](https://backstage.forgerock.com/knowledge/kb/article/a74096897).
+The code in this repository has binary dependency on `behaviosec-iSDK-2.0-SNAPSHOT.jar`, contact forgerock@behaviosec
+.com for access to the SDK. 
 
-Make sure to contact Sales Representative for licensing. 
+**Make sure to contact Sales Representative for licensing and tenant set up at forgerock@behaviosec.com.** 
+
+## External Dependencies
+behaviosec-iSDK-2.0-SNAPSHOT.jar
+commons-logging-1.2.jar         
+jackson-annotations-2.10.2.jar   
+slf4j-api-1.7.13.jar
+behaviosec-iSDK-2.0-SNAPSHOT.jar 
+httpclient-4.5.11.jar            
+jackson-core-2.10.2.jar          
+slf4j-simple-1.7.13.jar                  
+httpcore-4.4.13.jar              
+jackson-databind-2.10.2.jar
 
 ## Configuration
 The following sections provides information about configuring the BehavioSense tree. 
@@ -174,16 +187,7 @@ Version 2 brings multiple improvements based on customer feedback. We add suppor
 Additionally, configuration for new Risk flags: "Copy-Paste" and "IP Change". See the extended information above.
 
 
-# External Dependencies
-commons-logging-1.2.jar         
-jackson-annotations-2.10.2.jar   
-slf4j-api-1.7.13.jar
-behaviosec-iSDK-2.0-SNAPSHOT.jar 
-httpclient-4.5.11.jar            
-jackson-core-2.10.2.jar          
-slf4j-simple-1.7.13.jar                  
-httpcore-4.4.13.jar              
-jackson-databind-2.10.2.jar
+
 
 
 # Disclaimer
