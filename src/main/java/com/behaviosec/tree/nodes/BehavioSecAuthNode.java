@@ -157,7 +157,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
         Client client = new Client(clientConfig);
 
-        APICall callReport = APICall.reportBuilder()
+        APICall callReport = APICall.report()
                 .tenantId(this.config.tenantID())
                 .username(username)
                 .userIP(userip)
