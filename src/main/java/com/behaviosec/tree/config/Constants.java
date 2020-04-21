@@ -10,6 +10,7 @@ public class Constants {
     public static final int MAX_RISK = 100;
     //report naming
     public static final String BEHAVIOSEC_REPORT = "bhs_report";
+    public static final String BEHAVIOSEC_SID = "bhs_sid";
     //username from from openam
     public static String USERNAME = "username";
     // request header

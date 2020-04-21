@@ -19,6 +19,7 @@ package com.behaviosec.tree.nodes;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 
+import com.sun.identity.shared.debug.Debug;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.Action;
@@ -51,8 +52,8 @@ import javax.security.auth.callback.Callback;
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
         configClass = BehavioSecCollector.Config.class)
 public class BehavioSecCollector extends SingleOutcomeNode {
-    private static final String TAG = BehavioSecAuthNode.class.getName();
-    private static final Logger logger = LoggerFactory.getLogger(TAG);
+    private final static String DEBUG_NAME = "BehavioSecCollector";
+    private final static Debug debug = Debug.getInstance(DEBUG_NAME);
     private final Config config;
 
     /**
@@ -100,9 +101,6 @@ public class BehavioSecCollector extends SingleOutcomeNode {
                         "    var js, fjs = d.getElementsByTagName(s)[0];\n" +
                         "    if (d.getElementById(id)){ return; }\n" +
                         "    js = d.createElement(s); js.id = id;\n" +
-//                        "    js.onload = function(){\n" +
-//                        "        // remote script has loaded\n" +
-//                        "    };\n" +
                         "    js.src = \"%s\";\n" +
                         "    fjs.parentNode.insertBefore(js, fjs);\n" +
                         "}(document, 'script', 'collector-jssdk'));",
@@ -116,12 +114,14 @@ public class BehavioSecCollector extends SingleOutcomeNode {
         // Check if we have remote script
         if(!config.remoteJSSDK().equals("")) {
             myScript = injectRemoteScript(config.remoteJSSDK());
+            debug.message("using remote collector from " + config.remoteJSSDK());
         } else {
             // Fallback to local collector
             myScript = getScriptAsString(
                     config.fileName(),
                     Constants.DATA_FIELD
             );
+            debug.message("Using local collector");
         }
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
                 filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
@@ -129,10 +129,10 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
                 resultValue = "Not set";
-                logger.error("Result is not set");
+                debug.error("Result is not set");
             }
             JsonValue newSharedState = context.sharedState.copy();
-            logger.info("received results from page");
+            debug.message("received results from page");
             newSharedState.put(Constants.DATA_FIELD, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {

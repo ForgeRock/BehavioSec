@@ -22,6 +22,7 @@ import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.BooleanEvaluator;
 import com.behaviosec.isdk.evaluators.ScoreEvaluator;
 import com.behaviosec.tree.utils.Helper;
+import com.sun.identity.shared.debug.Debug;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
@@ -44,8 +45,8 @@ import javax.inject.Inject;
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
         configClass = BehavioSecBooleanEvaluator.Config.class)
 public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
-    private static final String TAG = BehavioSecBooleanEvaluator.class.getName();
-    private final Logger logger = LoggerFactory.getLogger(TAG);
+    private final static String DEBUG_NAME = "BehavioSecCollector";
+    private final static Debug debug = Debug.getInstance(DEBUG_NAME);
     private final Config config;
 
     /**
@@ -171,7 +172,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             return goTo(booleanEvaluatorEvaluator.evaluate(bhsReport)).build();
 
         } catch (NoBehavioSecReportException e) {
-            logger.error(TAG + " " + e.getMessage());
+            debug.error("Missing report" + e.getMessage());
 
         }
         return goTo(false).build();

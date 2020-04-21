@@ -22,6 +22,7 @@ import com.behaviosec.isdk.client.*;
 import com.behaviosec.isdk.config.BehavioSecException;
 import com.behaviosec.isdk.entities.Response;
 import com.google.common.hash.Hashing;
+import com.sun.identity.shared.debug.Debug;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
@@ -32,9 +33,6 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.behaviosec.tree.config.Constants;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -54,8 +52,8 @@ import javax.inject.Inject;
         configClass = BehavioSecAuthNode.Config.class)
 public class BehavioSecAuthNode extends AbstractDecisionNode {
 
-    private static final String TAG = BehavioSecAuthNode.class.getName();
-    private static final Logger logger = LoggerFactory.getLogger(TAG);
+    private final static String DEBUG_NAME = "BehavioSecPolicyEvaluator";
+    private final static Debug debug = Debug.getInstance(DEBUG_NAME);
 
     private final Config config;
 
@@ -80,7 +78,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
         @Attribute(order = 185)
         default String operatorFlag() {
-            return "512";
+            return "256";
         }
 
         @Attribute(order = 200)
@@ -113,12 +111,8 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-
-        return sendRequest(context);
-    }
-
-    private Action sendRequest(TreeContext context) throws NodeProcessException {
         String username = context.sharedState.get(Constants.USERNAME).asString();
+
         // add config option for the session name
         if (this.config.hashUserName()) {
             username = Hashing.sha256()
@@ -130,7 +124,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
         String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
         if (timingData == null) {
-            logger.error("Timing data is null in %s", Constants.DATA_FIELD);
+            debug.error("Timing data is null in %s", Constants.DATA_FIELD);
             // We check for flag, and we either return deny or success
             if (config.denyOnFail()) {
                 return goTo(false).build();
@@ -138,17 +132,28 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 return goTo(true).build();
             }
         }
-        logger.info("Got timing data");
+        debug.error("Got timing data");
+        debug.error(timingData);
         String userAgent = "";
         try {
             userAgent = context.request.headers.get("user-agent").get(0);
         } catch (IndexOutOfBoundsException e) {
-            logger.error("sendRequest: Change of API for user-agent");
+            debug.error("sendRequest: Change of API for user-agent");
+            throw new NodeProcessException("Could not get user-agent");
         }
 
         String userip = context.request.clientIp;
         if (this.config.anonymizeIP()){
             userip = userip.substring(0, userip.lastIndexOf(".")) +".000";
+        }
+
+        // Going to add UUID there and report
+        JsonValue newSharedState = context.sharedState.copy();
+
+        String sessionID = context.sharedState.get(Constants.BEHAVIOSEC_SID).asString();
+        if(sessionID == null) {
+            sessionID = UUID.randomUUID().toString();
+            newSharedState.put(Constants.BEHAVIOSEC_SID, sessionID);
         }
 
         ClientConfiguration clientConfig = new ClientConfiguration(this.config.endpoint());
@@ -162,7 +167,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 .userAgent(userAgent)
                 .timingData(timingData)
                 .timestamp()
-                .sessionId(UUID.randomUUID().toString())
+                .sessionId(sessionID)
                 .operatorFlags(com.behaviosec.isdk.config.Constants.FLAG_FINALIZE_SESSION)
                 .notes("FR-V" + BehavioSecPlugin.currentVersion)
                 .build();
@@ -173,12 +178,13 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         } catch (BehavioSecException e) {
             e.printStackTrace();
         }
-        JsonValue newSharedState = context.sharedState.copy();
+
         if( respose.hasReport()){
             newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(respose.getReport()));
             return goTo(true).replaceSharedState(newSharedState).build();
         }
 
+//        return goToNext().replaceSharedState(newSharedState).build();
         return goTo(false).build();
 
     }
