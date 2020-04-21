@@ -23,7 +23,7 @@ import java.util.Map;
 
 
 @Test
-public class BehaviosSecBooleanEvaluatorTest {
+public class BehavioSecBooleanEvaluatorTest {
 
 
     @BeforeMethod

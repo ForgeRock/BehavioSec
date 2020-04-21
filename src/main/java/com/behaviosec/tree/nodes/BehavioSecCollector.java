@@ -33,6 +33,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,6 +51,8 @@ import javax.security.auth.callback.Callback;
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
         configClass = BehavioSecCollector.Config.class)
 public class BehavioSecCollector extends SingleOutcomeNode {
+    private static final String TAG = BehavioSecAuthNode.class.getName();
+    private static final Logger logger = LoggerFactory.getLogger(TAG);
     private final Config config;
 
     /**
@@ -60,9 +64,14 @@ public class BehavioSecCollector extends SingleOutcomeNode {
          *
          * @return the amount.
          */
-        @Attribute(order = 10)
+        @Attribute(order = 100)
         default String fileName() {
             return Constants.COLLECTOR_SCRIPT;
+        }
+
+        @Attribute(order = 200)
+        default String remoteJSSDK() {
+            return "";
         }
     }
 
@@ -85,18 +94,45 @@ public class BehavioSecCollector extends SingleOutcomeNode {
         );
     }
 
+    private static String injectRemoteScript(String scriptUrl){
+        return String.format(
+                "(function(d, s, id){\n" +
+                        "    var js, fjs = d.getElementsByTagName(s)[0];\n" +
+                        "    if (d.getElementById(id)){ return; }\n" +
+                        "    js = d.createElement(s); js.id = id;\n" +
+//                        "    js.onload = function(){\n" +
+//                        "        // remote script has loaded\n" +
+//                        "    };\n" +
+                        "    js.src = \"%s\";\n" +
+                        "    fjs.parentNode.insertBefore(js, fjs);\n" +
+                        "}(document, 'script', 'collector-jssdk'));",
+                scriptUrl
+        );
+    }
+
     @Override
     public Action process(TreeContext context) {
-        String myScript = getScriptAsString(config.fileName(), Constants.DATA_FIELD);
-
+        String myScript ="";
+        // Check if we have remote script
+        if(!config.remoteJSSDK().equals("")) {
+            myScript = injectRemoteScript(config.remoteJSSDK());
+        } else {
+            // Fallback to local collector
+            myScript = getScriptAsString(
+                    config.fileName(),
+                    Constants.DATA_FIELD
+            );
+        }
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
                 filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
         if (result.isPresent() && !Constants.DATA_FIELD.equals(result.get())) {
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
                 resultValue = "Not set";
+                logger.error("Result is not set");
             }
             JsonValue newSharedState = context.sharedState.copy();
+            logger.info("received results from page");
             newSharedState.put(Constants.DATA_FIELD, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {

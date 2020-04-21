@@ -18,15 +18,11 @@
 package com.behaviosec.tree.nodes;
 
 
-import com.behaviosec.isdk.client.APICall;
-import com.behaviosec.isdk.client.Client;
-import com.behaviosec.isdk.client.ClientConfiguration;
+import com.behaviosec.isdk.client.*;
 import com.behaviosec.isdk.config.BehavioSecException;
 import com.behaviosec.isdk.entities.Response;
 import com.google.common.hash.Hashing;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -45,7 +41,6 @@ import com.google.inject.assistedinject.Assisted;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -83,6 +78,11 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             return "default_tenant";
         }
 
+        @Attribute(order = 185)
+        default String operatorFlag() {
+            return "512";
+        }
+
         @Attribute(order = 200)
         default boolean hashUserName() {
             return false;
@@ -97,6 +97,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         default boolean denyOnFail() {
             return false;
         }
+
     }
     /**
      * Create the node using Guice injection. Just-in-time bindings can be used to obtain instances of other classes
@@ -117,7 +118,6 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
     }
 
     private Action sendRequest(TreeContext context) throws NodeProcessException {
-        List<NameValuePair> nameValuePairs = new ArrayList<>(2);
         String username = context.sharedState.get(Constants.USERNAME).asString();
         // add config option for the session name
         if (this.config.hashUserName()) {
@@ -129,11 +129,8 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                     .toString();
         }
         String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
-        if (timingData != null) {
-            nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
-                    timingData));
-        } else {
-            logger.error("Timing data is null");
+        if (timingData == null) {
+            logger.error("Timing data is null in %s", Constants.DATA_FIELD);
             // We check for flag, and we either return deny or success
             if (config.denyOnFail()) {
                 return goTo(false).build();
@@ -141,6 +138,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 return goTo(true).build();
             }
         }
+        logger.info("Got timing data");
         String userAgent = "";
         try {
             userAgent = context.request.headers.get("user-agent").get(0);
@@ -155,7 +153,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
         ClientConfiguration clientConfig = new ClientConfiguration(this.config.endpoint());
 
-        Client client = new Client(clientConfig);
+        RestClient client = new RestClientOktHttpImpl(clientConfig);
 
         APICall callReport = APICall.report()
                 .tenantId(this.config.tenantID())

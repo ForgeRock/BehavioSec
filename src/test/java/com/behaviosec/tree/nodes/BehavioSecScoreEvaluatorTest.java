@@ -24,7 +24,7 @@ import java.util.Objects;
 
 
 @Test
-public class BehaviosSecScoreEvaluatorTest {
+public class BehavioSecScoreEvaluatorTest {
 
     private TestConfig config = new TestConfig();
 

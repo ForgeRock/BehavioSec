@@ -18,7 +18,7 @@ public class Constants {
 
 
     // data collector field
-    public static String DATA_FIELD = "application/json";
+    public static String DATA_FIELD = "bdata";
     public static String COLLECTOR_SCRIPT= "collector.min.js";
 
     // request body
@@ -35,8 +35,7 @@ public class Constants {
 
     //request action
     private static String API_BASE_URL               = "BehavioSenseAPI/";
-    //API endpoint
-    public static String GET_REPORT         = API_BASE_URL + "GetReport";
+
 
 
     // Node configuration
