@@ -73,6 +73,7 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
                 BehavioSecPlugin.currentVersion, asList(
                 BehavioSecAuthNode.class,
                 BehavioSecBooleanEvaluator.class,
+                BehavioSecPolicyEvaluator.class,
                 BehavioSecCollector.class,
                 BehavioSecScoreEvaluator.class
                 ));
