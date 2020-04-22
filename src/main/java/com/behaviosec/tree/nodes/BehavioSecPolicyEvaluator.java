@@ -88,6 +88,7 @@ public class BehavioSecPolicyEvaluator extends AbstractDecisionNode {
             return ImmutableList.of(
                     new Outcome("Red", "Red"),
                     new Outcome("Yellow", "Yellow"),
+                    new Outcome("Green", "Green"),
                     new Outcome("Unexpected", "Unexpected"),
                     new Outcome("Training", "Training")
             );
