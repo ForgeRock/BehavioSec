@@ -18,7 +18,15 @@
 package com.behaviosec.tree.nodes;
 
 
+<<<<<<< HEAD
 import com.behaviosec.isdk.client.*;
+=======
+import com.behaviosec.isdk.client.APICall;
+import com.behaviosec.isdk.client.Client;
+import com.behaviosec.isdk.client.ClientConfiguration;
+import com.behaviosec.isdk.client.RestClient;
+import com.behaviosec.isdk.client.RestClientOktHttpImpl;
+>>>>>>> 42ff80d4bc2f56dae59a3892e4d3a4f675a5365a
 import com.behaviosec.isdk.config.BehavioSecException;
 import com.behaviosec.isdk.entities.Response;
 import com.google.common.hash.Hashing;
@@ -178,6 +186,10 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
         ClientConfiguration clientConfig = new ClientConfiguration(this.config.endpoint());
 
+<<<<<<< HEAD
+=======
+//        Client client = new Client(clientConfig);
+>>>>>>> 42ff80d4bc2f56dae59a3892e4d3a4f675a5365a
         RestClient client = new RestClientOktHttpImpl(clientConfig);
 
         APICall callReport = APICall.report()
