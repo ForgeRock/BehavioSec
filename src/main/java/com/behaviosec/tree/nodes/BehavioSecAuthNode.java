@@ -39,10 +39,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 import javax.inject.Inject;
 
 /**
@@ -56,6 +53,24 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
     private final static Debug debug = Debug.getInstance(DEBUG_NAME);
 
     private final Config config;
+    List operatorFlags = Arrays.asList (
+            "1",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64",
+            "128",
+            "256",
+            "512",
+            "1024",
+            "2048",
+            "4096"
+            );
+
+
+
 
     /**
      * Configuration for the node.
@@ -111,17 +126,6 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        String username = context.sharedState.get(Constants.USERNAME).asString();
-
-        // add config option for the session name
-        if (this.config.hashUserName()) {
-            username = Hashing.sha256()
-                    .hashString(
-                            username,
-                            StandardCharsets.UTF_8
-                    )
-                    .toString();
-        }
         String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
         if (timingData == null) {
             debug.error("Timing data is null in %s", Constants.DATA_FIELD);
@@ -132,6 +136,22 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 return goTo(true).build();
             }
         }
+
+        if (!operatorFlags.contains(this.config.operatorFlag())) {
+            debug.error("Invalid operator flag");
+            throw new NodeProcessException("Invalid operator flag");
+        }
+
+        String username = context.sharedState.get(Constants.USERNAME).asString();
+        if (this.config.hashUserName()) {
+            username = Hashing.sha256()
+                    .hashString(
+                            username,
+                            StandardCharsets.UTF_8
+                    )
+                    .toString();
+        }
+
         debug.error("Got timing data");
         debug.error(timingData);
         String userAgent = "";
@@ -172,15 +192,15 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
                 .notes("FR-V" + BehavioSecPlugin.currentVersion)
                 .build();
 
-        Response respose = null;
+        Response response = null;
         try {
-            respose = client.makeCall(callReport);
+            response = client.makeCall(callReport);
         } catch (BehavioSecException e) {
             e.printStackTrace();
         }
 
-        if( respose.hasReport()){
-            newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(respose.getReport()));
+        if( response.hasReport()){
+            newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(response.getReport()));
             return goTo(true).replaceSharedState(newSharedState).build();
         }
 
