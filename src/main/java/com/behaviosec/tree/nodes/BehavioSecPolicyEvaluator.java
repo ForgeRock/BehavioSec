@@ -19,19 +19,13 @@ package com.behaviosec.tree.nodes;
 
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
-import com.behaviosec.isdk.evaluators.ScoreEvaluator;
-import com.behaviosec.tree.config.Constants;
 import com.behaviosec.tree.utils.Helper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.inject.Inject;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -73,7 +67,7 @@ public class BehavioSecPolicyEvaluator extends AbstractDecisionNode {
             return goTo(bhsReport.getPolicy()).build();
 
         } catch (NoBehavioSecReportException e) {
-            debug.error( e.getMessage());
+            debug.error( "No report " +  e.getMessage());
             throw  new NodeProcessException("Wasn't able to get policy outcome " + e.toString());
         }
     }

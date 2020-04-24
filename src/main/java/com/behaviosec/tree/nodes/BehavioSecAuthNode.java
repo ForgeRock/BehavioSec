@@ -23,7 +23,10 @@ import com.behaviosec.isdk.client.ClientConfiguration;
 import com.behaviosec.isdk.client.RestClient;
 import com.behaviosec.isdk.client.RestClientOktHttpImpl;
 import com.behaviosec.isdk.config.BehavioSecException;
+import com.behaviosec.isdk.config.NoBehavioSecReportException;
+import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.entities.Response;
+import com.behaviosec.tree.utils.Helper;
 import com.google.common.hash.Hashing;
 import com.sun.identity.shared.debug.Debug;
 import org.apache.http.HttpResponse;
@@ -52,11 +55,12 @@ import javax.inject.Inject;
         configClass = BehavioSecAuthNode.Config.class)
 public class BehavioSecAuthNode extends AbstractDecisionNode {
 
-    private final static String DEBUG_NAME = "BehavioSecPolicyEvaluator";
+    private final static String DEBUG_NAME = "BehavioSecAuthNode";
     private final static Debug debug = Debug.getInstance(DEBUG_NAME);
 
     private final Config config;
     List operatorFlags = Arrays.asList (
+            "0",
             "1",
             "2",
             "4",
@@ -129,9 +133,9 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) throws NodeProcessException {
-        String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
+        String timingData = context.sharedState.get(Constants.BEHAVIOSEC_TIMING_DATA).asString();
         if (timingData == null) {
-            debug.error("Timing data is null in %s", Constants.DATA_FIELD);
+            debug.error("Timing data is null in shared state", Constants.BEHAVIOSEC_TIMING_DATA);
             // We check for flag, and we either return deny or success
             if (config.denyOnFail()) {
                 return goTo(false).build();
@@ -145,7 +149,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             throw new NodeProcessException("Invalid operator flag");
         }
 
-        String username = context.sharedState.get(Constants.USERNAME).asString();
+        String username = context.sharedState.get(Constants.USER_NAME).asString();
         if (this.config.hashUserName()) {
             username = Hashing.sha256()
                     .hashString(
@@ -203,34 +207,18 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
 
         if( response.hasReport()){
+            newSharedState.remove(Constants.BEHAVIOSEC_TIMING_DATA);
             newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(response.getReport()));
+
             return goTo(true).replaceSharedState(newSharedState).build();
         }
-
-//        return goToNext().replaceSharedState(newSharedState).build();
         return goTo(false).build();
 
-    }
-
-
-    private String getResponseString(HttpResponse resp) throws IOException {
-        return EntityUtils.toString(resp.getEntity(), "UTF-8");
     }
 
     protected Action.ActionBuilder goTo(boolean outcome) {
         return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);
     }
 
-    static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehavioSecAuthNode.class.getName().replace(".", "/");
-
-        @Override
-        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
-            return ImmutableList.of(
-                    new Outcome(Constants.TRUE_OUTCOME_ID, bundle.getString("true")),
-                    new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
-        }
-    }
 
 }

@@ -119,21 +119,21 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             // Fallback to local collector
             myScript = getScriptAsString(
                     config.fileName(),
-                    Constants.DATA_FIELD
+                    Constants.BEHAVIOSEC_TIMING_DATA
             );
             debug.message("Using local collector");
         }
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
                 filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
-        if (result.isPresent() && !Constants.DATA_FIELD.equals(result.get())) {
+        if (result.isPresent() && !Constants.BEHAVIOSEC_TIMING_DATA.equals(result.get())) {
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
                 resultValue = "Not set";
                 debug.error("Result is not set");
             }
             JsonValue newSharedState = context.sharedState.copy();
-            debug.message("received results from page");
-            newSharedState.put(Constants.DATA_FIELD, resultValue);
+            debug.error("received timing data from the page: " + resultValue);
+            newSharedState.put(Constants.BEHAVIOSEC_TIMING_DATA, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
             if (result.isPresent()) {
@@ -145,7 +145,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.BEHAVIOSEC_TIMING_DATA, "false");
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);
             return send(callbacks).build();
         }
