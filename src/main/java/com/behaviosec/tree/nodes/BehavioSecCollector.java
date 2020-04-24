@@ -17,33 +17,29 @@
 
 package com.behaviosec.tree.nodes;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
-
-import com.sun.identity.shared.debug.Debug;
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
-import org.forgerock.openam.auth.node.api.TreeContext;
-
 import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.identity.shared.debug.Debug;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
+import org.forgerock.openam.auth.node.api.TreeContext;
 
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
+
+import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
  * Behaviometric collector JavaScript code injection into login page

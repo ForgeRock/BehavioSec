@@ -26,9 +26,9 @@ import com.sun.identity.shared.debug.Debug;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.util.i18n.PreferredLocales;
+
 import javax.inject.Inject;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * A node that checks to see if zero-page login headers have specified username and whether that username is in a group

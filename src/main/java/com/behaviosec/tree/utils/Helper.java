@@ -1,9 +1,8 @@
 package com.behaviosec.tree.utils;
 
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
-import com.behaviosec.tree.config.Constants;
 import com.behaviosec.isdk.entities.Report;
-
+import com.behaviosec.tree.config.Constants;
 import com.sun.identity.shared.debug.Debug;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.TreeContext;

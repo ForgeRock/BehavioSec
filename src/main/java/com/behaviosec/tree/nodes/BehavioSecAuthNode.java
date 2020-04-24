@@ -18,35 +18,25 @@
 package com.behaviosec.tree.nodes;
 
 import com.behaviosec.isdk.client.APICall;
-import com.behaviosec.isdk.client.Client;
 import com.behaviosec.isdk.client.ClientConfiguration;
 import com.behaviosec.isdk.client.RestClient;
 import com.behaviosec.isdk.client.RestClientOktHttpImpl;
 import com.behaviosec.isdk.config.BehavioSecException;
-import com.behaviosec.isdk.config.NoBehavioSecReportException;
-import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.entities.Response;
-import com.behaviosec.tree.utils.Helper;
+import com.behaviosec.tree.config.Constants;
 import com.google.common.hash.Hashing;
+import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.util.i18n.PreferredLocales;
-import com.behaviosec.tree.config.Constants;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
+import org.forgerock.openam.auth.node.api.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * A node that send request to BehavioSense endpoint. Node expect to find behavior data in shared context

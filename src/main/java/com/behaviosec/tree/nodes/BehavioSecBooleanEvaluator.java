@@ -20,20 +20,12 @@ package com.behaviosec.tree.nodes;
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.BooleanEvaluator;
-import com.behaviosec.isdk.evaluators.ScoreEvaluator;
+import com.behaviosec.tree.config.Constants;
 import com.behaviosec.tree.utils.Helper;
+import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.behaviosec.tree.config.Constants;
-import com.google.inject.assistedinject.Assisted;
+import org.forgerock.openam.auth.node.api.*;
 
 import javax.inject.Inject;
 
