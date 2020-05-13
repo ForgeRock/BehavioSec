@@ -12,6 +12,7 @@ public class Constants {
     //report naming
     public static final String BEHAVIOSEC_REPORT = "bhs_report";
     public static final String BEHAVIOSEC_SID = "bhs_sid";
+    public static final String COLLECTOR_URL = "http://URL_TO_COLLECTOR/";
 
     //username from from openam
     public static String USER_NAME = "username";

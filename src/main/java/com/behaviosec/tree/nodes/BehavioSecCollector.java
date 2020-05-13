@@ -68,7 +68,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
 
         @Attribute(order = 200)
         default String remoteJSSDK() {
-            return "";
+            return Constants.COLLECTOR_URL;
         }
     }
 
@@ -108,7 +108,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     public Action process(TreeContext context) {
         String myScript ="";
         // Check if we have remote script
-        if(!config.remoteJSSDK().equals("")) {
+        if(!config.remoteJSSDK().equals(Constants.COLLECTOR_URL)) {
             myScript = injectRemoteScript(config.remoteJSSDK());
             debug.message("using remote collector from " + config.remoteJSSDK());
         } else {
