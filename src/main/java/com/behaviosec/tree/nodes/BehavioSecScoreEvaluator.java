@@ -17,25 +17,16 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.NoBehavioSecReportException;
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.behaviosec.isdk.config.NoBehavioSecReportException;
+import com.behaviosec.isdk.entities.Report;
+import com.behaviosec.isdk.evaluators.ScoreEvaluator;
 import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.google.common.collect.ImmutableList;
+import com.behaviosec.tree.utils.Helper;
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.*;
 
-import java.util.List;
-import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 /**
@@ -45,8 +36,8 @@ import javax.inject.Inject;
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
         configClass = BehavioSecScoreEvaluator.Config.class)
 public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
-    private static final String TAG = BehavioSecScoreEvaluator.class.getName();
-    private final Logger logger = LoggerFactory.getLogger(TAG);
+    private final static String DEBUG_NAME = "BehavioSecScoreEvaluator";
+    private final static Debug debug = Debug.getInstance(DEBUG_NAME);
     private final Config config;
 
     /**
@@ -104,26 +95,26 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     @Override
     public Action process(TreeContext context) {
         //Get report from sharedState
-        BehavioSecReport bhsReport = null;
+        Report bhsReport = null;
         try {
-            bhsReport = BehavioSecReport.getReportFromContext(context);
-            // check with the settings, all must evaluate to true
-            if (!bhsReport.isTrained()  && config.allowInTraining()) {
-                return goTo(true).build();
-            }
+            bhsReport = Helper.getReportFromContext(context);
 
-            if (bhsReport.getScore() >= config.minScore() &&
-                    bhsReport.getConfidence() >= config.minConfidence() &&
-                    bhsReport.getRisk() <= config.maxRisk()) {
-                return goTo(true).build();
-            } else {
-                return goTo(false).build();
-            }
+            ScoreEvaluator scoreEvaluator = new ScoreEvaluator();
+            scoreEvaluator.config.setMinScore(config.minScore());
+            scoreEvaluator.config.setMinConfidence(config.minConfidence());
+            scoreEvaluator.config.setMaxRisk(config.maxRisk());
+            scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
+            debug.message(
+                    "User: " + bhsReport.getUserid() +
+                    " score: " + bhsReport.getScore() +
+                    " risk: " + bhsReport.getRisk());
+            return goTo(scoreEvaluator.evaluate(bhsReport)).build();
+
         } catch (NoBehavioSecReportException e) {
-            logger.error(TAG + " " + e.getMessage());
-            return goTo(false).build();
-        }
+            debug.error(e.getMessage());
 
+        }
+        return goTo(false).build();
     }
 
 

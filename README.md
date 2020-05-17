@@ -55,9 +55,22 @@ Download the latest release from <https://github.com/ForgeRock/BehavioSec/releas
  `../web-container/webapps/openam/WEB-INF/lib` directory where AM is deployed. Restart the
  web container to pick up the new node. The node will then appear in the authentication trees components palette.
 
-The code in this repository has binary dependencies that live in the ForgeRock maven repository. Maven can be configured to authenticate to this repository by following the following [ForgeRock Knowledge Base Article](https://backstage.forgerock.com/knowledge/kb/article/a74096897).
+The code in this repository has binary dependency on `behaviosec-iSDK-2.0-SNAPSHOT.jar`, contact forgerock@behaviosec
+.com for access to the SDK. 
 
-Make sure to contact Sales Representative for licensing. 
+**Make sure to contact Sales Representative for licensing and tenant set up at forgerock@behaviosec.com.** 
+
+## External Dependencies
+behaviosec-iSDK-2.0-SNAPSHOT.jar
+commons-logging-1.2.jar         
+jackson-annotations-2.10.2.jar   
+slf4j-api-1.7.13.jar
+behaviosec-iSDK-2.0-SNAPSHOT.jar 
+httpclient-4.5.11.jar            
+jackson-core-2.10.2.jar          
+slf4j-simple-1.7.13.jar                  
+httpcore-4.4.13.jar              
+jackson-databind-2.10.2.jar
 
 ## Configuration
 The following sections provides information about configuring the BehavioSense tree. 
@@ -95,6 +108,10 @@ This is a data collector node that you need to place under the page node. In the
 This node receives the collected data and communicates with the server. 
 
 ### Options
+*BehavioSec Endpoint* - if set to true, the username will be hashed using `Hashing.sha256()`
+
+*Tenant ID* - if set to true, the username will be hashed using `Hashing.sha256()`
+
 *Hash username* - if set to true, the username will be hashed using `Hashing.sha256()`
 
 *Anonymize IP* - if set to true, set last octet of IP address to 000. 
@@ -153,11 +170,24 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
  type is detected (e.g., Desktop, Android, or iOS device), this flag is set to true. This information is received
   from the deviceChanged flag in the JSON.  **Allow Device Change** enabled evaluates to a true outcome even if a device
    change is detected. Default is **true**.
-
-
+* **IP Changed** indicates if the IP has changed since previous sessions and will also provide a severity value depending on usage frequency. This information is received
+  from the ipChanged flag in the JSON.  **Allow IP Change** enabled evaluates to a true outcome even if a device
+   change is detected. Default is **true**.
+* **Copy-Paste** indicates that the user copied or pasted into username or password field during the active session. This information is received
+  from the diDesc flag in the JSON.  **Allow Copy-Paste Change** enabled evaluates to a true outcome even if a device
+   change is detected. Default is **true**.
+   
 For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
 
 ![ScreenShot](images/behaviosec-boolean-evaluator.png)
+
+# Whats new in version 2
+Version 2 brings multiple improvements based on customer feedback. We add support for BehavioSense 5.2 and a multitenant environment. 
+
+Additionally, configuration for new Risk flags: "Copy-Paste" and "IP Change". See the extended information above.
+
+
+
 
 
 # Disclaimer

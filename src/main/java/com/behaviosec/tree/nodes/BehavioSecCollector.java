@@ -17,30 +17,29 @@
 
 package com.behaviosec.tree.nodes;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
-
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
-import org.forgerock.openam.auth.node.api.TreeContext;
-
 import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import com.sun.identity.shared.debug.Debug;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
+import org.forgerock.openam.auth.node.api.TreeContext;
 
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
+
+import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
  * Behaviometric collector JavaScript code injection into login page
@@ -49,6 +48,8 @@ import javax.security.auth.callback.Callback;
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
         configClass = BehavioSecCollector.Config.class)
 public class BehavioSecCollector extends SingleOutcomeNode {
+    private final static String DEBUG_NAME = "BehavioSecCollector";
+    private final static Debug debug = Debug.getInstance(DEBUG_NAME);
     private final Config config;
 
     /**
@@ -60,9 +61,14 @@ public class BehavioSecCollector extends SingleOutcomeNode {
          *
          * @return the amount.
          */
-        @Attribute(order = 10)
+        @Attribute(order = 100)
         default String fileName() {
             return Constants.COLLECTOR_SCRIPT;
+        }
+
+        @Attribute(order = 200)
+        default String remoteJSSDK() {
+            return Constants.COLLECTOR_URL;
         }
     }
 
@@ -85,19 +91,45 @@ public class BehavioSecCollector extends SingleOutcomeNode {
         );
     }
 
+    private static String injectRemoteScript(String scriptUrl){
+        return String.format(
+                "(function(d, s, id){\n" +
+                        "    var js, fjs = d.getElementsByTagName(s)[0];\n" +
+                        "    if (d.getElementById(id)){ return; }\n" +
+                        "    js = d.createElement(s); js.id = id;\n" +
+                        "    js.src = \"%s\";\n" +
+                        "    fjs.parentNode.insertBefore(js, fjs);\n" +
+                        "}(document, 'script', 'collector-jssdk'));",
+                scriptUrl
+        );
+    }
+
     @Override
     public Action process(TreeContext context) {
-        String myScript = getScriptAsString(config.fileName(), Constants.DATA_FIELD);
-
+        String myScript ="";
+        // Check if we have remote script
+        if(!config.remoteJSSDK().equals(Constants.COLLECTOR_URL)) {
+            myScript = injectRemoteScript(config.remoteJSSDK());
+            debug.message("using remote collector from " + config.remoteJSSDK());
+        } else {
+            // Fallback to local collector
+            myScript = getScriptAsString(
+                    config.fileName(),
+                    Constants.BEHAVIOSEC_TIMING_DATA
+            );
+            debug.message("Using local collector");
+        }
         Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue).
                 filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
-        if (result.isPresent() && !Constants.DATA_FIELD.equals(result.get())) {
+        if (result.isPresent() && !Constants.BEHAVIOSEC_TIMING_DATA.equals(result.get())) {
             String resultValue = result.get();
             if ("undefined".equalsIgnoreCase(resultValue)) {
                 resultValue = "Not set";
+                debug.error("Result is not set");
             }
             JsonValue newSharedState = context.sharedState.copy();
-            newSharedState.put(Constants.DATA_FIELD, resultValue);
+            debug.error("received timing data from the page: " + resultValue);
+            newSharedState.put(Constants.BEHAVIOSEC_TIMING_DATA, resultValue);
             return goToNext().replaceSharedState(newSharedState).build();
         } else {
             if (result.isPresent()) {
@@ -109,7 +141,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.BEHAVIOSEC_TIMING_DATA, "false");
             ImmutableList<Callback> callbacks = ImmutableList.of(scriptAndSelfSubmitCallback, hiddenValueCallback);
             return send(callbacks).build();
         }

@@ -55,7 +55,8 @@ public class BehaviosecCollectorTest {
     public void testProcessWithCallbacksInCaseOfMobile() {
             BehavioSecCollector node = new BehavioSecCollector(config);
             JsonValue sharedState = json(object(1));
-            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.DATA_FIELD, "false");
+            HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(Constants.BEHAVIOSEC_TIMING_DATA,
+                    "false");
             hiddenValueCallback.setValue("================================================");
             //WHEN
             Action result = node.process(getContext(sharedState, Collections.singletonList(hiddenValueCallback)));
