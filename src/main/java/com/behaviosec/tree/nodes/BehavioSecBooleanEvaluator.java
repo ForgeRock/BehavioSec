@@ -17,30 +17,25 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.NoBehavioSecReportException;
+/*import com.behaviosec.isdk.config.NoBehavioSecReportException;
+import com.behaviosec.isdk.entities.Report;
+import com.behaviosec.isdk.evaluators.BooleanEvaluator; */
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.utils.Helper;
+import com.google.inject.assistedinject.Assisted;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.auth.node.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.google.inject.assistedinject.Assisted;
-
-import java.util.List;
 import javax.inject.Inject;
-
 
 
 /**
  * A node that what evaluates boolean flags of BehavioSec response
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehavioSecBooleanEvaluator.Config.class)
+        configClass = BehavioSecBooleanEvaluator.Config.class, tags={"behavioral"})
 public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
     private static final String TAG = BehavioSecBooleanEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
@@ -74,7 +69,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 300)
         default boolean allowInTraining() {
-            return true;
+            return false;
         }
 
         /**
@@ -84,7 +79,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
          */
         @Attribute(order = 400)
         default boolean allowRemoteAccess() {
-            return true;
+            return false;
         }
 
         /**
@@ -117,6 +112,25 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             return true;
         }
 
+        /**
+         *  Toggle IP changed flagged profiles to evaluate to true
+         *
+         * @return device changed.
+         */
+        @Attribute(order = 800)
+        default boolean allowIpChange() {
+            return true;
+        }
+
+        /**
+         *  Toggle when copy paste detected toggle will evaluate to true
+         *
+         * @return device changed.
+         */
+        @Attribute(order = 900)
+        default boolean allowCopyPaste() {
+            return true;
+        }
     }
 
     /**
@@ -132,22 +146,29 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
+        //Get report from sharedState
+        /*
+        Report bhsReport = null;
         try {
-            BehavioSecReport bhsReport = BehavioSecReport.getReportFromContext(context);
+            bhsReport = Helper.getReportFromContext(context);
 
-            boolean disallow =  bhsReport.isBot() && !config.allowBot() ||
-                                bhsReport.isRemoteAccess()  && !config.allowRemoteAccess() ||
-                                bhsReport.isReplay()  && !config.allowReplay() ||
-                                bhsReport.isTrained()  && !config.allowInTraining() ||
-                                bhsReport.isTabAnomaly()  && !config.allowTabAnomaly() ||
-                                bhsReport.isDeviceChanged()  && !config.allowDeviceChanged() ||
-                                bhsReport.isNumpadAnomaly()  && !config.allowNumpadAnomaly();
+            BooleanEvaluator booleanEvaluatorEvaluator = new BooleanEvaluator();
+            booleanEvaluatorEvaluator.config.setAllowBot(config.allowBot());
+            booleanEvaluatorEvaluator.config.setAllowReplay(config.allowReplay());
+            booleanEvaluatorEvaluator.config.setAllowInTraining(config.allowInTraining());
+            booleanEvaluatorEvaluator.config.setAllowRemoteAccess(config.allowRemoteAccess());
+            booleanEvaluatorEvaluator.config.setAllowTabAnomaly(config.allowTabAnomaly());
+            booleanEvaluatorEvaluator.config.setAllowNumpadAnomaly(config.allowNumpadAnomaly());
+            booleanEvaluatorEvaluator.config.setAllowDeviceChanged(config.allowDeviceChanged());
+            booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
+            booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
+            return goTo(booleanEvaluatorEvaluator.evaluate(bhsReport)).build();
 
-            return goTo(!disallow).build();
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
-            return goTo(false).build();
-        }
+
+        } */
+        return goTo(false).build();
     }
 
 

@@ -17,25 +17,18 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.config.NoBehavioSecReportException;
-import org.forgerock.json.JsonValue;
+/*
+import com.behaviosec.isdk.config.NoBehavioSecReportException;
+import com.behaviosec.isdk.entities.Report;
+import com.behaviosec.isdk.evaluators.ScoreEvaluator; */
+import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.utils.Helper;
+import com.google.inject.assistedinject.Assisted;
 import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.util.i18n.PreferredLocales;
+import org.forgerock.openam.auth.node.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.restclient.BehavioSecReport;
-import com.google.common.collect.ImmutableList;
-import com.google.inject.assistedinject.Assisted;
-
-import java.util.List;
-import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 /**
@@ -43,7 +36,7 @@ import javax.inject.Inject;
  * permitted to use zero-page login headers.
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehavioSecScoreEvaluator.Config.class)
+        configClass = BehavioSecScoreEvaluator.Config.class, tags={"behavioral"})
 public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     private static final String TAG = BehavioSecScoreEvaluator.class.getName();
     private final Logger logger = LoggerFactory.getLogger(TAG);
@@ -97,33 +90,30 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehavioSecScoreEvaluator(@Assisted BehavioSecScoreEvaluator.Config config){
+    public BehavioSecScoreEvaluator(@Assisted Config config){
         this.config = config;
     }
 
     @Override
     public Action process(TreeContext context) {
         //Get report from sharedState
-        BehavioSecReport bhsReport = null;
+ /*       Report bhsReport = null;
         try {
-            bhsReport = BehavioSecReport.getReportFromContext(context);
-            // check with the settings, all must evaluate to true
-            if (!bhsReport.isTrained()  && config.allowInTraining()) {
-                return goTo(true).build();
-            }
+            bhsReport = Helper.getReportFromContext(context);
 
-            if (bhsReport.getScore() >= config.minScore() &&
-                    bhsReport.getConfidence() >= config.minConfidence() &&
-                    bhsReport.getRisk() <= config.maxRisk()) {
-                return goTo(true).build();
-            } else {
-                return goTo(false).build();
-            }
+            ScoreEvaluator scoreEvaluator = new ScoreEvaluator();
+            scoreEvaluator.config.setMinScore(config.minScore());
+            scoreEvaluator.config.setMinConfidence(config.minConfidence());
+            scoreEvaluator.config.setMaxRisk(config.maxRisk());
+            scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
+
+            return goTo(scoreEvaluator.evaluate(bhsReport)).build();
+
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
-            return goTo(false).build();
-        }
 
+        } */
+        return goTo(false).build();
     }
 
 
