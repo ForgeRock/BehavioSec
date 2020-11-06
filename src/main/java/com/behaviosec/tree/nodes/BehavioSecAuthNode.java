@@ -122,9 +122,11 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
         String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
         if (timingData != null) {
+            System.out.println("Timing data is present");
             nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
                     timingData));
         } else {
+            System.out.println("Timing data is null");
             logger.error("Timing data is null");
             // We check for flag, and we either return deny or success
             if (config.denyOnFail()) {

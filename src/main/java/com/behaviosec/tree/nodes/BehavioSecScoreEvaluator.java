@@ -21,6 +21,9 @@ package com.behaviosec.tree.nodes;
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.ScoreEvaluator; */
+import com.behaviosec.isdk.config.NoBehavioSecReportException;
+import com.behaviosec.isdk.entities.Report;
+import com.behaviosec.isdk.evaluators.ScoreEvaluator;
 import com.behaviosec.tree.config.Constants;
 import com.behaviosec.tree.utils.Helper;
 import com.google.inject.assistedinject.Assisted;
@@ -97,7 +100,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     @Override
     public Action process(TreeContext context) {
         //Get report from sharedState
- /*       Report bhsReport = null;
+        Report bhsReport = null;
         try {
             bhsReport = Helper.getReportFromContext(context);
 
@@ -111,8 +114,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
 
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
-
-        } */
+        }
         return goTo(false).build();
     }
 

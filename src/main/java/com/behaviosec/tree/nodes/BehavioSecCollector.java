@@ -79,7 +79,8 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     private static String createClientSideScriptExecutorFunction(String script) {
-        logger.debug(("createClientSideScriptExecutorFunction"));
+        System.out.println("createClientSideScriptExecutorFunction");
+        logger.debug("createClientSideScriptExecutorFunction");
         return String.format(
                 "(function(output) {\n" +
                         "    %s\n" + // script
@@ -139,7 +140,9 @@ public class BehavioSecCollector extends SingleOutcomeNode {
 
     private String getScriptAsString(String filename, String outputParameterId) {
         System.out.println("Creating script from file " + filename);
+        logger.debug("Creating script from file " + filename);
         System.out.println("outputParameterId = " + outputParameterId);
+        logger.debug("outputParameterId = " + outputParameterId);
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
