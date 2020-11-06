@@ -165,7 +165,11 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             booleanEvaluatorEvaluator.config.setAllowDeviceChanged(config.allowDeviceChanged());
             booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
             booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
-            return goTo(booleanEvaluatorEvaluator.evaluate(bhsReport)).build();
+            boolean evaluation = booleanEvaluatorEvaluator.evaluate(bhsReport);
+            System.out.println("evaluation = " + evaluation);
+            logger.debug("evaluation = " + evaluation);
+
+            return goTo(evaluation).build();
 
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
