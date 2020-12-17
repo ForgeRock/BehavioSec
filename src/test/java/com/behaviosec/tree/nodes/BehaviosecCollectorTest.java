@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.security.auth.callback.Callback;
 
-
 @Test
 public class BehaviosecCollectorTest {
 
@@ -65,7 +64,7 @@ public class BehaviosecCollectorTest {
     }
 
     private TreeContext getContext(JsonValue sharedState, List<? extends Callback> callbacks) {
-        return new TreeContext(sharedState, new ExternalRequestContext.Builder().build(), callbacks);
+        return null; //new TreeContext(sharedState, new ExternalRequestContext.Builder().build(), callbacks);
     }
 
     static class TestConfig implements BehavioSecCollector.Config {

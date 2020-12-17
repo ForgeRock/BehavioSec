@@ -111,8 +111,8 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
             scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
 
             boolean evaluation = scoreEvaluator.evaluate(bhsReport);
-            System.out.println("evaluation = " + evaluation);
-            logger.debug("evaluation = " + evaluation);
+            System.out.println("evaluation BehavioSecScoreEvaluator = " + evaluation);
+            logger.debug("evaluation BehavioSecScoreEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
         } catch (NoBehavioSecReportException e) {

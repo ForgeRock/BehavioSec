@@ -89,22 +89,6 @@ public class BehavioSecCollector extends SingleOutcomeNode {
         );
     }
 
-    private static String createClientSideScriptExecutorFunction(String script, String endPointURL, String apiKey) {
-        logger.error("************ createClientSideScriptExecutorFunction");
-        logger.error("************ Configuration = : " + endPointURL + ":" + apiKey + ":");
-        String journeyID = "jid-" + java.util.UUID.randomUUID();
-        String sessionID = "sid-" + java.util.UUID.randomUUID();
-        //       System.out.println("************ journeyID = : " + journeyID + ":");
-        //       System.out.println("************ sessionID = : " + sessionID+ ":");
-        return String.format(
-                "(function(output) {\n" +
-                        "    %s\n" + // script
-                        "}) (document);\n",
-                "var endPointURL = \"" + endPointURL + "?apiKey=" + apiKey + "\";\nconsole.log(\"****** endPointURL:  \" + endPointURL + \":\");\n\n" + script
-        );
-    }
-
-
     @Override
     public Action process(TreeContext context) {
         String myScript = getScriptAsString(config.fileName(), Constants.DATA_FIELD);
@@ -125,10 +109,6 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             }
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript);
 
-            String endPointURL = "https://partner.behaviosec.com/BehavioSenseAPI/GetAjaxAsync?tenantid=0509518f7563";
-            String apiKey = "";
-            // clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript, endPointURL, apiKey);
-
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
@@ -139,9 +119,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     private String getScriptAsString(String filename, String outputParameterId) {
-        System.out.println("Creating script from file " + filename);
         logger.debug("Creating script from file " + filename);
-        System.out.println("outputParameterId = " + outputParameterId);
         logger.debug("outputParameterId = " + outputParameterId);
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
