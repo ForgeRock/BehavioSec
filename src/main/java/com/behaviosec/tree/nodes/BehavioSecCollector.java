@@ -79,7 +79,6 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     private static String createClientSideScriptExecutorFunction(String script) {
-        System.out.println("createClientSideScriptExecutorFunction");
         logger.debug("createClientSideScriptExecutorFunction");
         return String.format(
                 "(function(output) {\n" +

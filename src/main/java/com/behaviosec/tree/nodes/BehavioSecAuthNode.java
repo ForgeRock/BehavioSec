@@ -109,8 +109,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         List<NameValuePair> nameValuePairs = new ArrayList<>(2);
         String username = context.sharedState.get(Constants.USERNAME).asString();
 
-        System.out.println("sendRequest: " + nameValuePairs);
-        logger.error("********************************    sendRequest: " + nameValuePairs);
+        logger.debug("sendRequest: " + nameValuePairs);
         // add config option for the session name
         if (this.config.hashUserName()) {
             username = Hashing.sha256()
@@ -122,11 +121,10 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         }
         String timingData = context.sharedState.get(Constants.DATA_FIELD).asString();
         if (timingData != null) {
-            System.out.println("Timing data is present");
+            logger.debug("Timing data is present");
             nameValuePairs.add(new BasicNameValuePair(Constants.TIMING,
                     timingData));
         } else {
-            System.out.println("Timing data is null");
             logger.error("Timing data is null");
             // We check for flag, and we either return deny or success
             if (config.denyOnFail()) {
@@ -147,8 +145,8 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             userip = userip.substring(0, userip.lastIndexOf(".")) +".000";
         }
 
-        logger.error("endpoint  " + config.endpoint());
-        logger.error("tenantID  " + config.tenantID());
+        logger.debug("endpoint  " + config.endpoint());
+        logger.debug("tenantID  " + config.tenantID());
 
         String endPoint = config.endpoint();
         String tenantId = config.tenantID();
@@ -163,10 +161,10 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         try {
             Response h = restClient.makeCall(callHealth);
             if (h.hasReport()) {
-                System.out.println("health report " + h.getReport().toString());
+                logger.debug("health report " + h.getReport().toString());
             } else {
                 if (h.getResponseCode() == 200) {
-                    System.out.println("Health check result " + h.getResponseString());
+                    logger.debug("Health check result " + h.getResponseString());
                 }
             }
         } catch (BehavioSecException e) {
@@ -174,14 +172,14 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             return goTo(false).build();
         }
 
-        logger.debug("********************************    tenantId(this.config.tenantID()): " + this.config.tenantID());
-        logger.debug("********************************    username): " + username);
-        logger.debug("********************************    userip: " + userip);
-        logger.debug("********************************    userAgent: " + userAgent);
-        logger.debug("********************************    notes: " + "FR-V" + BehavioSecPlugin.currentVersion);
-        logger.debug("********************************    operatorFlags: " + com.behaviosec.isdk.config.Constants.FLAG_FINALIZE_SESSION);
-        logger.debug("********************************    timingData: " + timingData);
-        logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        logger.debug("tenantId(this.config.tenantID()): " + this.config.tenantID());
+        logger.debug("username): " + username);
+        logger.debug("userip: " + userip);
+        logger.debug("userAgent: " + userAgent);
+        logger.debug("notes: " + "FR-V" + BehavioSecPlugin.currentVersion);
+        logger.debug("operatorFlags: " + com.behaviosec.isdk.config.Constants.FLAG_FINALIZE_SESSION);
+        logger.debug("timingData: " + timingData);
+
         APICall callReport = APICall.report()
                .tenantId(this.config.tenantID())
                 .username(username)
@@ -206,9 +204,7 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
             return goTo(true).replaceSharedState(newSharedState).build();
         }
 
-        //okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
         logger.debug("After call to getReport in sendRequest: " + nameValuePairs);
-        System.out.println("After call to getReport in sendRequest: " + nameValuePairs);
         return goTo(false).build();
 
     }
