@@ -17,9 +17,6 @@
 
 package com.behaviosec.tree.nodes;
 
-/*import com.behaviosec.isdk.config.NoBehavioSecReportException;
-import com.behaviosec.isdk.entities.Report;
-import com.behaviosec.isdk.evaluators.BooleanEvaluator; */
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.BooleanEvaluator;
@@ -166,7 +163,6 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
             booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
             boolean evaluation = booleanEvaluatorEvaluator.evaluate(bhsReport);
-            System.out.println("evaluation BehavioSecBooleanEvaluator = " + evaluation);
             logger.debug("evaluation BehavioSecBooleanEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
@@ -176,7 +172,6 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
         return goTo(false).build();
     }
-
 
     protected Action.ActionBuilder goTo(boolean outcome) {
         return Action.goTo(outcome ? Constants.TRUE_OUTCOME_ID : Constants.FALSE_OUTCOME_ID);

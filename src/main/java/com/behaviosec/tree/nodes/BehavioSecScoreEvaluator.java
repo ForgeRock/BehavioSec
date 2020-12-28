@@ -17,10 +17,6 @@
 
 package com.behaviosec.tree.nodes;
 
-/*
-import com.behaviosec.isdk.config.NoBehavioSecReportException;
-import com.behaviosec.isdk.entities.Report;
-import com.behaviosec.isdk.evaluators.ScoreEvaluator; */
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.ScoreEvaluator;
@@ -111,7 +107,6 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
             scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
 
             boolean evaluation = scoreEvaluator.evaluate(bhsReport);
-            System.out.println("evaluation BehavioSecScoreEvaluator = " + evaluation);
             logger.debug("evaluation BehavioSecScoreEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
