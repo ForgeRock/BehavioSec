@@ -17,39 +17,41 @@
 
 package com.behaviosec.tree.nodes;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
-
-import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
-import org.forgerock.openam.auth.node.api.Action;
-import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
-import org.forgerock.openam.auth.node.api.TreeContext;
-
 import com.behaviosec.tree.config.Constants;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
+
+import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
  * Behaviometric collector JavaScript code injection into login page
  * puts data in authentications tree context
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = BehavioSecCollector.Config.class)
+        configClass = BehavioSecCollector.Config.class, tags={"behavioral"})
 public class BehavioSecCollector extends SingleOutcomeNode {
     private final Config config;
+    private static final String TAG = BehavioSecCollector.class.getName();
+    private static final Logger logger = LoggerFactory.getLogger(TAG);
 
     /**
      * Configuration for the node.
@@ -77,6 +79,7 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     private static String createClientSideScriptExecutorFunction(String script) {
+        logger.debug("createClientSideScriptExecutorFunction");
         return String.format(
                 "(function(output) {\n" +
                         "    %s\n" + // script
@@ -105,7 +108,6 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             }
             String clientSideScriptExecutorFunction = createClientSideScriptExecutorFunction(myScript);
 
-
             ScriptTextOutputCallback scriptAndSelfSubmitCallback =
                     new ScriptTextOutputCallback(clientSideScriptExecutorFunction);
 
@@ -116,6 +118,8 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     }
 
     private String getScriptAsString(String filename, String outputParameterId) {
+        logger.debug("Creating script from file " + filename);
+        logger.debug("outputParameterId = " + outputParameterId);
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 

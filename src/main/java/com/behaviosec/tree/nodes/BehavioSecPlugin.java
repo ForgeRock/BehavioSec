@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.plugins.PluginException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -57,8 +59,9 @@ import static java.util.Arrays.asList;
  * @since AM 5.5.0
  */
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
-
-    static public String currentVersion = "1.0.1";
+    private static final String TAG = BehavioSecPlugin.class.getName();
+    private static final Logger logger = LoggerFactory.getLogger(TAG);
+    static public String currentVersion = "2.0.2";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -70,10 +73,10 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     public Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
         return ImmutableMap.of(
                 BehavioSecPlugin.currentVersion, asList(
-                BehavioSecAuthNode.class,
-                BehavioSecBooleanEvaluator.class,
-                BehavioSecCollector.class,
-                BehavioSecScoreEvaluator.class
+                        BehavioSecAuthNode.class,
+                        BehavioSecBooleanEvaluator.class,
+                        BehavioSecCollector.class,
+                        BehavioSecScoreEvaluator.class
                 ));
     }
 
@@ -98,6 +101,7 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
      */
     @Override
     public void upgrade(String fromVersion) throws PluginException {
+        logger.debug("Upgrading from " + fromVersion);
         super.upgrade(fromVersion);
     }
 

@@ -12,7 +12,7 @@
  * Header, with the fields enclosed by brackets [] replaced by your own identifying
  * information: "Portions copyright [year] [name of copyright owner]".
  *
- * Copyright 2017-2018 ForgeRock AS.
+ * Copyright 2017-2020 ForgeRock AS.
  * 
 -->
 
@@ -23,16 +23,71 @@
     <artifactId>behaviosecNode</artifactId>
 
     <groupId>com.behaviosec</groupId>
-    <version>1.0.1</version>
-    <name>Template for an Auth Tree Node maven project</name>
-    <description>An Authentication Tree Node for ForgeRock's Identity Platform</description>
+    <version>2.0.1</version>
+    <name>BehavioSec Auth Tree Nodes</name>
+    <description>BehavioSec Authentication Tree Nodes for ForgeRock's Identity Platform</description>
 
     <properties>
-        <am.version>6.5.2</am.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <am.version>7.0.0</am.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <finalName>uber-${artifactId}-${version}</finalName>
+                    <minimizeJar>true</minimizeJar>
+                    <filters>
+                        <filter>
+                            <artifact>com.behaviosec:behaviosec-iSDK</artifact>
+                            <excludes>
+                                <exclude>*.properties</exclude>
+                                <exclude>META-INF/**</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>com.google.http-client:google-http-client</exclude>
+                            <exclude>org.apache.httpcomponents:httpcore</exclude>
+                            <exclude>com.google.code.gson:gson</exclude>
+                            <exclude>com.google.guava:*</exclude>
+                            <exclude>org.checkerframework:checker-qual</exclude>
+                            <exclude>com.google.j2objc:j2objc-annotations</exclude>
+                            <exclude>io.opencensus:opencensus-api</exclude>
+                            <exclude>io.grpc:grpc-context</exclude>
+                            <exclude>io.opencensus:opencensus-contrib-http-util</exclude>
+                            <exclude>com.google.http-client:google-http-client-jackson2</exclude>
+                            <exclude>com.google.errorprone:error_prone_annotations</exclude>
+                            <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                            <exclude>org.apache.httpcomponents:httpclient</exclude>
+                            <exclude>org.slf4j:*</exclude>
+                            <exclude>commons-codec:commons-codec</exclude>
+                            <exclude>com.google.code.findbugs:jsr305</exclude>
+                        </excludes>
+                    </artifactSet>
+                 </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencyManagement>
         <dependencies>
@@ -48,6 +103,30 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.behaviosec</groupId>
+            <artifactId>behaviosec-iSDK</artifactId>
+            <version>3.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.forgerock.am</groupId>
             <artifactId>auth-node-api</artifactId>
             <scope>provided</scope>
@@ -62,34 +141,6 @@
             <artifactId>openam-core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.forgerock.am</groupId>
-            <artifactId>openam-annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.9.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <repositories>
@@ -99,41 +150,7 @@
             </snapshots>
             <id>forgerock-private-releases</id>
             <name>ForgeRock Private Release Repository</name>
-            <url>http://maven.forgerock.org/repo/private-releases</url>
+            <url>https://maven.forgerock.org/repo/private-releases</url>
         </repository>
     </repositories>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <shadedArtifactAttached>false</shadedArtifactAttached>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                    <relocations>
-                        <relocation>
-                            <pattern>com.google</pattern>
-                            <shadedPattern>com.behaviosec.behaviosecAuthNode.guava</shadedPattern>
-                        </relocation>
-                    </relocations>
-                    <filters>
-                        <filter>
-                            <artifact>com.google.guava:guava</artifact>
-                            <excludes>
-                                <exclude>META-INF/**</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <manifestEntries>
-                                <Import-Package>javax.annotation;resolution:=optional,sun.misc;resolution:=optional</Import-Package>
-                            </manifestEntries>
-                        </transformer>
-                    </transformers>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

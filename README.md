@@ -69,7 +69,7 @@ The BehavioSec API backend returns a JSON response that has been integrated to h
 * Create a user with an email address and real password (see Note 1).
 * Combine the components as show in the Authentication Tree.
 * Save.
-* Navigate to the login page with the tree URL + `#login&service=BehavioSec`.
+* Navigate to the login page with the tree URL + `?authIndexType=service&authIndexValue=BehavioSec`.
 * Login in as the user.
 * Verify with the BehavioSense Dashboard recorded session. 
 
