@@ -48,10 +48,10 @@ import java.util.*;
  * A node that send request to BehavioSense endpoint. Node expect to find behavior data in shared context
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = BehavioSecNode.Config.class, tags={"behavioral"})
-public class BehavioSecNode extends AbstractDecisionNode {
+        configClass = BehavioSecAuthNode.Config.class, tags={"behavioral"})
+public class BehavioSecAuthNode extends AbstractDecisionNode {
 
-    private static final String TAG = BehavioSecNode.class.getName();
+    private static final String TAG = BehavioSecAuthNode.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
 
     private final Config config;
@@ -105,7 +105,7 @@ public class BehavioSecNode extends AbstractDecisionNode {
      * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
-    public BehavioSecNode(@Assisted Config config) {
+    public BehavioSecAuthNode(@Assisted Config config) {
         this.config = config;
     }
 
@@ -323,7 +323,7 @@ public class BehavioSecNode extends AbstractDecisionNode {
     }
 
     static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
-        private static final String BUNDLE = BehavioSecNode.class.getName().replace(".", "/");
+        private static final String BUNDLE = BehavioSecAuthNode.class.getName().replace(".", "/");
 
         @Override
         public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {

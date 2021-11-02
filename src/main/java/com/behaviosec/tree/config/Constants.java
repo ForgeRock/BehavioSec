@@ -20,6 +20,7 @@ public class Constants {
     // data collector field
     public static String DATA_FIELD = "myHiddenOutcome";
     public static String COLLECTOR_SCRIPT= "collector.min.js";
+    public static String AJAX_COLLECTOR_SCRIPT= "behavioweb_ajax.js";
 
     // request body
     public static String USER_ID = "userId";
@@ -30,7 +31,9 @@ public class Constants {
     public static String NOTES = "notes";
     public static String REPORT_FLAGS = "reportflags";
     public static String OPERATOR_FLAGS = "operatorflags";
-    public static String SESSION_ID = "sessionId";
+    public static String SESSION_ID = "sessionID";
+    public static String JOURNEY_ID = "journeyID";
+    public static String DEFAULT_TENANT_ID = "default_tenant";
 
 
     //request action

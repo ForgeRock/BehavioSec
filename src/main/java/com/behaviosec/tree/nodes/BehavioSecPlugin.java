@@ -61,7 +61,7 @@ import static java.util.Arrays.asList;
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     private static final String TAG = BehavioSecPlugin.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
-    static public String currentVersion = "2.0.2";
+    static public String currentVersion = "4.1.3";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -73,10 +73,12 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     public Map<String, Iterable<? extends Class<? extends Node>>> getNodesByVersion() {
         return ImmutableMap.of(
                 BehavioSecPlugin.currentVersion, asList(
-                        BehavioSecAuthNode.class,
                         BehavioSecBooleanEvaluator.class,
                         BehavioSecCollector.class,
-                        BehavioSecScoreEvaluator.class
+                        BehavioSecAuthNode.class,
+                        BehavioSecScoreEvaluator.class,
+                        ContinuousAuthentication.class,
+                        IDUtilsTest.class
                 ));
     }
 
