@@ -79,6 +79,11 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
         default boolean allowInTraining() {
             return true;
         }
+
+        @Attribute(order = 500)
+        default boolean IgnoreTraining() {
+            return false;
+        }
     }
 
     /**
@@ -106,7 +111,7 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
             scoreEvaluator.config.setMaxRisk(config.maxRisk());
             scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
 
-            boolean evaluation = scoreEvaluator.evaluate(bhsReport);
+            boolean evaluation = scoreEvaluator.evaluateInTraining(bhsReport, config.IgnoreTraining());
             logger.debug("evaluation BehavioSecScoreEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
