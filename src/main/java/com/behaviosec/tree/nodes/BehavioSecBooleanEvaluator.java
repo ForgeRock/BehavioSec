@@ -72,6 +72,11 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             return false;
         }
 
+        @Attribute(order = 350)
+        default boolean IgnoreTraining() {
+            return false;
+        }
+
         /**
          * Toggle Remote Access flagged profiles to evaluate to true
          *
@@ -162,8 +167,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             booleanEvaluatorEvaluator.config.setAllowDeviceChanged(config.allowDeviceChanged());
             booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
             booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
-            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, true);
-            System.out.println("evaluation BehavioSecBooleanEvaluator = " + evaluation);
+            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, config.IgnoreTraining());
             logger.debug("evaluation BehavioSecBooleanEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
