@@ -168,7 +168,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
                 .tenantId(tenantId)
                 .username(username)
                 .sessionId(sessionID)
-                .reportFlags(205983)
+                .reportFlags(0)
                 .includeRawData(false)
                 .build();
 
