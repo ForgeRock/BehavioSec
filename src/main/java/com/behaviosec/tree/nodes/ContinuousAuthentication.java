@@ -91,11 +91,6 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         String sSharedState = context.sharedState.toString();
         String sTransientState = context.transientState.toString();
 
-        debugMesssage("*** CONTEXT ***\n" + sContext);
-        debugMesssage("*** HEADERS ***\n" + sHeaders);
-        debugMesssage("*** COOKIES ***\n" + sCookies);
-        debugMesssage("*** SHARED_STATE ***\n" + sSharedState);
-        debugMesssage("*** TRANSIENT STATE ***\n" + sTransientState);
 
         return sendRequest(context);
     }
