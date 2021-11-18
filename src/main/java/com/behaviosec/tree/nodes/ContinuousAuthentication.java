@@ -90,10 +90,6 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         String sCookies = context.request.cookies.toString();
         String sSharedState = context.sharedState.toString();
         String sTransientState = context.transientState.toString();
-        String sLocales = context.request.locales.getLocales().toString();
-        String sClientIp = context.request.clientIp;
-        String sXForwardedFor = context.request.headers.get("X-Forwarded-For").toString();
-        String sCallbacks = context.getAllCallbacks().toString();
 
         debugMesssage("*** CONTEXT ***\n" + sContext);
         debugMesssage("*** HEADERS ***\n" + sHeaders);
@@ -118,16 +114,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         String endPoint = config.endpoint();
         String tenantId = config.tenantID();
 
-        if (endPoint == null || endPoint.equals("")) {
-            endPoint = "http://app.example.com:28080/";
-        }
-        if (tenantId == null || tenantId.equals("")) {
-            tenantId = "default_tenant";
-        }
-
-        logger.debug("sendRequest: " + nameValuePairs);
-
-        int timeOutInMilliSeconds = 100000;
+        int timeOutInMilliSeconds = 10000;
         int retries = 3;
         ClientConfiguration clientConfiguration = new ClientConfiguration(endPoint, tenantId, timeOutInMilliSeconds, retries);
 
@@ -142,10 +129,17 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
             } else {
                 System.out.println("Returning false - 0");
                 return goTo(false).build();
+
             }
         } catch (BehavioSecException e) {
-            logger.info("Returning false - 1");
+            logger.error("Error calling behaviosec " + e.getMessage());
             return goTo(false).build();
+        }
+
+        String replacementURL = this.config.replacementURL();
+
+        if (replacementURL != null && !"".equals(replacementURL)) {
+            logger.debug("Replacing URL: " + replacementURL);
         }
 
         APICall bindJourney = APICall.bindJourneyBuilder()
@@ -157,14 +151,14 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
 
         Response response = null;
 
-        logger.error("Calling bindJourney " + "tenantId(" + tenantId + ")" +
+        logger.debug("Calling bindJourney " + "tenantId(" + tenantId + ")" +
                 "                .username(" + username + ")" +
                 "                .journeyId(" + journeyID + ")" +
                 "                .sessionId(" + sessionID + ")");
         try {
             response = restClient.makeCall(bindJourney);
         } catch (BehavioSecException e) {
-            e.printStackTrace();
+            logger.error("Error calling bindjourney " + e.getMessage());
             return goTo(false).build();
         }
 
@@ -181,7 +175,8 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         try {
             response = restClient.makeCall(getReport);
         } catch (BehavioSecException e) {
-            e.printStackTrace();
+            logger.error("Error calling getReport " + e.getMessage());
+            return goTo(false).build();
         }
 
         if (response.hasReport()){
@@ -189,17 +184,11 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
             newSharedState.put("SESSIONID", Collections.singletonList(sessionID));
             newSharedState.put("JOURNEYID", Collections.singletonList(journeyID));
             newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(response.getReport()));
-
-            Action.ActionBuilder builder = Action.goTo(Constants.TRUE_OUTCOME_ID);
-            builder.putSessionProperty(Constants.USERNAME, username);
-            builder.putSessionProperty(Constants.SESSION_ID, sessionID);
-            builder.putSessionProperty(Constants.JOURNEY_ID, journeyID);
-
+            logger.debug("Returning from continuous authentication ");
             return goTo(true).replaceSharedState(newSharedState).build();
         }
 
-        logger.debug("After call to getReport in sendRequest: " + nameValuePairs);
-
+        logger.error("No report found for session id " + sessionID);
         return goTo(false).replaceSharedState(newSharedState).build();
     }
 
@@ -218,5 +207,4 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
                     new Outcome(Constants.FALSE_OUTCOME_ID, bundle.getString("false")));
         }
     }
-
 }
