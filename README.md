@@ -161,28 +161,85 @@ For full list of available flags please see the BehavioSec documentation for [Ri
 
 # Continuous authentication
 
-In addition of being able to use BehavioSec for login, the latest version of the integration allows the use of the BehavioSec SDK on any ForgeRock protected page where data needs to be collected.
+In addition of being able to use BehavioSec for login, the continuous authentication node allows the use of the BehavioSec SDK on any ForgeRock protected page where data needs to be collected.
 
-## Continuous Authentication Configuration 
+## Prerequisites
+The continuous authentication node requires requires a that a policy enforcement point (PEP) intercepting traffic to the application be already configured. ForgeRock Java Agents, Web Agents, and Identity Gateway can be used as PEPs with the ocntinuous authentication node.
 
-Steps to enable continuous authentication in ForgeRock are:
+## Configuration
 
-### Add the provided SDK to the required pages
+The following steps describe the basic setup of a Java agent and a web application for continuous authentication. For BehavioSec specific steps, start from step 3
 
-The only change required to the web application is to add the SDK to the web pages that are going to collect behavioral data:
+### Step 1: Setup a Policy in ForgeRock AM
+
+1. In the AM console, navigate to Realms > Realm Name > Authorization > Policy Sets > Default Policy Set.
+
+2. Click Add a Policy, and then provide the Name, Resource Type and Resources for the Policy.
+
+   Name: Banking
+
+   Resource Type: URL
+
+   Resources: http://app.example.com:8080/Banking/*
+
+3. Click Create to create the Policy.
+
+![ScreenShot](images/behaviosec-new-policy-banking.png)
+
+4. Click on the Actions tab
+
+5. Click on "Add an Action"
+
+6. Select "Get"
+
+7. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-new-policy-banking-actions.png)
+
+8. Click on the Subjects tab
+
+9. Click on "Add an Action"
+
+10. Select Type "Authenticated Users"
+
+11. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-new-policy-banking-subjects.png)
+
+The final policy should look like this:
+
+![ScreenShot](images/behaviosec-new-policy-banking0.png)
+
+### Step 2: Add the Policy to a Java Agent
+
+1. In the AM console, navigate to Realms > Realm Name > Applications > Agents > Java Agent.
+
+2. Select an Existing Java Agent 
+
+3. In the Global tab, go to the "Agent Filter Mode".
+
+4. Add a new "Agent Filter Mode" with key "Banking" and Value "URL_POLICY"
+
+5. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-java_agent_global0.png)
+
+### Step 3: Add the provided SDK to the required pages
+
+The only change required to the web application is to add the SDK to the form submitting web pages that are going to collect behavioral data:
 
 	    <script type="text/javascript" src="./behavioweb_ajax.js"></script>
 
 This can be done on the individual pages or at the framework level.
 
-### Create an Authentication Tree using the “Continuous Authentication” Node
+### Step 4: Create an Authentication Tree using the “Continuous Authentication” Node
 
 The BehavioSec Continuous Authentication node, just like the BehavioSec Auth Node, receives the collected data and communicates with the server.
 
 ![ScreenShot](images/behaviosec-continuous.png)
 
 
-### Create a policy
+### Step 5: Create One More Policy in ForgeRock AM
 
 Create a policy that invokes the Authentication Tree created on the previous step when data is posted by the page that contains the BehavioSec SDK
 
@@ -190,28 +247,67 @@ Access Manager  provides access management, which consists of authentication and
 
 To enable the collection of the behavioral data by the authentication tree, you need to configure policy sets to protect the pages.
 
-More information on policy configuration can be found at https://backstage.forgerock.com/docs/am/7.1/authorization-guide/configuring-policies.html
+1. In the AM console, navigate to Realms > Realm Name > Authorization > Policy Sets > Default Policy Set.
 
-The continuous authentication node uses Access Manager session upgrade functionality via "Transactional Authorization" 
-(https://backstage.forgerock.com/docs/am/7/authorization-guide/transactional-authorization.html) requiring the workflow to perform additional steps during the authorization of an action.
+2. Click Add a Policy, and then provide the Name, Resource Type and Resources for the Policy.
 
-![ScreenShot](images/behaviosec-policy.png)
+   Name: BankingContinuous
 
-In addition to the normal policy configuration parameters, the “Environments” configuration of the policy must follow the following format:
+   Resource Type: URL
 
-      {
-      "type": "Transaction",
-      "authenticationStrategy": "AuthenticateToTreeConditionAdvice",
-      "strategySpecifier": "Authentication Tree Defined on the Previous Step"
-      }
+   Resources: http://app.example.com:8080/Banking/post*
 
+3. Click Create to create the Policy.
 
+![ScreenShot](images/behaviosec-continuous-policy0.png)
 
-### Create an Application that uses the Policy
+4. Click on the Actions tab
 
-The last step is to actually protect an application using the Policy created in the previous step
+5. Click on "Add an Action"
 
-![ScreenShot](images/behaviosec-application.png)
+6. Select "Post"
+
+7. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-continuous-policy1.png)
+
+8. Click on the Subjects tab
+
+9. Click on "Add an Action"
+
+10. Select Type "Authenticated Users"
+
+11. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-continuous-policy2.png)
+
+11. Click on the Environments tab
+
+12. Click on "Add an Environment Condition"
+
+13. Select Type "Transaction", Authentication Strategy "Authenticate To Tree", and Strategy Specifier "Continuous"
+
+14. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-continuous-policy3.png)
+
+The final policy should look like this:
+
+![ScreenShot](images/behaviosec-continuous-policy4.png)
+
+### Step 6: Add the Policy to a Java Agent
+
+1. In the AM console, navigate to Realms > Realm Name > Applications > Agents > Java Agent.
+
+2. Select an Existing Java Agent
+
+3. In the Global tab, go to the "Agent Filter Mode".
+
+4. Add a new "Agent Filter Mode" with key "BankingContinuous" and Value "URL_POLICY"
+
+5. Click on “Save Changes”
+
+![ScreenShot](images/behaviosec-continuous-policy5.png)
 
 For more information on applications, see https://backstage.forgerock.com/docs/am/7/security-guide/protecting-applications.html.
 
