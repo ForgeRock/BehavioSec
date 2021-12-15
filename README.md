@@ -44,7 +44,7 @@ Flags can include:
 * A Remote Access Trojan (RAT) in the browser
 * Bot activity
 * Replay attacks
-* And more... see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
+* And more... see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/flags/flags_at_a_glance).
 
 ### More information
 Please familiarize yourself with the [BehavioSec SDK][behaviosec_platform] and ask customer Support for a deep dive into the flag and configuration options.
@@ -155,7 +155,7 @@ condition evaluating to false.
   change is detected. Default is **true**.
 
 
-For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/risk_flags).
+For full list of available flags please see the BehavioSec documentation for [Risk Flags](https://developer.behaviosec.com/dw/flags/flags_at_a_glance).
 
 ![ScreenShot](images/behaviosec-boolean-evaluator.png)
 
