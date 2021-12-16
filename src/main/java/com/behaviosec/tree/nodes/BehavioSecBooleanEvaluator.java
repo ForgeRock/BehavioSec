@@ -73,7 +73,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         @Attribute(order = 350)
-        default boolean IgnoreTraining() {
+        default boolean ignoreTraining() {
             return false;
         }
 
@@ -167,7 +167,7 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
             booleanEvaluatorEvaluator.config.setAllowDeviceChanged(config.allowDeviceChanged());
             booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
             booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
-            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, config.IgnoreTraining());
+            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, config.ignoreTraining());
             logger.debug("evaluation BehavioSecBooleanEvaluator = " + evaluation);
 
             return goTo(evaluation).build();
