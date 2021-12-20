@@ -83,6 +83,10 @@ This is a data collector node that you need to place under the page node. In the
 
 ![ScreenShot](images/behaviosec_collector_node.png)
 
+When using the old user interface (UI), use collector.min.65.js instead of the default, collector.min.js.
+
+![ScreenShot](images/behaviosec-collector-old-ui0.png)
+
 ## BehavioSec AuthNode
 This node receives the collected data and communicates with the server.
 
@@ -187,7 +191,7 @@ This can be done on the individual pages or at the framework level.
 ### Step 4: Create an Authentication Tree using the Continuous Authentication Node
 The BehavioSec Continuous Authentication node, just like the BehavioSec Auth Node, receives the collected data and communicates with the server.
 
-![ScreenShot](images/behaviosec-continuous.png)
+![ScreenShot](images/behaviosec-continuous-auth-node0.png)
 
 ### Step 5: Set up One More Policy in ForgeRock AM
 Configure a policy that invokes the Authentication Tree created in the previous step when data is posted by the page that contains the BehavioSec SDK.
