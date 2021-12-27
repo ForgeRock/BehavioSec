@@ -16,6 +16,7 @@
 
 package com.behaviosec.tree.nodes;
 
+import com.behaviosec.tree.utils.Debug;
 import com.google.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;
@@ -51,17 +52,14 @@ import static java.util.Arrays.asList;
  * </p>
  * <p>
  *     Plugins should <i>not</i> use the {@code ShutdownManager}/{@code ShutdownListener} API for handling shutdown, as
- *     the order of calling those listeners is not deterministic. The {@link #onShutdown()} method for all plugins will
- *     be called in the reverse order from the order that {@link #onStartup()} was called, with dependent plugins being
- *     notified after their dependencies for startup, and before them for shutdown.
+ *     the order of calling those listeners is not deterministic.
  * </p>
- * @supported.all.api
  * @since AM 5.5.0
  */
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     private static final String TAG = BehavioSecPlugin.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
-    static public String currentVersion = "7.1.6";
+    static public String currentVersion = "7.1.10";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -75,28 +73,21 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
                 BehavioSecPlugin.currentVersion, asList(
                         BehavioSecBooleanEvaluator.class,
                         BehavioSecInTrainingTestNode.class,
+//                        BehavioSecBooleanEvaluatorNoTraining.class,
                         BehavioSecCollector.class,
                         BehavioSecNode.class,
+//                        BehavioSecNode2.class,
                         BehavioSecScoreEvaluator.class,
+//                        BehavioSecScoreEvaluatorNoTraining.class,
                         ContinuousAuthentication.class,
+//                        ContinuousAuthentication2.class,
                         IDUtilsTest.class
                 ));
     }
 
     /**
-     * Handle plugin installation. This method will only be called once, on first AM startup once the plugin
-     * is included in the classpath. The {@link #onStartup()} method will be called after this one.
-     *
-     * No need to implement this unless your AuthNode has specific requirements on install.
-     */
-    @Override
-    public void onInstall() throws PluginException {
-        super.onInstall();
-    }
-
-    /**
      * This method will be called when the version returned by {@link #getPluginVersion()} is higher than the
-     * version already installed. This method will be called before the {@link #onStartup()} method.
+     * version already installed.
      *
      * No need to implement this untils there are multiple versions of your auth node.
      *
@@ -104,7 +95,10 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
      */
     @Override
     public void upgrade(String fromVersion) throws PluginException {
-        logger.debug("Upgrading from " + fromVersion);
+        Debug.printDebugMesssage("Upgrading from " + fromVersion);
+        pluginTools.upgradeAuthNode(BehavioSecBooleanEvaluator.class);
+        pluginTools.upgradeAuthNode(BehavioSecScoreEvaluator.class);
+        pluginTools.upgradeAuthNode(BehavioSecNode.class);
         super.upgrade(fromVersion);
     }
 
