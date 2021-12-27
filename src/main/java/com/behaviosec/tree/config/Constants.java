@@ -20,7 +20,6 @@ public class Constants {
     // data collector field
     public static String DATA_FIELD = "myHiddenOutcome";
     public static String COLLECTOR_SCRIPT= "collector.min.js";
-    public static String AJAX_COLLECTOR_SCRIPT= "behavioweb_ajax.js";
 
     // request body
     public static String USER_ID = "userId";
