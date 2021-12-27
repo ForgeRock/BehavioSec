@@ -26,8 +26,6 @@ import com.behaviosec.tree.utils.PathHelper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.idm.AMIdentity;
-import com.sun.identity.idm.IdUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -97,7 +95,6 @@ public class BehavioSecNode extends AbstractDecisionNode {
      * from the plugin.
      *
      * @param config The service config.
-     * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
     public BehavioSecNode(@Assisted Config config) {
@@ -120,7 +117,7 @@ public class BehavioSecNode extends AbstractDecisionNode {
         System.out.println(message);
     }
 
-    private Action sendRequest(TreeContext context) throws NodeProcessException {
+    private Action sendRequest(TreeContext context) {
         List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
         String username = context.sharedState.get(Constants.USERNAME).asString();
@@ -178,28 +175,11 @@ public class BehavioSecNode extends AbstractDecisionNode {
 
         RestClient restClient = RestClientFactory.buildRestClient(clientConfiguration);
 
-        APICall callHealth = APICall.healthBuilder().build();
-
-        try {
-            Response h = restClient.makeCall(callHealth);
-            if (h.hasReport()) {
-                logger.debug("health report " + h.getReport().toString());
-            } else {
-                if (h.getResponseCode() == 200) {
-                    logger.debug("Health check result " + h.getResponseString());
-                }
-            }
-        } catch (BehavioSecException e) {
-            e.printStackTrace();
-            return goTo(false).build();
-        }
-
         logger.debug("tenantId(this.config.tenantID()): " + this.config.tenantID());
         logger.debug("username): " + username);
         logger.debug("userip: " + userip);
         logger.debug("userAgent: " + userAgent);
         logger.debug("notes: " + "FR-V" + BehavioSecPlugin.currentVersion);
-        logger.debug("operatorFlags: " + com.behaviosec.isdk.config.Constants.FLAG_FINALIZE_SESSION);
         logger.debug("timingData: " + timingData);
 
         String sessionId = UUID.randomUUID().toString();
@@ -231,10 +211,11 @@ public class BehavioSecNode extends AbstractDecisionNode {
                 .timingData(timingData)
                 .timestamp()
                 .sessionId(sessionId)
+                .operatorFlags(0)
                 .notes("FR-V" + BehavioSecPlugin.currentVersion) 
                 .build();
 
-        Response response = null;
+        Response response;
         try {
             response = restClient.makeCall(callReport);
         } catch (BehavioSecException e) {
