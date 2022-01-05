@@ -6,3 +6,6 @@ behaviosecNode.iml
 .settings/
 .factorypath
 notused/
+/src/main/java/com/behaviosec/isdk/
+*.sh
+
