@@ -17,6 +17,7 @@ package com.behaviosec.tree.nodes;
 
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
+import com.behaviosec.tree.utils.Debug;
 import com.behaviosec.tree.utils.Helper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -52,7 +53,6 @@ public class BehavioSecInTrainingTestNode implements Node {
      * from the plugin.
      *
      * @param config The service config.
-     * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
     public BehavioSecInTrainingTestNode(@Assisted Config config) {
@@ -67,24 +67,21 @@ public class BehavioSecInTrainingTestNode implements Node {
 
         InTrainingOutcome outcome = InTrainingOutcome.ERROR;
 
-        Report bhsReport = null;
+        Report bhsReport;
         try {
             bhsReport = Helper.getReportFromContext(context);
             if (bhsReport.isTrained()) {
-                logger.debug(TAG + " returning " + InTrainingOutcome.TRAINED_OUTCOME + "outcome");
-                System.out.println(TAG + " returning " + InTrainingOutcome.TRAINED_OUTCOME + "outcome");
+                Debug.printDebugMesssage(TAG + " returning " + InTrainingOutcome.TRAINED_OUTCOME + " outcome");
                 outcome = InTrainingOutcome.TRAINED_OUTCOME;
             } else {
-                logger.debug(TAG + " returning " + InTrainingOutcome.NOT_TRAINED_OUTCOME + "outcome");
-                System.out.println(TAG + " returning " + InTrainingOutcome.NOT_TRAINED_OUTCOME + "outcome");
+                Debug.printDebugMesssage(TAG + " returning " + InTrainingOutcome.NOT_TRAINED_OUTCOME + " outcome");
                 outcome = InTrainingOutcome.NOT_TRAINED_OUTCOME;
             }
             return goTo(outcome).build();
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
         }
-        logger.error(TAG + " returning " + InTrainingOutcome.ERROR + "outcome");
-        System.out.println(TAG + " returning " + InTrainingOutcome.ERROR + "outcome");
+        Debug.printDebugMesssage(TAG + " returning " + InTrainingOutcome.ERROR + "outcome");
         return goTo(outcome).build();
     }
 

@@ -36,9 +36,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.*;
 
-import static org.forgerock.openam.auth.node.api.SharedStateConstants.FAILURE_URL;
-import static org.forgerock.openam.auth.node.api.SharedStateConstants.SUCCESS_URL;
-
 /**
  * A node that send request to BehavioSense endpoint. Node expect to find behavior data in shared context
  */
@@ -76,7 +73,6 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
      * from the plugin.
      *
      * @param config The service config.
-     * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
     public ContinuousAuthentication(@Assisted Config config) {
@@ -99,7 +95,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         System.out.println(message);
     }
 
-    private Action sendRequest(TreeContext context) throws NodeProcessException {
+    private Action sendRequest(TreeContext context) {
         List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
         String username = context.sharedState.get(Constants.USERNAME).asString();
@@ -144,7 +140,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
                 .sessionId(sessionID)
                 .build();
 
-        Response response = null;
+        Response response;
 
         logger.debug("Calling bindJourney " + "tenantId(" + tenantId + ")" +
                 "                .username(" + username + ")" +

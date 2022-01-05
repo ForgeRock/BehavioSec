@@ -21,6 +21,7 @@ import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.ScoreEvaluator;
 import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.utils.Debug;
 import com.behaviosec.tree.utils.Helper;
 import com.google.inject.assistedinject.Assisted;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -75,14 +76,13 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
             return Constants.MAX_RISK;
         }
 
+        /**
+         * Deprecated
+         *
+         */
         @Attribute(order = 400)
         default boolean allowInTraining() {
             return true;
-        }
-
-        @Attribute(order = 500)
-        default boolean IgnoreTraining() {
-            return false;
         }
     }
 
@@ -91,7 +91,6 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
      * from the plugin.
      *
      * @param config The service config.
-     * @throws NodeProcessException If the configuration was not valid.
      */
     @Inject
     public BehavioSecScoreEvaluator(@Assisted Config config){
@@ -101,19 +100,16 @@ public class BehavioSecScoreEvaluator extends AbstractDecisionNode {
     @Override
     public Action process(TreeContext context) {
         //Get report from sharedState
-        Report bhsReport = null;
+        Report bhsReport;
         try {
             bhsReport = Helper.getReportFromContext(context);
-
             ScoreEvaluator scoreEvaluator = new ScoreEvaluator();
             scoreEvaluator.config.setMinScore(config.minScore());
             scoreEvaluator.config.setMinConfidence(config.minConfidence());
             scoreEvaluator.config.setMaxRisk(config.maxRisk());
             scoreEvaluator.config.setAllowInTraining(config.allowInTraining());
-
-            boolean evaluation = scoreEvaluator.evaluateInTraining(bhsReport, config.IgnoreTraining());
-            logger.debug("evaluation BehavioSecScoreEvaluator = " + evaluation);
-
+            boolean evaluation = scoreEvaluator.evaluateInTraining(bhsReport, false);
+            Debug.printDebugMesssage("evaluation BehavioSecScoreEvaluator = " + evaluation);
             return goTo(evaluation).build();
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());

@@ -21,6 +21,7 @@ import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.BooleanEvaluator;
 import com.behaviosec.tree.config.Constants;
+import com.behaviosec.tree.utils.Debug;
 import com.behaviosec.tree.utils.Helper;
 import com.google.inject.assistedinject.Assisted;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -64,16 +65,11 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
         }
 
         /**
-         * Toggle in Training flagged profiles to evaluate to true
+         * Toggle in Training flagged profiles to evaluate to true (deprecated)
          * @return allow in training.
          */
         @Attribute(order = 300)
         default boolean allowInTraining() {
-            return false;
-        }
-
-        @Attribute(order = 350)
-        default boolean ignoreTraining() {
             return false;
         }
 
@@ -142,10 +138,9 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
      * Guice constructor.
      *
      * @param config The node configuration.
-     * @throws NodeProcessException If there is an error reading the configuration.
      */
     @Inject
-    public BehavioSecBooleanEvaluator(@Assisted Config config) throws NodeProcessException {
+    public BehavioSecBooleanEvaluator(@Assisted Config config) {
         this.config = config;
     }
 
@@ -153,25 +148,21 @@ public class BehavioSecBooleanEvaluator extends AbstractDecisionNode {
     public Action process(TreeContext context) {
         //Get report from sharedState
 
-        Report bhsReport = null;
+        Report bhsReport;
         try {
             bhsReport = Helper.getReportFromContext(context);
-
             BooleanEvaluator booleanEvaluatorEvaluator = new BooleanEvaluator();
             booleanEvaluatorEvaluator.config.setAllowBot(config.allowBot());
             booleanEvaluatorEvaluator.config.setAllowReplay(config.allowReplay());
-            booleanEvaluatorEvaluator.config.setAllowInTraining(config.allowInTraining());
             booleanEvaluatorEvaluator.config.setAllowRemoteAccess(config.allowRemoteAccess());
             booleanEvaluatorEvaluator.config.setAllowTabAnomaly(config.allowTabAnomaly());
             booleanEvaluatorEvaluator.config.setAllowNumpadAnomaly(config.allowNumpadAnomaly());
             booleanEvaluatorEvaluator.config.setAllowDeviceChanged(config.allowDeviceChanged());
             booleanEvaluatorEvaluator.config.setAllowIPChange(config.allowIpChange());
             booleanEvaluatorEvaluator.config.setAllowCopyOrPaste(config.allowCopyPaste());
-            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, config.ignoreTraining());
-            logger.debug("evaluation BehavioSecBooleanEvaluator = " + evaluation);
-
+            boolean evaluation = booleanEvaluatorEvaluator.evaluateTraining(bhsReport, false);
+            Debug.printDebugMesssage("evaluation BehavioSecScoreEvaluator = " + evaluation);
             return goTo(evaluation).build();
-
         } catch (NoBehavioSecReportException e) {
             logger.error(TAG + " " + e.getMessage());
         }
