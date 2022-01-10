@@ -113,10 +113,6 @@ public class BehavioSecAuthNode extends AbstractDecisionNode {
         return sendRequest(context);
     }
 
-    private void debugMesssage (String message) {
-        System.out.println(message);
-    }
-
     private Action sendRequest(TreeContext context) {
         List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 

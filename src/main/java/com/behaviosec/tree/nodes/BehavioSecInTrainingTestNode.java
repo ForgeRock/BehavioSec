@@ -17,7 +17,7 @@ package com.behaviosec.tree.nodes;
 
 import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
-import com.behaviosec.tree.utils.Debug;
+import com.behaviosec.isdk.utils.Debug;
 import com.behaviosec.tree.utils.Helper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;

@@ -16,7 +16,7 @@
 
 package com.behaviosec.tree.nodes;
 
-import com.behaviosec.tree.utils.Debug;
+import com.behaviosec.isdk.utils.Debug;
 import com.google.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;

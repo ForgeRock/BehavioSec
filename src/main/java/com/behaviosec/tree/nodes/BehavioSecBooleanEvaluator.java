@@ -21,7 +21,7 @@ import com.behaviosec.isdk.config.NoBehavioSecReportException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.evaluators.BooleanEvaluator;
 import com.behaviosec.tree.config.Constants;
-import com.behaviosec.tree.utils.Debug;
+import com.behaviosec.isdk.utils.Debug;
 import com.behaviosec.tree.utils.Helper;
 import com.google.inject.assistedinject.Assisted;
 import org.forgerock.openam.annotations.sm.Attribute;
