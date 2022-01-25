@@ -59,7 +59,7 @@ import static java.util.Arrays.asList;
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     private static final String TAG = BehavioSecPlugin.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
-    static public String currentVersion = "7.1.12";
+    static public String currentVersion = "7.1.13";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -93,7 +93,7 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
         Debug.printDebugMesssage("Upgrading from " + fromVersion);
         pluginTools.upgradeAuthNode(BehavioSecBooleanEvaluator.class);
         pluginTools.upgradeAuthNode(BehavioSecScoreEvaluator.class);
-        pluginTools.upgradeAuthNode(BehavioSecNode.class);
+        pluginTools.upgradeAuthNode(BehavioSecAuthNode.class);
         super.upgrade(fromVersion);
     }
 
