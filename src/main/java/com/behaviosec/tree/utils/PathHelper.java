@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.behaviosec.isdk.utils.Debug.printDebugMesssage;
+
 public class PathHelper {
     private static String W = "w";
     private static String C = "c";
@@ -17,7 +19,7 @@ public class PathHelper {
 
             jsonList.forEach((entry) -> process(entry, replacement));
             timingData2 = objectMapper.writeValueAsString(jsonList);
-            System.out.println(timingData2);
+            printDebugMesssage(timingData2);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             timingData2 = timingData;
