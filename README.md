@@ -79,11 +79,11 @@ A sample of the Authentication Tree is shown below. Details for component config
 ![ScreenShot](images/behaviosec-authentication-tree-basic-example.png)
 
 ## BehavioSec Collector
-This is a data collector node that you need to place under the page node. In the configuration you have an option to add a different collector script if needed.
+This is a data collector node that you need to place under the page node. "collector.min.js" is the default. In the configuration you have an option to add a different collector script if needed.
 
 ![ScreenShot](images/behaviosec_collector_node.png)
 
-When using the old user interface (UI), use collector.min.65.js instead of the default, collector.min.js.
+The same script works with both new and old user interface (UI).
 
 ![ScreenShot](images/behaviosec-collector-old-ui0.png)
 
@@ -99,6 +99,18 @@ This node receives the collected data and communicates with the server.
 
 ![ScreenShot](images/behaviosec-auth-node.png)
 
+## BehavioSec In Training Evaluator
+This module evaluates if the user profile are still in the Training phase.
+
+* **Trained** The user profile is trained on this target.
+  
+* **Not Trained** The user profile is not trained on this target yet.
+
+[Read more about Training here](https://developer.behaviosec.com/dw/training).
+
+
+![ScreenShot](images/behaviosec-in-training-evaluator.png)
+
 ## BehavioSec Score Evaluator
 This Score evaluation module allows you to specify the Behavioral Score, Confidence, and Risk levels. Anything below the specified values will fail. It also allows you to control the outcome for users whose Profiles are still in the Training phase.
 
@@ -109,7 +121,7 @@ This Score evaluation module allows you to specify the Behavioral Score, Confide
 
 * **Risk** is a numerical measure of potentially fraudulent activity during the course of a user session. It can be a number greater than or equal to zero. A Risk value in the range of 0 to 100 is considered minimal risk, while over 100 is high risk and should be investigated for fraud. [Read more about the Risk value](https://developer.behaviosec.com/dw/scoring_and_metrics#risk).
 
-* **Allow In Training** indicates that the User Profile is still in the Training phase. If enabled, the Score and Risk will be ignored and the node will evaluate to `true`. [Read more about Training](https://developer.behaviosec.com/dw/training).
+* **Allow In Training (deprecated)** Not used anymore and will be ignored. [Read more about Training](https://developer.behaviosec.com/dw/training).
 
 ![ScreenShot](images/behaviosec-score-evaluator.png)
 
@@ -119,7 +131,7 @@ The Boolean evaluator controls the outcome for flags returned by the BehavioSens
 ### Boolean Flag configuration
 * **Bot Detection**	indicates that robotic behavior was detected, such as a typing rhythm that is too uniform or jittery mouse movements. This information is received from the `isBot` flag in the JSON. **Allow Auto-Login Bot** enabled evaluates to a `true` outcome even if a bot is detected. Default is `false`.
 * **Replay Attack**	indicates that the exact same behavioral data has been received in the past. This information is received from the `isReplay` flag. **Allow Replay** enabled evaluates to a true outcome even if replay is detected. Default is `false`.
-* **Allow In Training**	indicates that the user Profile is still in the Training phase. If enabled, the Score and Risk will be ignored, and the node will evaluate to `true`.
+* **Allow In Training (deprecated) ** Not used anymore and will be ignored.
 * **Remote Access**	indicates that one or more remote access protocols were detected in the session. If remote access has been flagged, you can see a breakdown of software using the detected protocols by looking at the `ratProtocol` parameter. **Allow Remote Access** enabled evaluates to a `true` outcome even if a remote access protocol is detected. Default is `true`.
 * **Tab Anomaly** indicates that the user has inconsistent tabbing behavior. This information is received from the `tabAnomaly` flag in the JSON. **Allow Tab Anomaly** enabled evaluates to a `true` outcome even if a tab anomaly is detected. Default is `true`.
 * **Numpad Anomaly** indicates that the user has inconsistent numeric keypad behavior. This information is received from the `numpadAnomaly` flag in the JSON. **Allow Numpad Anomaly** enabled evaluates to a `true` outcome even if a numpad anomaly is detected. Default is `true`.
