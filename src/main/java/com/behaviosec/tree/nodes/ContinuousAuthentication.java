@@ -22,6 +22,7 @@ import com.behaviosec.isdk.client.RestClientFactory;
 import com.behaviosec.isdk.config.BehavioSecException;
 import com.behaviosec.isdk.entities.Report;
 import com.behaviosec.isdk.entities.Response;
+import com.behaviosec.isdk.utils.Debug;
 import com.behaviosec.tree.config.Constants;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+
+import static com.behaviosec.isdk.utils.Debug.printDebugMesssage;
 
 /**
  * A node that send request to BehavioSense endpoint. Node expect to find behavior data in shared context
@@ -91,10 +94,6 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
         return sendRequest(context);
     }
 
-    private void debugMesssage (String message) {
-        System.out.println(message);
-    }
-
     private Action sendRequest(TreeContext context) {
         List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
@@ -118,7 +117,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
             if (h.getResponseCode() == 200 || h.getResponseCode() == 0) {
                 logger.debug("Health check result " + h.getResponseString());
             } else {
-                System.out.println("Returning false - 0");
+                printDebugMesssage("Returning false from health check result");
                 return goTo(false).build();
 
             }
@@ -142,12 +141,18 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
 
         Response response;
 
-        logger.debug("Calling bindJourney " + "tenantId(" + tenantId + ")" +
+        printDebugMesssage("Calling bindJourney " + "tenantId(" + tenantId + ")" +
                 "                .username(" + username + ")" +
                 "                .journeyId(" + journeyID + ")" +
                 "                .sessionId(" + sessionID + ")");
         try {
             response = restClient.makeCall(bindJourney);
+            int responseCode = response.getResponseCode();
+            Debug.printDebugMesssage("responseCode = " + responseCode);
+
+            if (responseCode == 500 || responseCode == 400) {
+                return goTo(false).build();
+            }
         } catch (BehavioSecException e) {
             logger.error("Error calling bindjourney " + e.getMessage());
             return goTo(false).build();
@@ -175,7 +180,7 @@ public class ContinuousAuthentication extends AbstractDecisionNode {
             newSharedState.put("SESSIONID", Collections.singletonList(sessionID));
             newSharedState.put("JOURNEYID", Collections.singletonList(journeyID));
             newSharedState.put(Constants.BEHAVIOSEC_REPORT, Collections.singletonList(response.getReport()));
-            logger.debug("Returning from continuous authentication ");
+            printDebugMesssage("Returning from continuous authentication ");
             return goTo(true).replaceSharedState(newSharedState).build();
         }
 
