@@ -23,7 +23,7 @@
     <artifactId>behaviosecNode</artifactId>
 
     <groupId>com.behaviosec</groupId>
-    <version>3.0.1
+    <version>3.0.2
 </version>
     <name>BehavioSec Auth Tree Nodes</name>
     <description>BehavioSec Authentication Tree Nodes for ForgeRock's Identity Platform</description>
