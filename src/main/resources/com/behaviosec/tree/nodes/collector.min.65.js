@@ -554,53 +554,20 @@ var fdata = function (window, document, monitorName, config) {
     })
 }
 
-function createUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
+var userNameEventListener = function functionUserNameEventListener() {
+    var userNameField = document.getElementsByClassName("form-control")[0];
+    userNameField.removeEventListener("blur", userNameEventListener);
+    var submitButton = document.getElementsByClassName("btn-primary")[0];
+    submitButton.addEventListener("click", submitCollectedData, false);
+};
 
 var submitCollectedData = function functionSubmitCollectedData() {
-    var uuid = createUUID();
-    document.cookie = "PF=" + uuid + "; path=/";
-    document.cookie = "usenewurl=true; path=/";
-    document.cookie = "nextsession=1; path=/";
-
-    if (typeof loginHelpers !== 'undefined') {
-        var callback_1 = document.getElementsByName("callback_1")[0].value;
-        document.cookie = "username=" + callback_1 + "; path=/";
-        loginHelpers.setHiddenCallback('%1$s', bw.getData());
-        //alert("loginHelpers is defined");
-    } else {
-        //alert("loginHelpers is undefined");
-    }
+    var outputVariable = document.forms[0].elements['%1$s'];
+    outputVariable.value = bw.getData();
 }
 
-if (typeof loginHelpers !== 'undefined') {
-    if (loginHelpers) {
-        loginHelpers.nextStepCallback(submitCollectedData)
-    }
-} else {
-    var userNameEventListener = function functionUserNameEventListener() {
-        var userNameField = document.getElementsByClassName("form-control")[0];
-        userNameField.removeEventListener("blur", userNameEventListener);
-        var submitButton = document.getElementsByClassName("btn-primary")[0];
-        submitButton.addEventListener("click", submitCollectedData, false);
-    };
-
-    var submitCollectedData = function functionSubmitCollectedData() {
-        var outputVariable = document.forms[0].elements['%1$s'];
-        outputVariable.value = bw.getData();
-    }
-
-    if (document.getElementsByClassName("form-control")[0] != undefined) {
-        fdata(window, document, "bw", {autoload: !0});
-        var userNameField = document.getElementsByClassName("form-control")[0];
-        userNameField.addEventListener("blur", userNameEventListener);
-    }
-}
-
-{
+if (document.getElementsByClassName("form-control")[0] != undefined) {
     fdata(window, document, "bw", {autoload: !0});
+    var userNameField = document.getElementsByClassName("form-control")[0];
+    userNameField.addEventListener("blur", userNameEventListener);
 }

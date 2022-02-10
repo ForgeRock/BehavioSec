@@ -30,7 +30,9 @@ public class Constants {
     public static String NOTES = "notes";
     public static String REPORT_FLAGS = "reportflags";
     public static String OPERATOR_FLAGS = "operatorflags";
-    public static String SESSION_ID = "sessionId";
+    public static String SESSION_ID = "sessionID";
+    public static String JOURNEY_ID = "journeyID";
+    public static String DEFAULT_TENANT_ID = "default_tenant";
 
 
     //request action

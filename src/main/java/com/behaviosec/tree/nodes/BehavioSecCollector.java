@@ -14,7 +14,6 @@
  * Copyright 2017-2018 ForgeRock AS.
  */
 
-
 package com.behaviosec.tree.nodes;
 
 import com.behaviosec.tree.config.Constants;
@@ -40,6 +39,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Optional;
 
+import static com.behaviosec.tree.utils.Generate.createJourneyId;
+import static com.behaviosec.tree.utils.Generate.createSessionId;
 import static org.forgerock.openam.auth.node.api.Action.send;
 
 /**
@@ -120,6 +121,8 @@ public class BehavioSecCollector extends SingleOutcomeNode {
     private String getScriptAsString(String filename, String outputParameterId) {
         logger.debug("Creating script from file " + filename);
         logger.debug("outputParameterId = " + outputParameterId);
+        String sessionId = createSessionId();
+        String journeyId = createJourneyId();
         try {
             Reader paramReader = new InputStreamReader(getClass().getResourceAsStream(filename));
 
@@ -127,6 +130,8 @@ public class BehavioSecCollector extends SingleOutcomeNode {
             BufferedReader objReader = new BufferedReader(paramReader);
             String strCurrentLine;
             while ((strCurrentLine = objReader.readLine()) != null) {
+                strCurrentLine = strCurrentLine.replaceAll("REPLACEMENT_SESSION_ID", sessionId);
+                strCurrentLine = strCurrentLine.replaceAll("REPLACEMENT_JOURNEY_ID", journeyId);
                 data.append(strCurrentLine).append(System.lineSeparator());
             }
             return String.format(data.toString(), outputParameterId);
