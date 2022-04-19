@@ -59,7 +59,7 @@ import static java.util.Arrays.asList;
 public class BehavioSecPlugin extends AbstractNodeAmPlugin {
     private static final String TAG = BehavioSecPlugin.class.getName();
     private static final Logger logger = LoggerFactory.getLogger(TAG);
-    static public String currentVersion = "7.1.13";
+    static public String currentVersion = "7.1.14";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
