@@ -76,7 +76,8 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
                         BehavioSecCollector.class,
                         BehavioSecAuthNode.class,
                         BehavioSecScoreEvaluator.class,
-                        ContinuousAuthentication.class
+                        ContinuousAuthentication.class,
+                        BehavioSecNode.class
                 ));
     }
 
@@ -94,6 +95,10 @@ public class BehavioSecPlugin extends AbstractNodeAmPlugin {
         pluginTools.upgradeAuthNode(BehavioSecBooleanEvaluator.class);
         pluginTools.upgradeAuthNode(BehavioSecScoreEvaluator.class);
         pluginTools.upgradeAuthNode(BehavioSecAuthNode.class);
+        pluginTools.upgradeAuthNode(BehavioSecInTrainingTestNode.class);
+        pluginTools.upgradeAuthNode(BehavioSecCollector.class);
+        pluginTools.upgradeAuthNode(ContinuousAuthentication.class);
+        pluginTools.upgradeAuthNode(BehavioSecNode.class);
         super.upgrade(fromVersion);
     }
 
